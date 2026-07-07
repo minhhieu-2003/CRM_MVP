@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "bankrm-crm": {
+      "command": "node",
+      "args": ["src/mcp/server.js"],
+      "cwd": "D:/CRM_MVP",
+      "env": {}
+    }
+  }
+}

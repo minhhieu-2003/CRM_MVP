@@ -1,0 +1,17 @@
+{
+  "name": "crm_mvp",
+  "version": "1.0.0",
+  "description": "CRM AI Agent MVP for Vietnamese Relationship Manager workflow",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "dev": "node --env-file-if-exists=.env --watch src/server.js",
+    "mcp": "node --env-file-if-exists=.env src/mcp/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "express": "^4.19.2",
+    "zod": "^4.4.3"
+  }
+}
