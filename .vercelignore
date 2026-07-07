@@ -1,0 +1,9 @@
+.env
+.env.*
+.firebase/
+logs/
+evidence/
+node_modules/
+npm-debug.log*
+*.log
+tmp_*

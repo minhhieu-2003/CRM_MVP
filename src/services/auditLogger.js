@@ -4,7 +4,9 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const logsDir = path.join(__dirname, "..", "..", "logs");
+const logsDir =
+  process.env.AUDIT_LOG_DIR ||
+  (process.env.VERCEL ? path.join("/tmp", "bankrm-logs") : path.join(__dirname, "..", "..", "logs"));
 const logFile = path.join(logsDir, "audit.log");
 const inMemoryLogs = [];
 

@@ -1,0 +1,502 @@
+﻿[
+  {
+    "template_id": "EMAIL_001",
+    "type": "follow_up_call",
+    "product": "tiet_kiem_12_thang",
+    "stage": "post_call",
+    "subject": "Thông tin gói tiết kiệm 12 tháng — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã dành thời gian trao đổi với em [Tên RM] hôm nay.\n\nNhư đã trao đổi, em xin gửi lại thông tin chi tiết gói Tiết kiệm 12 tháng ưu đãi:\n• Lãi suất: 7.2%/năm (áp dụng đến hết tháng này)\n• Lãi trả cuối kỳ hoặc hàng tháng theo yêu cầu\n• Gửi từ 50 triệu đồng\n• Không giới hạn số tiền tối đa\n\nNếu Anh/Chị muốn mở tài khoản tiết kiệm hoặc cần thêm thông tin, em luôn sẵn sàng hỗ trợ.\n\nTrân trọng,\n[Tên RM]\nRelationship Manager — Bank A\nSĐT: [SĐT]",
+    "rating": 4.8,
+    "use_count": 145
+  },
+  {
+    "template_id": "EMAIL_002",
+    "type": "follow_up_proposal",
+    "product": "vay_mua_nha",
+    "stage": "post_proposal",
+    "subject": "Thông tin bổ sung về gói vay mua nhà ưu đãi — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến gói Vay mua nhà tại Bank A.\n\nNhư đã trao đổi, em xin gửi bảng tính trả góp chi tiết:\n• Số tiền vay: [Số tiền] tỷ đồng\n• Lãi suất ưu đãi: 8.5%/năm trong 24 tháng đầu\n• Thời hạn vay: tối đa 25 năm\n• Tỷ lệ tài trợ: đến 80% giá trị tài sản\n• Phí trả nợ trước hạn: miễn phí sau năm thứ 3\n\nTrả góp hàng tháng dự kiến khoảng [X] triệu đồng (tùy kỳ hạn và tỷ lệ vay).\n\nAnh/Chị có muốn hẹn gặp để em tư vấn chi tiết hơn không?\n\nTrân trọng,\n[Tên RM]\nBank A",
+    "rating": 4.9,
+    "use_count": 203
+  },
+  {
+    "template_id": "EMAIL_003",
+    "type": "product_introduction",
+    "product": "the_visa_platinum",
+    "stage": "introduction",
+    "subject": "Ưu đãi độc quyền thẻ Visa Platinum dành cho Anh/Chị",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A trân trọng giới thiệu thẻ tín dụng Visa Platinum với những đặc quyền dành riêng cho khách hàng thân thiết như Anh/Chị:\n\n• Hoàn tiền 5% tại siêu thị và nhà hàng\n• Hoàn tiền 3% xăng dầu và tiện ích\n• Miễn phí phòng chờ sân bay không giới hạn lượt\n• Bảo hiểm du lịch quốc tế đến 5 tỷ đồng\n• Phí thường niên: 0đ năm đầu\n\nHạn mức lên đến 200 triệu đồng.\n\nĐăng ký ngay hôm nay để nhận thêm ưu đãi hoàn tiền 10% trong tháng đầu.\n\nEm có thể hỗ trợ Anh/Chị thủ tục qua điện thoại hoặc tại chi nhánh.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 98
+  },
+  {
+    "template_id": "EMAIL_004",
+    "type": "follow_up_proposal",
+    "product": "quy_mo_tcbf",
+    "stage": "post_meeting",
+    "subject": "Tài liệu quỹ đầu tư TCBF theo yêu cầu — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã dành thời gian gặp gỡ với em.\n\nTheo yêu cầu, em gửi kèm tài liệu về Quỹ mở TCBF:\n• NAV hiện tại: [X] đồng/chứng chỉ quỹ\n• Tăng trưởng 12 tháng qua: 15.3%\n• Tăng trưởng từ khi thành lập: 87.5%\n• Đầu tư tối thiểu: 1 triệu đồng\n• Phí quản lý: 1.5%/năm trên NAV\n• Rút vốn T+3 làm việc\n\nDanh mục đầu tư tập trung cổ phiếu blue-chip và trái phiếu chính phủ, phù hợp khẩu vị rủi ro vừa phải.\n\nAnh/Chị có câu hỏi nào không ạ?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 67
+  },
+  {
+    "template_id": "EMAIL_005",
+    "type": "appointment_reminder",
+    "product": "general",
+    "stage": "pre_meeting",
+    "subject": "Nhắc lịch hẹn ngày [Ngày] tại Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm xin nhắc lịch hẹn của chúng ta:\n\n📅 Thời gian: [Ngày], [Giờ]\n📍 Địa điểm: [Chi nhánh/Địa điểm]\n👤 Gặp: [Tên RM] — Relationship Manager\n\nNội dung trao đổi: [Nội dung]\n\nAnh/Chị vui lòng mang theo:\n• CMND/CCCD bản gốc\n• [Tài liệu cụ thể nếu có]\n\nNếu cần thay đổi lịch, Anh/Chị liên hệ em qua SĐT: [SĐT] hoặc trả lời email này.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 312
+  },
+  {
+    "template_id": "EMAIL_006",
+    "type": "thank_you",
+    "product": "general",
+    "stage": "post_transaction",
+    "subject": "Cảm ơn Anh/Chị đã tin tưởng Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nThay mặt Bank A và cá nhân, em xin chân thành cảm ơn Anh/Chị đã tin tưởng và lựa chọn sử dụng dịch vụ [Sản phẩm] tại Bank A.\n\nThông tin tóm tắt giao dịch:\n• Sản phẩm: [Tên sản phẩm]\n• Giá trị: [Giá trị]\n• Ngày hiệu lực: [Ngày]\n\nEm sẽ đồng hành cùng Anh/Chị trong suốt quá trình sử dụng dịch vụ và luôn sẵn sàng hỗ trợ khi cần.\n\nNếu có bất kỳ thắc mắc hoặc yêu cầu nào, xin đừng ngại liên hệ em trực tiếp.\n\nTrân trọng,\n[Tên RM]\nRelationship Manager — Bank A",
+    "rating": 4.9,
+    "use_count": 445
+  },
+  {
+    "template_id": "EMAIL_007",
+    "type": "renewal_reminder",
+    "product": "tiet_kiem_12_thang",
+    "stage": "pre_maturity",
+    "subject": "Tài khoản tiết kiệm của Anh/Chị sắp đáo hạn — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm xin thông báo tài khoản tiết kiệm của Anh/Chị sắp đến ngày đáo hạn:\n\n• Số tài khoản: [Số TK]\n• Số tiền: [Số tiền]\n• Ngày đáo hạn: [Ngày]\n• Lãi nhận được: [Số lãi]\n\nAnh/Chị có thể chọn:\n1️⃣ Tái tục kỳ hạn 12 tháng — lãi suất 7.2%/năm\n2️⃣ Chuyển sang kỳ hạn 18 tháng — lãi suất cao hơn 7.5%/năm\n3️⃣ Rút toàn bộ hoặc một phần\n4️⃣ Tư vấn phương án đầu tư khác sinh lời cao hơn\n\nVui lòng cho em biết ý định của Anh/Chị trước ngày [Ngày-3] để em chuẩn bị thủ tục.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 189
+  },
+  {
+    "template_id": "EMAIL_008",
+    "type": "follow_up_call",
+    "product": "bao_hiem_suc_khoe",
+    "stage": "post_call",
+    "subject": "Bảng quyền lợi bảo hiểm sức khỏe toàn diện — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến sản phẩm Bảo hiểm sức khỏe toàn diện.\n\nEm gửi tóm tắt quyền lợi nổi bật:\n\n✅ Nội trú: đến 2 tỷ đồng/năm\n✅ Ngoại trú: đến 20 triệu đồng/năm\n✅ Phẫu thuật: đến 500 triệu đồng/ca\n✅ Thai sản: đến 30 triệu đồng\n✅ Nha khoa: đến 5 triệu đồng/năm\n✅ Không khám sức khỏe cho khoản bảo hiểm dưới 500tr/năm\n\nPhí bảo hiểm cho gia đình 4 người (theo độ tuổi trung bình [X] tuổi): khoảng [Y] triệu/năm.\n\nAnh/Chị có muốn em tính chi tiết theo độ tuổi cụ thể không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 78
+  },
+  {
+    "template_id": "EMAIL_009",
+    "type": "follow_up_proposal",
+    "product": "vay_tin_chap",
+    "stage": "post_call",
+    "subject": "Điều kiện vay tín chấp cá nhân — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã liên hệ với em.\n\nĐây là điều kiện vay tín chấp cá nhân tại Bank A:\n\n💰 Hạn mức vay: tối đa 8 lần thu nhập/tháng (tối đa 500tr)\n📅 Thời hạn: 12 đến 60 tháng\n💹 Lãi suất: từ 11.5%/năm\n⚡ Giải ngân: trong 24 giờ sau khi đủ hồ sơ\n\nHồ sơ cần chuẩn bị:\n• CMND/CCCD\n• Hợp đồng lao động\n• 3 tháng sao kê tài khoản lương gần nhất\n\nVới thu nhập [X] triệu/tháng, Anh/Chị có thể vay tối đa khoảng [Y] triệu đồng.\n\nEm có thể hỗ trợ Anh/Chị nộp hồ sơ online không cần ra chi nhánh.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 134
+  },
+  {
+    "template_id": "EMAIL_010",
+    "type": "product_introduction",
+    "product": "trai_phieu_dn",
+    "stage": "introduction",
+    "subject": "Cơ hội đầu tư trái phiếu doanh nghiệp lãi suất cao — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A đang phân phối trái phiếu doanh nghiệp với lãi suất hấp dẫn, phù hợp cho nhà đầu tư muốn thu nhập cố định cao hơn tiết kiệm:\n\n📊 Tổ chức phát hành: [Tên doanh nghiệp] — xếp hạng tín nhiệm A+\n💹 Lãi suất: 10.5%/năm (trả hàng quý)\n📅 Kỳ hạn: 24 tháng\n💰 Đầu tư tối thiểu: 100 triệu đồng\n🔒 Tài sản đảm bảo: Bất động sản\n\nVới đầu tư 500 triệu, thu nhập lãi hàng quý: khoảng 13.125 triệu đồng.\n\n⚠️ Lưu ý: Trái phiếu doanh nghiệp có rủi ro cao hơn tiết kiệm, nhà đầu tư cần đọc kỹ prospectus trước khi quyết định.\n\nAnh/Chị có muốn em gửi thêm thông tin về tổ chức phát hành không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 45
+  },
+  {
+    "template_id": "EMAIL_011",
+    "type": "follow_up_call",
+    "product": "tai_khoan_sme",
+    "stage": "post_call",
+    "subject": "Gói tài khoản SME cho doanh nghiệp — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến giải pháp ngân hàng cho doanh nghiệp.\n\nGói SME Pro dành cho doanh nghiệp vừa và nhỏ:\n\n🏢 Tài khoản thanh toán doanh nghiệp: miễn phí mở\n💳 Thẻ doanh nghiệp: tối đa 10 thẻ nhân viên\n🖥️ Internet Banking doanh nghiệp: phê duyệt đa cấp\n📊 Báo cáo tài chính: tích hợp tự động\n💰 Hạn mức overdraft: đến 500tr\n📦 Phí giao dịch: giảm 30% so với biểu phí thông thường\n\nChúng tôi có thể cài đặt tại văn phòng của Anh/Chị.\n\nEm có thể sắp xếp gặp gỡ để demo hệ thống không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 56
+  },
+  {
+    "template_id": "EMAIL_012",
+    "type": "follow_up_proposal",
+    "product": "vay_mua_xe",
+    "stage": "post_call",
+    "subject": "Bảng tính trả góp vay mua xe — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nTheo yêu cầu, em gửi bảng tính trả góp vay mua xe ô tô:\n\n🚗 Giá xe: [Giá xe]\n💰 Vay: [Số tiền vay] (tối đa 85% giá xe)\n💹 Lãi suất ưu đãi: 7.9%/năm trong 12 tháng đầu\n📅 Kỳ hạn tối đa: 84 tháng (7 năm)\n\nBảng tính trả góp hàng tháng:\n• 36 tháng: [X] triệu/tháng\n• 48 tháng: [Y] triệu/tháng  \n• 60 tháng: [Z] triệu/tháng\n• 84 tháng: [W] triệu/tháng\n\nƯu đãi thêm: tặng gói bảo hiểm xe ô tô 1 năm khi vay tại Bank A.\n\nHồ sơ đơn giản, giải ngân trong 3 ngày làm việc.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 167
+  },
+  {
+    "template_id": "EMAIL_013",
+    "type": "follow_up_call",
+    "product": "chuyen_tien_quoc_te",
+    "stage": "post_call",
+    "subject": "Dịch vụ chuyển tiền quốc tế — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã liên hệ về dịch vụ chuyển tiền quốc tế.\n\nƯu điểm dịch vụ của Bank A:\n\n🌍 Chuyển đến 180+ quốc gia\n⚡ Thời gian: SWIFT 1-3 ngày, Wise T+1\n💹 Tỷ giá cạnh tranh, cập nhật real-time\n📱 Thực hiện qua app 24/7\n💰 Phí: 0.1% giá trị giao dịch (tối thiểu 100.000đ)\n\nĐặc biệt với chuyển tiền định kỳ (standing order):\n• Thiết lập 1 lần, tự động hàng tháng\n• Phí giảm 20%\n• Thông báo tự động sau mỗi giao dịch\n\nAnh/Chị cần chuyển tiền đến quốc gia nào và thường xuyên không ạ?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 89
+  },
+  {
+    "template_id": "EMAIL_014",
+    "type": "product_introduction",
+    "product": "bao_hiem_huu_tri",
+    "stage": "introduction",
+    "subject": "Kế hoạch tài chính hưu trí — An tâm tuổi vàng",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nViệc chuẩn bị tài chính cho hưu trí là quyết định quan trọng nhất trong cuộc đời tài chính của mỗi người.\n\nBank A hợp tác với [Tên công ty bảo hiểm] cung cấp kế hoạch hưu trí toàn diện:\n\n🎯 Tích lũy có bảo vệ: vừa đầu tư vừa bảo hiểm rủi ro\n💰 Đảm bảo thu nhập hưu trí: từ [X] triệu/tháng\n📈 Tăng trưởng: lãi suất đảm bảo 4.5% + chia sẻ lợi nhuận\n🛡️ Bảo vệ: tử vong, thương tật vĩnh viễn\n💊 Quyền lợi sức khỏe: tùy chọn thêm\n\nPhù hợp cho Anh/Chị [Tuổi] tuổi, dự kiến hưu trí ở [Tuổi hưu]:\n• Đóng phí: [X] triệu/năm trong [N] năm\n• Thu nhập hưu trí: [Y] triệu/tháng suốt đời\n\nEm có thể chuẩn bị minh họa chi tiết cho Anh/Chị không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 42
+  },
+  {
+    "template_id": "EMAIL_015",
+    "type": "follow_up_proposal",
+    "product": "structured_note",
+    "stage": "post_meeting",
+    "subject": "Term Sheet Structured Note — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nTheo cam kết từ buổi gặp gỡ, em gửi Term Sheet sản phẩm Structured Note:\n\n📋 Tên sản phẩm: Structured Note liên kết [Tài sản cơ sở]\n📅 Kỳ hạn: 6 tháng\n💹 Lãi suất bảo vệ vốn: 100%\n🎯 Lãi suất coupons: 9%/năm (trả cuối kỳ)\n💰 Đầu tư tối thiểu: 500 triệu đồng\n⚡ Phát hành: ngày [Ngày phát hành]\n⚠️ Yếu tố rủi ro: biến động [Tài sản cơ sở]\n\nSản phẩm phù hợp nhà đầu tư:\n✅ Muốn lãi suất cao hơn tiết kiệm\n✅ Chấp nhận gắn kết kỳ hạn\n✅ Quan tâm đến bảo vệ vốn 100%\n\nEm đặt chỗ cho Anh/Chị [Số tiền] tỷ đến hết ngày [Deadline].\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 28
+  },
+  {
+    "template_id": "EMAIL_016",
+    "type": "follow_up_call",
+    "product": "tich_luy_vang",
+    "stage": "post_call",
+    "subject": "Chương trình tích lũy vàng hàng tháng — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến chương trình Tích lũy vàng tự động.\n\nCách hoạt động:\n🥇 Đăng ký 1 lần, tự động mua [X] chỉ vàng mỗi tháng\n📅 Ngày trừ tiền: [Ngày] hàng tháng\n💰 Giá mua: theo giá SJC ngày trừ tiền\n📊 Theo dõi số dư vàng qua app\n🏦 Lưu ký an toàn tại Bank A\n\nLợi ích:\n✅ Trung bình hóa giá mua — giảm rủi ro biến động\n✅ Hình thành thói quen tích lũy\n✅ Không cần theo dõi giá hàng ngày\n✅ Rút vàng hoặc quy đổi tiền bất kỳ lúc nào\n\nKhởi đầu chỉ từ 1 chỉ/tháng (~6-8 triệu).\n\nAnh/Chị muốn đăng ký bao nhiêu chỉ/tháng?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 55
+  },
+  {
+    "template_id": "EMAIL_017",
+    "type": "follow_up_call",
+    "product": "vay_kinh_doanh",
+    "stage": "post_meeting",
+    "subject": "Phương án vay kinh doanh hộ cá thể — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã cho em cơ hội tham quan mô hình kinh doanh. Em xin gửi phương án vay kinh doanh:\n\n💰 Hạn mức đề xuất: [Số tiền] triệu đồng\n📅 Thời hạn: [Kỳ hạn] tháng\n💹 Lãi suất: từ 9.5%/năm\n🏠 Tài sản đảm bảo: [Tài sản]\n⚡ Giải ngân: trong 5 ngày làm việc sau duyệt\n\nPhương thức trả nợ linh hoạt:\n• Trả gốc đều + lãi hàng tháng\n• Trả lãi hàng tháng, trả gốc cuối kỳ\n• Hoặc theo dòng tiền kinh doanh\n\nHồ sơ cần bổ sung: [Danh sách hồ sơ còn thiếu]\n\nEm sẵn sàng hỗ trợ hoàn thiện hồ sơ bất cứ lúc nào.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 73
+  },
+  {
+    "template_id": "EMAIL_018",
+    "type": "follow_up_proposal",
+    "product": "bao_hiem_giao_duc",
+    "stage": "post_call",
+    "subject": "Kế hoạch tài chính giáo dục cho bé — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nTrẻ em xứng đáng được hưởng nền giáo dục tốt nhất. Em gửi minh họa kế hoạch tài chính giáo dục:\n\n👶 Bé: [Tên bé], [Tuổi] tuổi\n🎓 Mục tiêu: Đại học trong nước/nước ngoài\n\nSản phẩm Bảo hiểm Giáo dục:\n💰 Phí đóng: [X] triệu/năm trong [N] năm\n🎯 Quyền lợi tích lũy:\n   • Lúc bé 15 tuổi: [A] triệu\n   • Lúc bé 18 tuổi: [B] triệu\n   • Lúc bé 22 tuổi: [C] triệu\n🛡️ Bảo vệ: miễn phí đóng nếu phụ huynh gặp rủi ro\n\nBé luôn được bảo đảm quỹ học bổng dù điều gì xảy ra với phụ huynh.\n\nEm có thể chuẩn bị minh họa theo ngân sách cụ thể của Anh/Chị.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 34
+  },
+  {
+    "template_id": "EMAIL_019",
+    "type": "product_introduction",
+    "product": "goi_vip",
+    "stage": "introduction",
+    "subject": "Chào mừng Anh/Chị gia nhập VIP Priority Banking — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A trân trọng chào mừng Anh/Chị gia nhập chương trình VIP Priority Banking!\n\nVới tư cách khách hàng VIP, Anh/Chị được hưởng:\n\n⭐ Ưu đãi lãi suất tiết kiệm +0.3%/năm so với biểu phí thông thường\n💳 Thẻ Priority Banking card: phòng chờ sân bay, bảo hiểm du lịch\n🏦 Quầy giao dịch riêng: không chờ đợi\n📞 Hotline VIP 24/7: ưu tiên kết nối\n👤 RM chuyên biệt: phục vụ riêng cho Anh/Chị\n🎁 Ưu đãi sinh nhật và sự kiện đặc biệt\n💰 Miễn phí toàn bộ phí giao dịch\n🌐 Ưu tiên tỷ giá ngoại tệ\n\nEm — [Tên RM] — sẽ là người đồng hành cùng Anh/Chị. Mọi yêu cầu xin liên hệ em trực tiếp bất kỳ lúc nào.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 67
+  },
+  {
+    "template_id": "EMAIL_020",
+    "type": "follow_up_proposal",
+    "product": "vay_cam_co",
+    "stage": "post_call",
+    "subject": "Phương án vay cầm cố sổ tiết kiệm — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nVay cầm cố sổ tiết kiệm là giải pháp linh hoạt để Anh/Chị xoay vốn mà không cần tất toán sổ tiết kiệm.\n\nƯu điểm:\n✅ Giải ngân cùng ngày\n✅ Vay đến 95% giá trị sổ tiết kiệm\n✅ Lãi suất: lãi suất sổ TK + 2%/năm\n✅ Sổ TK vẫn sinh lãi bình thường\n✅ Không cần hồ sơ chứng minh thu nhập\n✅ Trả nợ linh hoạt, không phí tất toán trước hạn\n\nVới sổ tiết kiệm [Số tiền] triệu của Anh/Chị:\n• Có thể vay: đến [X] triệu\n• Lãi suất vay: [Y]%/năm\n• Lãi vay hàng tháng khoảng: [Z] triệu\n\nAnh/Chị muốn vay bao lâu và cần bao nhiêu?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 91
+  },
+  {
+    "template_id": "EMAIL_021",
+    "type": "follow_up_call",
+    "product": "tiet_kiem_ngoai_te",
+    "stage": "post_call",
+    "subject": "Lãi suất tiết kiệm ngoại tệ — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến tiết kiệm ngoại tệ.\n\nBiểu lãi suất hiện tại (áp dụng đến cuối tháng):\n\n💵 USD:\n• 1 tháng: 2.5%/năm\n• 3 tháng: 3.0%/năm\n• 6 tháng: 3.5%/năm\n• 12 tháng: 4.0%/năm\n\n💶 EUR:\n• 1 tháng: 1.5%/năm\n• 3 tháng: 2.0%/năm\n• 6 tháng: 2.5%/năm\n\nLưu ý: tiết kiệm ngoại tệ tiềm ẩn rủi ro tỷ giá khi quy đổi sang VND.\n\nGửi tối thiểu: 1.000 USD / 500 EUR.\n\nAnh/Chị có nguồn ngoại tệ sẵn hay cần đổi từ VND?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 48
+  },
+  {
+    "template_id": "EMAIL_022",
+    "type": "follow_up_proposal",
+    "product": "chiet_khau_hoa_don",
+    "stage": "post_meeting",
+    "subject": "Đề xuất hạn mức chiết khấu hóa đơn — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã dành thời gian trao đổi với em về giải pháp tài chính cho doanh nghiệp.\n\nGiải pháp Chiết khấu hóa đơn bán hàng:\n\n💰 Hạn mức đề xuất: [X] tỷ đồng\n⚡ Giải ngân: trong 24 giờ sau khi duyệt hóa đơn\n💹 Chi phí: [Y]%/tháng trên số tiền chiết khấu\n📊 Tỷ lệ chiết khấu: đến 90% giá trị hóa đơn\n📅 Kỳ hạn: tối đa 90 ngày\n\nLợi ích cho dòng tiền doanh nghiệp:\n✅ Thu hồi vốn ngay, không chờ đến ngày thanh toán\n✅ Cải thiện hệ số thanh khoản\n✅ Không ảnh hưởng hạn mức vay hiện có\n✅ Linh hoạt chiết khấu theo từng hóa đơn\n\nEm sẽ cử chuyên gia SME Banking đến hỗ trợ Anh/Chị hoàn thiện hồ sơ.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 23
+  },
+  {
+    "template_id": "EMAIL_023",
+    "type": "follow_up_call",
+    "product": "bao_hiem_xe",
+    "stage": "post_call",
+    "subject": "Gói bảo hiểm xe ô tô toàn diện — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã hỏi về bảo hiểm xe ô tô.\n\nGói bảo hiểm xe toàn diện Bank A x [Tên BH]:\n\n🚗 Bảo hiểm vật chất xe:\n• Bồi thường: đến 95% giá trị xe\n• Không khấu hao linh kiện\n• Sửa chữa tại 500+ garage toàn quốc\n\n👥 Bảo hiểm trách nhiệm dân sự:\n• Người: 150 triệu/người\n• Tài sản: 50 triệu/vụ\n\n🆘 Hỗ trợ 24/7:\n• Cứu hộ miễn phí trong vòng 50km\n• Xe thay thế trong khi sửa chữa\n\nPhí bảo hiểm năm: [X] triệu (xe [Hãng xe], [Năm], [Giá xe])\n\nƯu đãi thêm 10% khi mua cùng vay mua xe tại Bank A.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 82
+  },
+  {
+    "template_id": "EMAIL_024",
+    "type": "product_introduction",
+    "product": "bao_lanh",
+    "stage": "introduction",
+    "subject": "Dịch vụ bảo lãnh ngân hàng — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A cung cấp đầy đủ các loại bảo lãnh ngân hàng phục vụ hoạt động kinh doanh:\n\n📋 Các loại bảo lãnh:\n• Bảo lãnh thực hiện hợp đồng\n• Bảo lãnh dự thầu\n• Bảo lãnh thanh toán\n• Bảo lãnh hoàn tiền ứng trước\n• Bảo lãnh bảo hành\n• Thư tín dụng (L/C) nhập/xuất khẩu\n\n💰 Phí: từ 0.5%/năm trên giá trị bảo lãnh\n⚡ Thời gian phát hành: 3-5 ngày làm việc\n💪 Uy tín: Bank A được chấp nhận bởi tất cả chủ đầu tư và đối tác nước ngoài\n\nHạn mức bảo lãnh tùy thuộc tình hình tài chính doanh nghiệp.\n\nDoanh nghiệp của Anh/Chị đang cần loại bảo lãnh nào?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 31
+  },
+  {
+    "template_id": "EMAIL_025",
+    "type": "follow_up_call",
+    "product": "bao_hiem_du_lich",
+    "stage": "post_call",
+    "subject": "Gói bảo hiểm du lịch quốc tế — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã quan tâm đến bảo hiểm du lịch.\n\nGói bảo hiểm du lịch Châu Âu Schengen:\n\n✈️ Quyền lợi chính:\n• Cấp cứu y tế: đến 2.000.000 EUR\n• Hồi hương khẩn cấp: đến 500.000 EUR\n• Chậm/hủy chuyến bay: đến 2.000 EUR\n• Mất hành lý: đến 1.500 EUR\n• Trách nhiệm dân sự: đến 1.000.000 EUR\n\n📅 Chuyến đi: [Số ngày] ngày\n💰 Phí bảo hiểm: [X] triệu đồng/người\n\nGói này đáp ứng yêu cầu tối thiểu của Đại sứ quán Schengen.\n\nAnh/Chị đi bao nhiêu người? Em sẽ tính tổng phí và hỗ trợ cấp thẻ bảo hiểm luôn.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 127
+  },
+  {
+    "template_id": "EMAIL_026",
+    "type": "follow_up_proposal",
+    "product": "vay_mua_nha",
+    "stage": "pre_submit",
+    "subject": "Checklist hồ sơ vay mua nhà — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nĐể hồ sơ vay của Anh/Chị được xét duyệt nhanh nhất, em gửi danh sách hồ sơ cần chuẩn bị:\n\n📁 Hồ sơ pháp lý (bản sao công chứng):\n□ CMND/CCCD\n□ Hộ khẩu / Sổ tạm trú\n□ Giấy đăng ký kết hôn (nếu có)\n\n💰 Hồ sơ tài chính:\n□ Hợp đồng lao động / Quyết định tuyển dụng\n□ Sao kê lương 3-6 tháng gần nhất\n□ Sao kê tài khoản 6 tháng gần nhất\n\n🏠 Hồ sơ tài sản đảm bảo:\n□ Hợp đồng mua bán / Công chứng\n□ Giấy tờ nhà đất bản gốc\n□ Bản vẽ thiết kế / Giấy phép xây dựng (nếu có)\n\nAnh/Chị đang thiếu hồ sơ nào? Em hỗ trợ ngay.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 245
+  },
+  {
+    "template_id": "EMAIL_027",
+    "type": "renewal_reminder",
+    "product": "bao_hiem_suc_khoe",
+    "stage": "pre_maturity",
+    "subject": "Nhắc gia hạn bảo hiểm sức khỏe — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBảo hiểm sức khỏe của Anh/Chị sắp hết hạn vào ngày [Ngày].\n\nĐể không bị gián đoạn quyền lợi bảo hiểm, Anh/Chị cần gia hạn trước ngày [Ngày-15].\n\nTóm tắt hợp đồng hiện tại:\n• Số hợp đồng: [Số HĐ]\n• Người được bảo hiểm: [Danh sách]\n• Phí gia hạn dự kiến: [X] triệu\n\nThay đổi có thể áp dụng khi gia hạn:\n✅ Nâng cấp gói: thêm quyền lợi nha khoa, sinh sản\n✅ Thêm thành viên gia đình\n✅ Điều chỉnh mức độ bảo hiểm\n\nNếu không có thay đổi, em có thể tự động gia hạn cho Anh/Chị.\n\nAnh/Chị muốn giữ nguyên hay điều chỉnh gì không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 88
+  },
+  {
+    "template_id": "EMAIL_028",
+    "type": "follow_up_call",
+    "product": "tai_khoan_sme",
+    "stage": "post_meeting",
+    "subject": "Đề xuất gói Startup Banking — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã chia sẻ về dự án khởi nghiệp. Em rất ấn tượng với ý tưởng của Anh/Chị!\n\nBank A có gói Startup Banking thiết kế riêng cho startup:\n\n🚀 Ưu đãi 6 tháng đầu:\n• Miễn phí 100% phí mở và duy trì tài khoản\n• Miễn phí chuyển khoản nội địa không giới hạn\n• Miễn phí Internet Banking doanh nghiệp\n\n💳 Tín dụng khởi nghiệp:\n• Hạn mức overdraft: đến 200tr (không cần TSĐB)\n• Thẻ công ty: 3 thẻ nhân viên\n\n🤝 Hệ sinh thái:\n• Kết nối với mạng lưới investor của Bank A\n• Tham gia sự kiện networking Startup x Bank\n• Tư vấn tài chính miễn phí hàng quý\n\nĐây là gói phù hợp nhất để Anh/Chị tập trung vào phát triển sản phẩm.\n\nEm có thể setup tài khoản cho Anh/Chị trong tuần này không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 19
+  },
+  {
+    "template_id": "EMAIL_029",
+    "type": "follow_up_call",
+    "product": "vay_mua_nha",
+    "stage": "competitive_comparison",
+    "subject": "Phân tích so sánh vay mua nhà — Tại sao chọn Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm hiểu Anh/Chị đang cân nhắc nhiều lựa chọn — đây là quyết định tài chính lớn!\n\nEm xin chia sẻ phân tích khách quan:\n\n📊 So sánh với mặt bằng thị trường:\n\n                    Bank A      TB thị trường\n• Lãi suất ưu đãi:   8.5%         8.9%\n• Kỳ ưu đãi:         24 tháng     12 tháng\n• Phí trước hạn:     0% (>3 năm)  1-2%\n• Hạn mức vay:       80%          70-75%\n• Thời gian duyệt:   5 ngày       7-10 ngày\n\n🏆 Điểm khác biệt của Bank A:\n✅ Định giá tài sản miễn phí\n✅ Công chứng hợp đồng tại nhà (tiết kiệm 1 buổi)\n✅ Giải ngân theo tiến độ xây dựng\n✅ Hỗ trợ chuyển khoản vay từ ngân hàng khác\n\nTổng tiết kiệm ước tính với khoản vay [X] tỷ trong 5 năm: khoảng [Y] triệu đồng.\n\nAnh/Chị còn băn khoăn điều gì không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 56
+  },
+  {
+    "template_id": "EMAIL_030",
+    "type": "product_introduction",
+    "product": "goi_gia_dinh",
+    "stage": "introduction",
+    "subject": "Gói tài chính gia đình toàn diện — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A cung cấp Gói tài chính gia đình — giải pháp tất-cả-trong-một tiết kiệm thời gian và chi phí:\n\n👨‍👩‍👧‍👦 Gói gia đình bao gồm:\n\n1. Tài khoản cá nhân cho cả gia đình\n   • Miễn phí duy trì nếu số dư > 5tr\n   \n2. Thẻ tín dụng gia đình\n   • Hạn mức chung, tối đa 4 thẻ phụ\n   • Hoàn tiền 3% mọi giao dịch gia đình\n   \n3. Tiết kiệm mục tiêu\n   • TK giáo dục, du lịch, mua nhà\n   \n4. Bảo hiểm gia đình\n   • Sức khỏe + tai nạn cho cả nhà\n   \nƯu đãi khi đăng ký combo:\n🎁 Miễn phí phí thường niên thẻ tín dụng 2 năm\n🎁 Lãi suất tiết kiệm +0.2%/năm\n🎁 Tặng voucher mua sắm 1 triệu đồng\n\nEm có thể tư vấn chi tiết theo nhu cầu cụ thể của gia đình Anh/Chị.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 44
+  },
+  {
+    "template_id": "EMAIL_031",
+    "type": "follow_up_call",
+    "product": "the_visa_gold",
+    "stage": "post_call",
+    "subject": "Điều kiện mở thẻ tín dụng cho freelancer — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã liên hệ về thẻ tín dụng.\n\nBank A có chính sách linh hoạt cho khách hàng freelancer/thu nhập tự do:\n\n📋 Điều kiện:\n• Chứng minh thu nhập ổn định (bất kỳ hình thức nào)\n• Sao kê giao dịch tài khoản 6 tháng\n• Hợp đồng dịch vụ hoặc hóa đơn 3-6 tháng gần nhất\n• Không nhất thiết cần hợp đồng lao động\n\n💳 Thẻ Visa Gold phù hợp:\n• Hạn mức: 20-50 triệu (tùy thu nhập)\n• Miễn lãi 45 ngày\n• Hoàn tiền 2%\n• Không cần tài sản đảm bảo\n\nNếu Anh/Chị cung cấp được chứng minh thu nhập, em có thể hỗ trợ hoàn thiện hồ sơ ngay.\n\nThu nhập bình quân hàng tháng của Anh/Chị khoảng bao nhiêu?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.6,
+    "use_count": 38
+  },
+  {
+    "template_id": "EMAIL_032",
+    "type": "follow_up_proposal",
+    "product": "quy_mo_tcbf",
+    "stage": "post_meeting",
+    "subject": "Đề xuất danh mục đầu tư — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nDựa trên buổi trao đổi, em xin đề xuất danh mục đầu tư phù hợp khẩu vị rủi ro vừa của Anh/Chị:\n\n📊 Phân bổ đề xuất cho [Tổng số tiền] tỷ:\n\n1. Quỹ TCBF — 40% ([X] triệu)\n   • Cổ phiếu blue-chip + trái phiếu\n   • Kỳ vọng lợi nhuận: 12-15%/năm\n   • Rủi ro: vừa phải\n\n2. Trái phiếu chính phủ — 30% ([Y] triệu)\n   • An toàn, lợi nhuận ổn định 6.5%/năm\n   • Bảo vệ danh mục\n\n3. Tiết kiệm dài hạn 24 tháng — 30% ([Z] triệu)\n   • Lãi suất 7.5%/năm, chắc chắn\n   • Thanh khoản dự phòng\n\nLợi nhuận kỳ vọng toàn danh mục: ~10.5%/năm\n\nAnh/Chị có muốn điều chỉnh tỷ lệ nào không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 32
+  },
+  {
+    "template_id": "EMAIL_033",
+    "type": "thank_you",
+    "product": "vay_mua_nha",
+    "stage": "post_disbursement",
+    "subject": "Chúc mừng Anh/Chị đã sở hữu ngôi nhà mơ ước — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A chân thành chúc mừng Anh/Chị đã thực hiện thành công khoản vay mua nhà!\n\nThông tin khoản vay:\n• Số hợp đồng: [Số HĐ]\n• Số tiền vay: [Số tiền] tỷ đồng\n• Ngày giải ngân: [Ngày]\n• Ngày trả nợ đầu tiên: [Ngày]\n• Số tiền trả hàng tháng: [Số tiền] triệu\n\nMột số lưu ý quan trọng:\n📅 Ngày trả nợ cố định: ngày [X] hàng tháng\n💳 Trả nợ tự động qua tài khoản [Số TK]\n📱 Theo dõi lịch trả nợ trên app\n\nNếu có bất kỳ khó khăn nào trong việc thanh toán, hãy liên hệ em sớm để tìm giải pháp tốt nhất.\n\nChúc Anh/Chị và gia đình nhiều niềm vui trong ngôi nhà mới!\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 156
+  },
+  {
+    "template_id": "EMAIL_034",
+    "type": "follow_up_call",
+    "product": "vay_mua_nha",
+    "stage": "refinancing",
+    "subject": "Phân tích lợi ích chuyển khoản vay về Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nDựa trên thông tin Anh/Chị chia sẻ về khoản vay hiện tại, em phân tích cụ thể lợi ích khi chuyển về Bank A:\n\n📊 Khoản vay hiện tại của Anh/Chị:\n• Dư nợ còn lại: [X] tỷ đồng\n• Lãi suất hiện tại: [Y]%/năm\n• Kỳ hạn còn lại: [Z] năm\n\n💡 Nếu chuyển về Bank A:\n• Lãi suất mới: 8.5%/năm (ưu đãi 24 tháng)\n• Tiết kiệm lãi 24 tháng: khoảng [A] triệu\n• Phí chuyển khoản vay (one-time): [B] triệu\n• Lợi nhuận ròng sau 2 năm: [A-B] triệu\n\n📋 Quy trình chuyển vay:\n1. Nộp hồ sơ tại Bank A\n2. Bank A định giá và phê duyệt (5 ngày)\n3. Bank A tất toán khoản vay cũ\n4. Ký hợp đồng mới\n5. Giải ngân hoàn chỉnh\n\nAnh/Chị muốn em chuẩn bị tờ trình chi tiết không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 44
+  },
+  {
+    "template_id": "EMAIL_035",
+    "type": "product_introduction",
+    "product": "bao_hiem_tin_dung",
+    "stage": "introduction",
+    "subject": "Bảo hiểm tín dụng — An tâm vay, vững bước đầu tư — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nKhi vay một khoản lớn, điều lo ngại nhất là nếu rủi ro xảy ra, gia đình sẽ phải gánh nặng nợ.\n\nBảo hiểm tín dụng nhân thọ giải quyết nỗi lo đó:\n\n🛡️ Quyền lợi:\n• Nếu người vay qua đời: ngân hàng xóa toàn bộ dư nợ\n• Nếu thương tật toàn bộ vĩnh viễn: xóa dư nợ tương ứng\n• Gia đình không phải trả bất kỳ khoản nào\n\n💰 Chi phí:\n• Phí bảo hiểm: [X]% dư nợ/năm\n• Đóng hàng tháng cùng tiền trả góp\n• Với khoản vay [Y] tỷ: khoảng [Z] triệu/tháng\n\n✅ Đặc biệt:\n• Không cần khám sức khỏe (khoản vay < 1 tỷ)\n• Hiệu lực ngay từ ngày ký hợp đồng bảo hiểm\n\nSự an tâm xứng đáng với chi phí rất nhỏ.\n\nAnh/Chị muốn thêm bảo hiểm này vào khoản vay không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 67
+  },
+  {
+    "template_id": "EMAIL_036",
+    "type": "follow_up_call",
+    "product": "vay_tin_chap",
+    "stage": "debt_restructuring",
+    "subject": "Phương án cơ cấu lại nợ — Giảm gánh nặng tài chính",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm hiểu việc quản lý nhiều khoản vay cùng lúc rất phức tạp và tốn kém.\n\nBank A có giải pháp Cơ cấu lại nợ — gộp các khoản vay thành 1:\n\n📊 Phân tích khoản vay hiện tại của Anh/Chị:\n• Khoản vay 1: [X] triệu, lãi [A]%\n• Khoản vay 2: [Y] triệu, lãi [B]%  \n• Khoản vay 3: [Z] triệu, lãi [C]%\n• Tổng dư nợ: [Tổng] triệu\n• Lãi suất bình quân: [D]%\n\n💡 Sau khi cơ cấu tại Bank A:\n• 1 khoản duy nhất: [Tổng] triệu\n• Lãi suất mới: 11.5%/năm\n• Tiết kiệm lãi hàng tháng: khoảng [E] triệu\n• Tiết kiệm trong 3 năm: khoảng [F] triệu\n\nThủ tục đơn giản, không cần TSĐB nếu tổng dư nợ < 200tr.\n\nAnh/Chị muốn em tính toán chi tiết không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 39
+  },
+  {
+    "template_id": "EMAIL_037",
+    "type": "follow_up_call",
+    "product": "tai_khoan_thanh_toan",
+    "stage": "onboarding",
+    "subject": "Hướng dẫn sử dụng Internet Banking — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã mở tài khoản tại Bank A. Em gửi hướng dẫn nhanh sử dụng Internet Banking:\n\n📱 App Mobile Banking:\n1. Tải app \"Bank A\" từ App Store / Google Play\n2. Đăng ký với số điện thoại và số tài khoản\n3. Xác thực OTP\n4. Tạo mã PIN 6 chữ số\n\n💻 Internet Banking tại home.bankA.com:\n1. Đăng ký tài khoản trực tuyến\n2. Xác thực qua Smart OTP\n\n🔒 Một số tính năng chính:\n• Chuyển khoản 24/7\n• Thanh toán hóa đơn\n• Nạp tiền điện thoại\n• Đặt kỳ hạn tiết kiệm online\n• Tra cứu lịch sử giao dịch\n\nHạn mức mặc định: 100tr/giao dịch và 200tr/ngày.\n\nNếu cần hỗ trợ, Anh/Chị gọi hotline 1900-xxxx hoặc liên hệ em trực tiếp.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 378
+  },
+  {
+    "template_id": "EMAIL_038",
+    "type": "product_introduction",
+    "product": "tiet_kiem_18_thang",
+    "stage": "upsell",
+    "subject": "Kỳ hạn 18 tháng — Lãi suất cao hơn cho khoản tiết kiệm của Anh/Chị",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm muốn chia sẻ một cơ hội tối ưu hóa lợi nhuận cho khoản tiết kiệm của Anh/Chị.\n\nSo sánh lãi suất hiện tại:\n\n                12 tháng    18 tháng    Chênh lệch\nLãi suất:        7.2%        7.5%       +0.3%/năm\n\nVới khoản tiết kiệm [Số tiền] triệu của Anh/Chị:\n• Thu nhập từ kỳ hạn 12 tháng: [A] triệu lãi\n• Thu nhập từ kỳ hạn 18 tháng: [B] triệu lãi\n• Lợi nhuận tăng thêm: [B-A] triệu chỉ bằng cách kéo dài 6 tháng\n\nĐiều kiện tương tự, thủ tục đơn giản, chỉ cần chọn lại kỳ hạn khi tái tục.\n\nTK của Anh/Chị đáo hạn vào ngày [Ngày]. Em đặt lịch nhắc để tư vấn Anh/Chị trước đó nhé?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 112
+  },
+  {
+    "template_id": "EMAIL_039",
+    "type": "follow_up_call",
+    "product": "tai_khoan_sme",
+    "stage": "post_demo",
+    "subject": "Tóm tắt demo Internet Banking doanh nghiệp — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nCảm ơn Anh/Chị đã tham gia buổi demo Internet Banking doanh nghiệp.\n\nTóm tắt các tính năng đã demo:\n\n🏢 Quản lý tài khoản:\n✅ Xem số dư và lịch sử giao dịch theo đơn vị\n✅ Phân quyền người dùng: Maker/Checker/Approver\n\n💸 Thanh toán & chuyển khoản:\n✅ Chuyển khoản đơn lẻ và theo lô (batch)\n✅ Thanh toán lương tự động\n✅ Thanh toán nhà cung cấp\n✅ Phê duyệt đa cấp trên mobile\n\n📊 Báo cáo:\n✅ Xuất sao kê theo định dạng tùy chỉnh\n✅ Tích hợp với phần mềm kế toán\n\nCác tính năng Anh/Chị quan tâm nhất: [Note từ buổi demo]\n\nEm sẽ chuẩn bị proposal chi tiết và gửi Anh/Chị trong 2 ngày tới.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 27
+  },
+  {
+    "template_id": "EMAIL_040",
+    "type": "follow_up_proposal",
+    "product": "bao_hiem_huu_tri",
+    "stage": "post_meeting",
+    "subject": "Kế hoạch hưu trí chi tiết theo yêu cầu — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nTheo yêu cầu từ buổi gặp gỡ, em gửi kế hoạch tài chính hưu trí chi tiết:\n\n👤 Thông tin cá nhân:\n• Tuổi hiện tại: [X]\n• Tuổi hưu dự kiến: [Y]\n• Thời gian tích lũy: [Y-X] năm\n\n🎯 Mục tiêu:\n• Thu nhập hưu trí hàng tháng: [A] triệu\n• Tổng quỹ hưu trí cần tích lũy: ~[B] tỷ\n\n📋 Phương án đề xuất:\n\nPhương án 1 — Bảo hiểm hưu trí:\n• Phí đóng: [X1] triệu/năm\n• Kỳ đóng: [N1] năm\n• Thu nhập hưu trí: [A1] triệu/tháng suốt đời\n• Bảo vệ thêm: [Y1] tỷ\n\nPhương án 2 — Combo Bảo hiểm + Quỹ đầu tư:\n• Phí đóng: [X2] triệu/năm\n• Kỳ vọng lợi nhuận cao hơn 30%\n• Linh hoạt rút vốn khi cần\n\nAnh/Chị ưu tiên sự đảm bảo hay lợi nhuận cao hơn?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 21
+  },
+  {
+    "template_id": "EMAIL_041",
+    "type": "follow_up_call",
+    "product": "the_visa_platinum",
+    "stage": "usage_optimization",
+    "subject": "Tối ưu hóa quyền lợi thẻ Visa Platinum của Anh/Chị",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm nhận thấy Anh/Chị chưa khai thác hết quyền lợi thẻ Visa Platinum. Em muốn chia sẻ một vài mẹo:\n\n💰 Tối ưu hoàn tiền:\n• Dùng thẻ cho tất cả chi tiêu thay vì tiền mặt → hoàn tiền 3-5%\n• Ưu tiên dùng ở siêu thị và nhà hàng → hoàn tiền 5%\n• Thanh toán hóa đơn định kỳ → tích điểm tự động\n\n✈️ Quyền lợi sân bay (chưa dùng):\n• Anh/Chị còn [X] lượt phòng chờ VIP chưa sử dụng\n• Áp dụng tại tất cả sân bay quốc tế Việt Nam\n\n🎁 Ưu đãi tháng này:\n• [Ưu đãi tháng hiện tại]\n\n📊 Thống kê chi tiêu tháng trước:\n• Tổng chi tiêu: [X] triệu\n• Hoàn tiền nhận được: [Y] triệu\n• Tiết kiệm so với tiền mặt: [Y] triệu\n\nAnh/Chị có muốn em tư vấn thêm cách tối ưu không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 63
+  },
+  {
+    "template_id": "EMAIL_042",
+    "type": "follow_up_call",
+    "product": "vay_kinh_doanh",
+    "stage": "post_appraisal",
+    "subject": "Cập nhật tiến độ thẩm định hồ sơ vay — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm cập nhật tiến độ thẩm định hồ sơ vay kinh doanh của Anh/Chị:\n\n📋 Tình trạng hồ sơ:\n✅ Thẩm định hồ sơ pháp lý: Hoàn thành\n✅ Thẩm định tài chính: Hoàn thành\n⏳ Thẩm định tài sản đảm bảo: Đang thực hiện\n⏳ Phê duyệt cấp có thẩm quyền: Chờ\n\n📅 Dự kiến kết quả: trong [X] ngày làm việc\n\n📌 Hồ sơ cần bổ sung thêm:\n• [Danh sách hồ sơ nếu có]\n\nHoặc nếu không cần bổ sung: Hồ sơ của Anh/Chị đã đầy đủ, em đang đẩy nhanh quy trình.\n\nNếu Anh/Chị có câu hỏi nào, em luôn sẵn sàng hỗ trợ.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 134
+  },
+  {
+    "template_id": "EMAIL_043",
+    "type": "product_introduction",
+    "product": "tich_luy_vang",
+    "stage": "introduction",
+    "subject": "Tích lũy vàng tự động — Đơn giản, an toàn, hiệu quả",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nVàng vẫn là kênh đầu tư bền vững qua thời gian, nhưng không phải ai cũng có thời gian theo dõi giá vàng hàng ngày.\n\nChương trình Tích lũy vàng tự động Bank A giải quyết điều đó:\n\n🥇 Cách hoạt động:\n• Đăng ký một lần, tự động mua vàng hàng tháng\n• Ngày mua cố định theo lịch bạn chọn\n• Mua theo giá thị trường ngày đó\n• Tích lũy vào tài khoản vàng của bạn\n\n📊 Lợi thế chiến lược Dollar-Cost Averaging:\n• Mua đều đặn → trung bình hóa giá mua\n• Không bị cảm xúc chi phối quyết định\n• Phù hợp cả người mới bắt đầu đầu tư\n\n🏦 An toàn tuyệt đối:\n• Vàng được lưu ký tại kho an toàn Bank A\n• Bảo hiểm tiền gửi\n• Rút vàng hoặc quy đổi tiền bất kỳ lúc nào\n\nChỉ cần từ 1 chỉ/tháng (~6-8 triệu) để bắt đầu.\n\nAnh/Chị muốn tìm hiểu thêm không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.7,
+    "use_count": 52
+  },
+  {
+    "template_id": "EMAIL_044",
+    "type": "follow_up_call",
+    "product": "chuyen_tien_quoc_te",
+    "stage": "standing_order",
+    "subject": "Thiết lập chuyển tiền định kỳ quốc tế — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nĐể thuận tiện cho việc chuyển tiền định kỳ, em hướng dẫn thiết lập lệnh chuyển tiền tự động:\n\n⚙️ Cách thiết lập:\n1. Đăng nhập Internet Banking doanh nghiệp / cá nhân\n2. Chọn \"Chuyển tiền quốc tế\" → \"Lệnh thường xuyên\"\n3. Nhập thông tin người nhận (1 lần, lưu lại)\n4. Chọn tần suất: Hàng tuần / Hàng tháng / Hàng quý\n5. Chọn ngày thực hiện\n6. Xác nhận bằng Smart OTP\n\n📋 Thông tin cần chuẩn bị:\n• Tên ngân hàng nhận: [Tên NH]\n• SWIFT code: [Code]\n• Số tài khoản người nhận: [Số TK]\n• Địa chỉ ngân hàng nhận\n\n✅ Sau khi thiết lập:\n• Hệ thống tự động thực hiện đúng ngày\n• Email xác nhận sau mỗi giao dịch\n• Phí giảm 20% so với giao dịch thường\n\nEm có thể hỗ trợ Anh/Chị thiết lập qua điện thoại không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 41
+  },
+  {
+    "template_id": "EMAIL_045",
+    "type": "follow_up_call",
+    "product": "vay_mua_nha",
+    "stage": "first_time_buyer",
+    "subject": "Cẩm nang vay mua nhà lần đầu — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nMua nhà lần đầu là hành trình thú vị nhưng cũng nhiều điều cần lưu ý. Em gửi cẩm nang đầy đủ:\n\n🏠 Bước 1 — Xác định ngân sách:\n• Thu nhập hàng tháng: [X] triệu\n• Khả năng trả góp an toàn: tối đa 40% thu nhập → [0.4X] triệu/tháng\n• Với mức trả [0.4X] triệu: có thể vay khoảng [Y] tỷ (25 năm)\n\n🔍 Bước 2 — Chọn bất động sản:\n• Kiểm tra quy hoạch tại Sở Tài nguyên môi trường\n• Kiểm tra tranh chấp, thế chấp tại văn phòng đăng ký\n• Thuê thẩm định độc lập nếu mua nhà đã qua sử dụng\n\n📋 Bước 3 — Chuẩn bị hồ sơ vay:\n[Link checklist hồ sơ]\n\n⏱️ Bước 4 — Thời gian xử lý:\n• Thẩm định: 5-7 ngày làm việc\n• Phê duyệt: 3-5 ngày làm việc\n• Giải ngân: 1-2 ngày làm việc\n\n💡 Lời khuyên: Đừng ký hợp đồng mua bán trước khi có phê duyệt vay!\n\nEm luôn sẵn sàng đồng hành cùng Anh/Chị trong từng bước.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 87
+  },
+  {
+    "template_id": "EMAIL_046",
+    "type": "follow_up_call",
+    "product": "tai_khoan_thanh_toan",
+    "stage": "fraud_follow_up",
+    "subject": "Cập nhật xử lý vấn đề bảo mật tài khoản — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm cập nhật tình trạng xử lý vấn đề bảo mật tài khoản:\n\n✅ Các biện pháp đã thực hiện:\n• Khóa thẻ ATM/thẻ tín dụng tạm thời\n• Đặt lại mật khẩu Internet Banking\n• Chặn giao dịch đáng ngờ\n• Báo cáo lên bộ phận an ninh\n\n📋 Trạng thái điều tra:\n• Đang xem xét lịch sử giao dịch [X] ngày gần nhất\n• Dự kiến có kết quả trong [Y] ngày làm việc\n\n🔓 Khôi phục tài khoản:\n• Tài khoản sẽ được mở lại sau khi xác minh an toàn\n• Anh/Chị sẽ nhận OTP để đặt lại PIN mới\n\n🛡️ Phòng ngừa tương lai:\n• Không chia sẻ OTP, mật khẩu với bất kỳ ai\n• Bank A không bao giờ gọi điện yêu cầu cung cấp mật khẩu\n• Bật thông báo giao dịch để phát hiện sớm\n\nMọi thắc mắc, Anh/Chị liên hệ em trực tiếp.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 43
+  },
+  {
+    "template_id": "EMAIL_047",
+    "type": "product_introduction",
+    "product": "structured_note",
+    "stage": "introduction",
+    "subject": "Cơ hội đầu tư Structured Note kỳ hạn 6 tháng — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A ra mắt sản phẩm Structured Note mới với lãi suất vượt trội:\n\n📋 Thông tin sản phẩm:\n• Loại: Structured Note bảo vệ vốn 100% + liên kết vàng\n• Kỳ hạn: 6 tháng\n• Lãi suất coupon: 9%/năm (trả cuối kỳ)\n• Đầu tư tối thiểu: 500 triệu đồng\n• Phát hành: [Ngày]\n• Hạn đặt chỗ: [Ngày]\n\n🔒 Cơ chế bảo vệ vốn:\n• 100% vốn được bảo vệ khi đáo hạn\n• Lãi suất 9%/năm = gần gấp đôi tiết kiệm thông thường\n• Tài sản cơ sở: Giá vàng SJC\n\n🎯 Phù hợp với:\n✅ Nhà đầu tư muốn lãi cao hơn tiết kiệm\n✅ Không chịu rủi ro mất vốn\n✅ Có thể gắn kết 6 tháng\n\nSố lượng có hạn. Em đặt chỗ cho Anh/Chị không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 36
+  },
+  {
+    "template_id": "EMAIL_048",
+    "type": "follow_up_call",
+    "product": "vay_cam_co",
+    "stage": "post_disbursement",
+    "subject": "Xác nhận giải ngân vay cầm cố thành công — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nEm xác nhận khoản vay cầm cố sổ tiết kiệm đã giải ngân thành công:\n\n📋 Thông tin khoản vay:\n• Số hợp đồng: [Số HĐ]\n• Số tiền vay: [Số tiền] triệu đồng\n• Ngày giải ngân: [Hôm nay]\n• Lãi suất: [X]%/năm\n• Thời hạn: [N] tháng\n• Tiền lãi hàng tháng: [Y] triệu\n• Ngày trả lãi: ngày [Z] hàng tháng\n\n🏦 Sổ tiết kiệm cầm cố:\n• Số sổ: [Số sổ]\n• Giá trị: [Giá trị] triệu\n• Vẫn sinh lãi bình thường trong thời gian cầm cố\n\n📌 Lưu ý quan trọng:\n• Trả lãi đúng hạn để tránh phát sinh lãi phạt\n• Có thể trả gốc sớm bất kỳ lúc nào\n• Sau khi tất toán, sổ TK được giải phóng ngay\n\nAnh/Chị có cần thêm thông tin gì không?\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 58
+  },
+  {
+    "template_id": "EMAIL_049",
+    "type": "renewal_reminder",
+    "product": "bao_hiem_giao_duc",
+    "stage": "anniversary",
+    "subject": "Báo cáo tích lũy bảo hiểm giáo dục hàng năm — Bank A",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nChúc mừng kỷ niệm [N] năm tham gia kế hoạch tài chính giáo dục tại Bank A!\n\n📊 Báo cáo tích lũy của bé [Tên bé]:\n\n• Tổng phí đã đóng: [X] triệu đồng\n• Giá trị tài khoản tích lũy hiện tại: [Y] triệu đồng\n• Lợi nhuận đến nay: [Y-X] triệu đồng ([Z]%)\n• Lãi suất thực tế: [A]%/năm\n\n📅 Dự kiến giá trị khi bé đủ tuổi đại học:\n• Năm [Bé 18 tuổi]: [B] triệu đồng\n\n✅ Quyền lợi bảo hiểm đang có hiệu lực:\n• Bảo vệ: [X1] tỷ đồng\n• Miễn phí đóng nếu phụ huynh mất khả năng lao động\n\n💡 Gợi ý:\nAnh/Chị có thể tăng phí đóng hàng năm để đẩy nhanh tích lũy. Mỗi 1 triệu tăng thêm/năm sẽ bổ sung khoảng [C] triệu vào quỹ giáo dục.\n\nEm sẽ liên hệ để tư vấn chi tiết hơn.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.8,
+    "use_count": 18
+  },
+  {
+    "template_id": "EMAIL_050",
+    "type": "product_introduction",
+    "product": "goi_vip",
+    "stage": "private_banking",
+    "subject": "Giới thiệu dịch vụ Private Banking — Quản lý tài sản toàn diện",
+    "body": "Kính gửi Anh/Chị [Tên],\n\nBank A trân trọng giới thiệu dịch vụ Private Banking — giải pháp quản lý tài sản đặc biệt dành cho nhà đầu tư có tài sản trên 10 tỷ đồng:\n\n👑 Dịch vụ độc quyền:\n\n💼 Quản lý danh mục đầu tư:\n• Chuyên gia đầu tư riêng\n• Danh mục cá nhân hóa theo mục tiêu\n• Báo cáo danh mục hàng tuần\n• Tiếp cận sản phẩm đầu tư không công khai\n\n🏦 Dịch vụ ngân hàng ưu tiên:\n• Phòng giao dịch VIP riêng\n• Hotline Private 24/7\n• Phê duyệt hạn mức tín dụng đặc biệt\n\n🌐 Dịch vụ gia tăng:\n• Tư vấn thuế và kế hoạch di sản\n• Dịch vụ du lịch và lifestyle\n• Bảo hiểm tài sản cao cấp\n\n📊 Kết quả thực tế:\n• Lợi nhuận danh mục trung bình 5 năm: 14.2%/năm\n• 95% khách hàng Private Banking hài lòng cao\n\nEm xin phép sắp xếp buổi gặp gỡ giới thiệu với Director Private Banking của chúng tôi.\n\nTrân trọng,\n[Tên RM]",
+    "rating": 4.9,
+    "use_count": 12
+  }
+]

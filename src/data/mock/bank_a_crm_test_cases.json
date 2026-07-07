@@ -1,0 +1,169 @@
+[
+  {
+    "id": "TC01",
+    "type": "chat",
+    "prompt": "Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này",
+    "expectedContext": "customer-profile",
+    "expectedSources": ["GET /customers"],
+    "expectedKeywords": ["tiết kiệm đến hạn", "Nguyễn Văn An", "Đỗ Minh Châu"]
+  },
+  {
+    "id": "TC02",
+    "type": "chat",
+    "prompt": "1",
+    "expectedContext": "customer-profile",
+    "expectedSources": ["GET /customers"],
+    "expectedKeywords": ["khách hàng", "đến hạn"]
+  },
+  {
+    "id": "TC03",
+    "type": "chat_sequence",
+    "prompts": [
+      "Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này",
+      "Soạn email cho nhóm này"
+    ],
+    "expectedContext": "interaction",
+    "expectedSources": ["GET /customers", "POST /draft-email"],
+    "expectedKeywords": ["Email 1", "Tài khoản tiết kiệm", "Gợi ý cá nhân hóa"]
+  },
+  {
+    "id": "TC04",
+    "type": "chat_sequence",
+    "prompts": [
+      "Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này",
+      "kịch bản gọi"
+    ],
+    "expectedContext": "interaction",
+    "expectedSources": ["GET /customers", "POST /call-script"],
+    "expectedKeywords": ["Xin chào", "sắp đáo hạn"]
+  },
+  {
+    "id": "TC05",
+    "type": "chat",
+    "prompt": "Nguyễn Văn An có cơ hội mua bảo hiểm nào phù hợp không?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Bảo hiểm nhân thọ", "Cần follow-up"]
+  },
+  {
+    "id": "TC06",
+    "type": "chat",
+    "prompt": "Nguyen Van An co co hoi nao phu hop khong?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Nguyễn Văn An", "Gợi ý cơ hội"]
+  },
+  {
+    "id": "TC07",
+    "type": "chat",
+    "prompt": "Khách Đỗ Minh Châu nên tư vấn sản phẩm gì?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Quỹ mở trái phiếu", "Private"]
+  },
+  {
+    "id": "TC08",
+    "type": "chat",
+    "prompt": "Bùi Quốc Khánh có nhu cầu vay vốn lưu động không?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Vay vốn lưu động SME", "Chuẩn bị proposal"]
+  },
+  {
+    "id": "TC09",
+    "type": "chat",
+    "prompt": "Cho tôi danh sách chiến dịch đang chạy",
+    "expectedContext": "campaign",
+    "expectedSources": ["GET /campaigns"],
+    "expectedKeywords": ["Gia hạn tiết kiệm quý 3", "SME Cashflow Booster"]
+  },
+  {
+    "id": "TC10",
+    "type": "chat",
+    "prompt": "4",
+    "expectedContext": "campaign",
+    "expectedSources": ["GET /campaigns"],
+    "expectedKeywords": ["chiến dịch đang chạy"]
+  },
+  {
+    "id": "TC11",
+    "type": "chat",
+    "prompt": "Tạ Hoàng Nam có gì cần chăm sóc?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Dịch vụ Private Banking", "VIP"]
+  },
+  {
+    "id": "TC12",
+    "type": "chat",
+    "prompt": "Đặng Thùy Dương nên giới thiệu bảo hiểm nào?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Bảo hiểm sức khỏe cao cấp"]
+  },
+  {
+    "id": "TC13",
+    "type": "chat",
+    "prompt": "Hồ Quốc Việt đang quan tâm khoản vay nào?",
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
+    "expectedKeywords": ["Vay mua nhà", "2.2 tỷ"]
+  },
+  {
+    "id": "TC14",
+    "type": "chat",
+    "prompt": "Khách không tồn tại ABC có trong CRM không?",
+    "expectedContext": "general",
+    "expectedSources": ["GET /customers"],
+    "expectedKeywords": ["không tìm thấy khách hàng"]
+  },
+  {
+    "id": "TC15",
+    "type": "chat_sequence",
+    "prompts": [
+      "Trần Thị Mai có gợi ý gì?",
+      "Soạn email tiếp"
+    ],
+    "expectedContext": "interaction",
+    "expectedSources": ["GET /customers", "POST /draft-email"],
+    "expectedKeywords": ["Trần Thị Mai", "Email 1"]
+  },
+  {
+    "id": "TC16",
+    "type": "draft_email",
+    "customerId": "C001",
+    "expectedKeywords": ["EMAIL_007", "Nguyễn Văn An", "2026-07-07"]
+  },
+  {
+    "id": "TC17",
+    "type": "call_script",
+    "customerId": "C006",
+    "expectedKeywords": ["Đỗ Minh Châu", "sắp đáo hạn", "tái tục"]
+  },
+  {
+    "id": "TC18",
+    "type": "crm_endpoint",
+    "endpoint": "customers",
+    "expectedCountAtLeast": 20
+  },
+  {
+    "id": "TC19",
+    "type": "crm_endpoint",
+    "endpoint": "opportunities",
+    "expectedCountAtLeast": 16
+  },
+  {
+    "id": "TC20",
+    "type": "crm_endpoint",
+    "endpoint": "campaigns",
+    "expectedCountAtLeast": 5
+  },
+  {
+    "id": "TC21",
+    "type": "chat",
+    "prompt": "hom nay tiep khach co bao nhieu nguoi liet ke",
+    "expectedContext": "customer-profile",
+    "expectedSources": ["GET /customers"],
+    "expectedKeywords": ["Hôm nay", "khách hàng", "Nguyễn Văn An", "soạn email cho nhóm này"]
+  }
+]

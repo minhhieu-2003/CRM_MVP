@@ -3,6 +3,9 @@ logs/
 *.log
 .env
 .env.local
+.firebase/
 .DS_Store
 npm-debug.log*
 tmp_*
+
+.vercel

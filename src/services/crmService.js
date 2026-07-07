@@ -1,70 +1,233 @@
+import fs from "fs";
 import {
   campaigns,
   customers,
   interactions,
   opportunities
 } from "./crmData.js";
+import { normalizeVietnamese } from "./textUtils.js";
 
-const toDate = (value) => new Date(`${value}T00:00:00+07:00`);
+const emailTemplates = readJson("../data/mock/email_templates.json");
+const callScripts = readJson("../data/mock/call_scripts.json");
+const useSandboxApi = process.env.CRM_USE_SANDBOX_API === "true";
+const fallbackToMock = process.env.CRM_FALLBACK_TO_MOCK !== "false";
 
-export function listCustomers() {
-  return customers;
+function toDate(value) {
+  return new Date(`${value}T00:00:00+07:00`);
 }
 
-export function listOpportunities() {
-  return opportunities;
+function readJson(relativePath) {
+  const fileUrl = new URL(relativePath, import.meta.url);
+  return JSON.parse(fs.readFileSync(fileUrl, "utf8").replace(/^\uFEFF/, ""));
 }
 
-export function listInteractions() {
-  return interactions;
+async function crmRequest(endpoint, options = {}) {
+  const baseUrl = process.env.CRM_API_BASE_URL?.replace(/\/$/, "");
+  const apiKey = process.env.CRM_API_KEY;
+  if (!useSandboxApi || !baseUrl || !apiKey) return null;
+
+  const headers = {
+    Accept: "application/json",
+    ...(options.body ? { "Content-Type": "application/json" } : {})
+  };
+
+  if ((process.env.CRM_API_AUTH_SCHEME || "api-key") === "bearer") {
+    headers.Authorization = `Bearer ${apiKey}`;
+  } else {
+    headers[process.env.CRM_API_KEY_HEADER || "X-API-Key"] = apiKey;
+  }
+
+  const response = await fetch(`${baseUrl}${endpoint}`, {
+    method: options.method ?? "GET",
+    headers,
+    body: options.body ? JSON.stringify(options.body) : undefined
+  });
+
+  if (!response.ok) {
+    throw new Error(`CRM API ${endpoint} trả HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  return payload.data ?? payload;
 }
 
-export function listCampaigns() {
-  return campaigns;
+async function withFallback(loader, fallbackValue) {
+  try {
+    const data = await loader();
+    return data ?? fallbackValue;
+  } catch (error) {
+    if (fallbackToMock) return fallbackValue;
+    throw error;
+  }
 }
 
-export function getCustomerByName(name) {
-  const lowered = name.toLowerCase();
-  return customers.find((item) => item.name.toLowerCase().includes(lowered)) ?? null;
+function pickBest(items, predicate) {
+  const candidates = items.filter(predicate);
+  const pool = candidates.length > 0 ? candidates : items;
+  return [...pool].sort(
+    (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.use_count ?? 0) - (a.use_count ?? 0)
+  )[0];
 }
 
-export function getCustomerById(customerId) {
-  return customers.find((item) => item.id === customerId) ?? null;
+function fillPlaceholders(text, customer, extra = {}) {
+  const reminderDate = extra.reminderDate ?? shiftDate(customer.maturityDate, -3);
+  const daysUntilMaturity = extra.daysUntilMaturity ?? daysBetween("2026-07-07", customer.maturityDate);
+
+  return text
+    .replaceAll("[Tên]", customer.name)
+    .replaceAll("[Tên RM]", extra.rmName ?? "RM Bank A")
+    .replaceAll("[SĐT]", extra.rmPhone ?? "1900 0000")
+    .replaceAll("[Số TK]", customer.id)
+    .replaceAll("[Số tiền]", formatVnd(customer.savingsAmountVnd))
+    .replaceAll("[Số lãi]", extra.interestAmount ?? "theo biểu lãi suất hiện hành")
+    .replaceAll("[Ngày]", customer.maturityDate)
+    .replaceAll("[Ngày-3]", reminderDate)
+    .replaceAll("[số ngày]", String(daysUntilMaturity))
+    .replaceAll("[Số ngày]", String(daysUntilMaturity))
+    .replaceAll("[Sản phẩm]", customer.savingsProduct)
+    .replaceAll("[Tên sản phẩm]", customer.savingsProduct)
+    .replaceAll("[Giá trị]", formatVnd(customer.savingsAmountVnd))
+    .replaceAll("[Nội dung]", extra.topic ?? "Tư vấn phương án tái tục và sản phẩm phù hợp")
+    .replaceAll("[Chi nhánh/Địa điểm]", customer.location)
+    .replaceAll("[Tài liệu cụ thể nếu có]", "Hồ sơ định danh theo quy định KYC")
+    .replaceAll("[giờ]", extra.meetingTime ?? "09:00")
+    .replaceAll("[ngày]", customer.maturityDate)
+    .replaceAll("[phương án]", extra.renewalOption ?? "tái tục kỳ hạn phù hợp");
 }
 
-export function getCustomerOpportunities(customerId) {
-  return opportunities.filter((item) => item.customerId === customerId);
+function shiftDate(dateValue, days) {
+  const date = toDate(dateValue);
+  date.setDate(date.getDate() + days);
+  return formatDate(date);
 }
 
-export function getCustomerInteractions(customerId) {
-  return interactions.filter((item) => item.customerId === customerId);
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-export function getMaturityCustomers(daysAhead = 7, now = new Date("2026-07-07T08:00:00+07:00")) {
+function daysBetween(fromDateValue, toDateValue) {
+  const fromDate = toDate(fromDateValue);
+  const targetDate = toDate(toDateValue);
+  return Math.max(
+    0,
+    Math.round((targetDate.getTime() - fromDate.getTime()) / (24 * 60 * 60 * 1000))
+  );
+}
+
+export async function listCustomers() {
+  return withFallback(() => crmRequest("/customers"), customers);
+}
+
+export async function listOpportunities() {
+  return withFallback(() => crmRequest("/opportunities"), opportunities);
+}
+
+export async function listInteractions() {
+  return withFallback(() => crmRequest("/interactions"), interactions);
+}
+
+export async function listCampaigns() {
+  return withFallback(() => crmRequest("/campaigns"), campaigns);
+}
+
+export async function getCustomerByName(name) {
+  const normalizedName = normalizeVietnamese(name);
+  const allCustomers = await listCustomers();
+  return (
+    allCustomers.find((item) =>
+      normalizeVietnamese(item.name).includes(normalizedName)
+    ) ?? null
+  );
+}
+
+export async function getCustomerById(customerId) {
+  const allCustomers = await listCustomers();
+  return allCustomers.find((item) => item.id === customerId) ?? null;
+}
+
+export async function getCustomerOpportunities(customerId) {
+  const allOpportunities = await listOpportunities();
+  return allOpportunities.filter((item) => item.customerId === customerId);
+}
+
+export async function getCustomerInteractions(customerId) {
+  const allInteractions = await listInteractions();
+  return allInteractions.filter((item) => item.customerId === customerId);
+}
+
+export async function getMaturityCustomers(daysAhead = 7, now = new Date("2026-07-07T08:00:00+07:00")) {
   const maxDate = new Date(now);
   maxDate.setDate(now.getDate() + daysAhead);
+  const allCustomers = await listCustomers();
 
-  return customers.filter((customer) => {
+  return allCustomers.filter((customer) => {
     const maturity = toDate(customer.maturityDate);
     return maturity >= now && maturity <= maxDate;
   });
 }
 
-export function draftEmailForCustomer(customer, suggestion) {
+export async function draftEmailForCustomer(customer, suggestion) {
+  const remoteDraft = await withFallback(
+    () =>
+      crmRequest("/draft-email", {
+        method: "POST",
+        body: { customerId: customer.id, suggestion }
+      }),
+    null
+  );
+  if (remoteDraft) return remoteDraft;
+
+  const template = pickBest(
+    emailTemplates,
+    (item) => item.type === "renewal_reminder" || item.stage === "pre_maturity"
+  );
+
+  const subject = fillPlaceholders(template.subject, customer);
+  const body = [
+    fillPlaceholders(template.body, customer),
+    "",
+    `Gợi ý cá nhân hóa: ${suggestion}`
+  ].join("\n");
+
   return {
-    subject: `Nhắc đến hạn ${customer.savingsProduct} - ${customer.name}`,
-    body: `Kính gửi ${customer.name},\n\nKhoản ${customer.savingsProduct} số tiền ${formatVnd(customer.savingsAmountVnd)} sẽ đến hạn vào ngày ${customer.maturityDate}. ${suggestion}\n\nRM sẽ hỗ trợ anh/chị chọn phương án tối ưu theo nhu cầu hiện tại.\n\nTrân trọng,\nRelationship Manager - Bank A`
+    subject,
+    body,
+    templateId: template.template_id
   };
 }
 
-export function draftCallScript(customer, suggestion) {
+export async function draftCallScript(customer, suggestion) {
+  const remoteScript = await withFallback(
+    () =>
+      crmRequest("/call-script", {
+        method: "POST",
+        body: { customerId: customer.id, suggestion }
+      }),
+    null
+  );
+  if (remoteScript?.script) return remoteScript.script;
+  if (typeof remoteScript === "string") return remoteScript;
+
+  const script = pickBest(
+    callScripts,
+    (item) => item.objective === "renewal_reminder" || item.stage === "Renewal"
+  );
+
+  const objection = script.objection_handling?.[0];
   return [
-    `Chào ${customer.name}, em là RM từ Bank A.`,
-    `Em gọi để nhắc khoản ${customer.savingsProduct} của anh/chị sẽ đến hạn ngày ${customer.maturityDate}.`,
-    `Số dư hiện tại là ${formatVnd(customer.savingsAmountVnd)}.`,
-    `${suggestion}`,
-    "Nếu anh/chị đồng ý, em xin đặt lịch hẹn 15 phút để tư vấn chi tiết."
-  ].join(" ");
+    fillPlaceholders(script.opening, customer),
+    fillPlaceholders(script.main_content, customer),
+    objection
+      ? `Nếu khách hàng nói "${objection.objection}": ${fillPlaceholders(objection.response, customer)}`
+      : "",
+    suggestion,
+    fillPlaceholders(script.closing, customer)
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export function formatVnd(value) {

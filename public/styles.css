@@ -91,3 +91,9 @@ body {
   color: #fff;
   font-weight: 700;
 }
+
+.composer input:disabled,
+.composer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}

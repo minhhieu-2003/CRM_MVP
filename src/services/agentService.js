@@ -6,7 +6,7 @@ import { dispatchFallback } from "../plugins/router.js";
 export async function runAgentTurn({ conversationId, message }) {
   const auditId = crypto.randomUUID();
   const startedAt = Date.now();
-  const result = routeConversation({ conversationId, message });
+  const result = await routeConversation({ conversationId, message });
 
   let reply = result.reply;
   let sources = result.sources;

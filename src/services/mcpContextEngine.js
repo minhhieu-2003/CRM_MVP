@@ -7,6 +7,7 @@ import {
   getCustomerInteractions,
   getCustomerOpportunities,
   getMaturityCustomers,
+  listCustomers,
   listCampaigns
 } from "./crmService.js";
 import { normalizeVietnamese } from "./textUtils.js";
@@ -24,8 +25,28 @@ function getState(conversationId) {
   return contextStore.get(conversationId);
 }
 
-function detectCustomerName(message) {
-  const match = message.match(/khach\s+([a-zA-ZÀ-ỹ\s]+)/i);
+async function detectCustomerName(message) {
+  const normalized = normalizeVietnamese(message);
+  const customers = await listCustomers();
+  const mentionedCustomer = customers.find((customer) =>
+    normalized.includes(normalizeVietnamese(customer.name))
+  );
+  if (mentionedCustomer) return mentionedCustomer.name;
+
+  if (
+    hasAny(normalized, [
+      "bao nhieu",
+      "liet ke",
+      "danh sach",
+      "hom nay",
+      "tiep khach",
+      "cham soc"
+    ])
+  ) {
+    return null;
+  }
+
+  const match = normalized.match(/khach\s+([a-z\s]+)/i);
   if (!match) return null;
   return match[1].trim();
 }
@@ -38,14 +59,27 @@ function hasAny(text, keywords) {
   return keywords.some((keyword) => text.includes(keyword));
 }
 
-export function routeConversation({ conversationId, message }) {
+function renewalSuggestion(customer) {
+  if (customer.segment === "VIP") {
+    return "Em đề xuất tư vấn Private Banking và phân bổ một phần sang quỹ trái phiếu để tối ưu danh mục.";
+  }
+  if (customer.segment === "Affluent") {
+    return "Em đề xuất thêm gói bảo hiểm liên kết vay mua nhà để tối ưu bảo vệ tài chính.";
+  }
+  if (customer.segment === "SME Owner") {
+    return "Em đề xuất gói quản lý dòng tiền SME và khoản vay vốn lưu động nếu khách có nhu cầu mùa cao điểm.";
+  }
+  return "Em đề xuất tái tục tự động kỳ hạn linh hoạt để tối ưu dòng tiền.";
+}
+
+export async function routeConversation({ conversationId, message }) {
   const state = getState(conversationId);
   const normalized = normalizeVietnamese(message);
   const compact = normalized.replace(/\s+/g, " ").trim();
 
   const isReminderIntent =
     compact === "1" ||
-    ((normalized.includes("nhac") || normalized.includes("nhac toi")) &&
+    (normalized.includes("nhac") &&
       normalized.includes("tiet kiem") &&
       normalized.includes("den han"));
 
@@ -58,8 +92,34 @@ export function routeConversation({ conversationId, message }) {
   const isCampaignIntent =
     compact === "4" || normalized.includes("chien dich") || normalized.includes("campaign");
 
+  const isTodayCareIntent =
+    hasAny(normalized, ["hom nay", "ngay nay"]) &&
+    hasAny(normalized, ["khach", "tiep", "cham soc", "gap", "goi"]) &&
+    hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "can"]);
+
+  if (isTodayCareIntent) {
+    const dueCustomers = await getMaturityCustomers(7);
+    state.currentModule = "customer-profile";
+    state.focusedCustomers = dueCustomers.map((item) => item.id);
+    state.lastIntent = "today-care-list";
+
+    const lines = dueCustomers.map(
+      (item, index) =>
+        `${index + 1}. ${item.name} - ${item.savingsProduct} - ${formatVnd(item.savingsAmountVnd)} - đến hạn ${item.maturityDate}`
+    );
+
+    return {
+      reply:
+        dueCustomers.length > 0
+          ? `Hôm nay em đề xuất RM ưu tiên tiếp/chăm sóc ${dueCustomers.length} khách hàng có tiết kiệm sắp đến hạn trong 7 ngày tới:\n${lines.join("\n")}\n\nAnh/chị có thể nhắn "soạn email cho nhóm này" hoặc "kịch bản gọi" để em chuẩn bị nội dung chăm sóc.`
+          : "Hôm nay chưa có khách hàng nào cần ưu tiên tiếp/chăm sóc theo dữ liệu CRM sandbox.",
+      sources: sourceTrace(["GET /customers"]),
+      context: state
+    };
+  }
+
   if (isReminderIntent) {
-    const dueCustomers = getMaturityCustomers(7);
+    const dueCustomers = await getMaturityCustomers(7);
     state.currentModule = "customer-profile";
     state.focusedCustomers = dueCustomers.map((item) => item.id);
     state.lastIntent = "maturity-reminder";
@@ -85,10 +145,10 @@ export function routeConversation({ conversationId, message }) {
 
     const candidates =
       state.focusedCustomers.length > 0
-        ? state.focusedCustomers.map((id) => getCustomerById(id)).filter(Boolean)
+        ? (await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id)))).filter(Boolean)
         : [];
 
-    const targets = candidates.length > 0 ? candidates : getMaturityCustomers(7);
+    const targets = candidates.length > 0 ? candidates : await getMaturityCustomers(7);
 
     if (targets.length === 0) {
       return {
@@ -98,13 +158,11 @@ export function routeConversation({ conversationId, message }) {
       };
     }
 
-    const drafts = targets.slice(0, 5).map((customer) => {
-      const suggestion =
-        customer.segment === "Affluent"
-          ? "Em đề xuất thêm gói bảo hiểm liên kết vay mua nhà để tối ưu bảo vệ tài chính."
-          : "Em đề xuất tái tục tự động kỳ hạn linh hoạt để tối ưu dòng tiền.";
-      return draftEmailForCustomer(customer, suggestion);
-    });
+    const drafts = await Promise.all(
+      targets.slice(0, 5).map((customer) =>
+        draftEmailForCustomer(customer, renewalSuggestion(customer))
+      )
+    );
 
     return {
       reply: drafts
@@ -120,7 +178,7 @@ export function routeConversation({ conversationId, message }) {
 
   if (normalized.includes("call script") || normalized.includes("kich ban goi")) {
     const targetId = state.focusedCustomers[0];
-    const targetCustomer = targetId ? getCustomerById(targetId) : null;
+    const targetCustomer = targetId ? await getCustomerById(targetId) : null;
 
     if (!targetCustomer) {
       return {
@@ -134,7 +192,7 @@ export function routeConversation({ conversationId, message }) {
     state.lastIntent = "call-script";
 
     return {
-      reply: draftCallScript(
+      reply: await draftCallScript(
         targetCustomer,
         "Ngoài ra, em có thể gửi đề xuất bảo hiểm/lãi suất ưu đãi ngay sau cuộc gọi."
       ),
@@ -144,7 +202,7 @@ export function routeConversation({ conversationId, message }) {
   }
 
   if (isCampaignIntent) {
-    const activeCampaigns = listCampaigns().filter((item) => item.status === "Active");
+    const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
     state.currentModule = "campaign";
     state.lastIntent = "campaign-summary";
 
@@ -157,9 +215,9 @@ export function routeConversation({ conversationId, message }) {
     };
   }
 
-  const askedName = detectCustomerName(message);
+  const askedName = await detectCustomerName(message);
   if (askedName) {
-    const customer = getCustomerByName(askedName);
+    const customer = await getCustomerByName(askedName);
     if (!customer) {
       return {
         reply: `Em không tìm thấy khách hàng "${askedName}" trong CRM sandbox.`,
@@ -168,8 +226,8 @@ export function routeConversation({ conversationId, message }) {
       };
     }
 
-    const opps = getCustomerOpportunities(customer.id);
-    const logs = getCustomerInteractions(customer.id);
+    const opps = await getCustomerOpportunities(customer.id);
+    const logs = await getCustomerInteractions(customer.id);
     state.currentModule = "opportunity";
     state.focusedCustomers = [customer.id];
     state.lastIntent = "customer-insight";

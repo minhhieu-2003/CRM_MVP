@@ -1,0 +1,743 @@
+﻿[
+  {
+    "script_id": "SCRIPT_001",
+    "objective": "follow_up_proposal",
+    "product": "vay_mua_nha",
+    "segment": "VIP",
+    "stage": "Proposal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] gọi từ Bank A. Tuần trước em có gửi thông tin về gói vay mua nhà cho mình, không biết Anh/Chị đã có dịp xem qua chưa ạ?",
+    "main_content": "Dạ, gói vay mua nhà hiện tại của Bank A đang có lãi suất ưu đãi chỉ 8.5%/năm trong 24 tháng đầu, hạn mức lên đến 80% giá trị tài sản, thời hạn tối đa 25 năm. Với mức thu nhập của Anh/Chị, em tính sơ bộ khoản vay 2 tỷ thì góp hàng tháng khoảng 18-20 triệu, rất phù hợp. Anh/Chị có muốn em hẹn gặp để tư vấn chi tiết hơn không ạ?",
+    "objection_handling": [
+      {
+        "objection": "Lãi suất cao quá",
+        "response": "Dạ em hiểu Anh/Chị muốn mức tốt nhất. Thực ra 8.5% là ưu đãi đặc biệt cho khách hàng VIP của Bank A, thấp hơn thị trường 0.5-1%. Hơn nữa sau 24 tháng lãi suất thả nổi cũng rất cạnh tranh. Anh/Chị cho em biết kỳ vọng của mình là bao nhiêu để em xem có phương án nào phù hợp hơn không ạ?"
+      },
+      {
+        "objection": "Đang cân nhắc ngân hàng khác",
+        "response": "Dạ, Anh/Chị cân nhắc kỹ là hoàn toàn đúng đắn ạ. Em có thể hỏi Anh/Chị đang so sánh với ngân hàng nào không để em có thể phân tích ưu nhược điểm cho mình tham khảo? Bank A có thêm ưu đãi miễn phí bảo hiểm tài sản năm đầu và hỗ trợ công chứng, những cái này tiết kiệm được khá nhiều đấy ạ."
+      },
+      {
+        "objection": "Chưa tìm được nhà ưng",
+        "response": "Dạ không sao ạ. Anh/Chị có thể đăng ký trước để khi tìm được nhà là giải ngân ngay, tiết kiệm thời gian. Hơn nữa có cam kết vay sẵn thì khi đàm phán với chủ nhà mình sẽ có lợi thế hơn nhiều đấy ạ."
+      }
+    ],
+    "closing": "Dạ vậy em xin phép hẹn Anh/Chị [ngày] lúc [giờ] để ngồi trao đổi chi tiết hơn nhé? Em sẽ chuẩn bị đầy đủ hồ sơ và phương án tài chính cụ thể cho Anh/Chị. Cảm ơn Anh/Chị đã dành thời gian ạ.",
+    "rating": 4.8,
+    "use_count": 47,
+    "tags": ["vay_mua_nha", "follow_up", "VIP", "proposal"]
+  },
+  {
+    "script_id": "SCRIPT_002",
+    "objective": "product_introduction",
+    "product": "the_tin_dung_visa_platinum",
+    "segment": "VIP",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi để cảm ơn Anh/Chị đã luôn tin tưởng sử dụng dịch vụ của Bank A. Hiện tại Bank A vừa ra mắt thẻ Visa Platinum với nhiều ưu đãi đặc biệt dành riêng cho khách hàng VIP như Anh/Chị ạ.",
+    "main_content": "Thẻ Visa Platinum của Bank A có 3 đặc quyền nổi bật: hoàn tiền 5% cho tất cả giao dịch không giới hạn, miễn phí phòng chờ sân bay toàn cầu không giới hạn lượt, và bảo hiểm du lịch quốc tế lên đến 2 tỷ đồng miễn phí. Phí thường niên chỉ 2.4 triệu/năm nhưng với mức hoàn tiền, đa số khách hàng VIP thu về nhiều hơn phí trong vòng 2-3 tháng đầu ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đã có thẻ ngân hàng khác rồi",
+        "response": "Dạ, hầu hết khách hàng VIP đều có 2-3 thẻ để tận dụng ưu đãi khác nhau ạ. Thẻ Platinum của Bank A đặc biệt hơn ở điểm hoàn tiền 5% không giới hạn danh mục, trong khi nhiều thẻ khác chỉ hoàn 1-2% hoặc giới hạn theo nhóm chi tiêu. Anh/Chị thử tính xem mỗi tháng chi tiêu khoảng bao nhiêu thì em tính xem lợi ích cụ thể cho mình nhé?"
+      },
+      {
+        "objection": "Không cần thêm thẻ",
+        "response": "Dạ em hiểu ạ. Vậy Anh/Chị có hay đi công tác hoặc du lịch nước ngoài không? Vì lợi ích lớn nhất là phòng chờ sân bay và bảo hiểm du lịch quốc tế miễn phí, những khách hàng hay di chuyển thường tiết kiệm được rất nhiều đấy ạ."
+      },
+      {
+        "objection": "Phí thường niên cao",
+        "response": "Dạ, 2.4 triệu nghe có vẻ vậy nhưng nếu Anh/Chị chi tiêu khoảng 4-5 triệu/tháng thôi thì tiền hoàn về đã bù phí rồi ạ. Chưa kể phòng chờ sân bay ở nước ngoài thường 20-30 USD/lượt. Em có thể gửi bảng phân tích lợi ích cụ thể theo profile của Anh/Chị để tham khảo không ạ?"
+      }
+    ],
+    "closing": "Anh/Chị cho em xin địa chỉ email để gửi thông tin chi tiết và form đăng ký online tiện không ạ? Hiện tại đang có ưu đãi miễn phí năm đầu cho khách hàng VIP đăng ký trước cuối tháng ạ.",
+    "rating": 4.6,
+    "use_count": 63,
+    "tags": ["the_tin_dung", "introduction", "VIP", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_003",
+    "objective": "renewal_reminder",
+    "product": "tiet_kiem_co_ky_han",
+    "segment": "Premium",
+    "stage": "Renewal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi để thông báo sổ tiết kiệm của Anh/Chị sắp đáo hạn vào ngày [ngày], khoảng [số ngày] ngày nữa. Em muốn hỏi Anh/Chị có muốn tái tục hay có kế hoạch gì với khoản tiền này không ạ?",
+    "main_content": "Hiện tại Bank A đang có lãi suất tiết kiệm kỳ hạn 12 tháng là 6.8%/năm, cao hơn kỳ trước 0.3%. Nếu Anh/Chị tái tục thêm kỳ hạn 6 tháng thì được 6.5%, còn 3 tháng là 6.2%. Ngoài ra nếu Anh/Chị muốn đa dạng hóa, em có thể giới thiệu thêm sản phẩm tiết kiệm linh hoạt hoặc gói đầu tư có lợi suất cao hơn ạ.",
+    "objection_handling": [
+      {
+        "objection": "Muốn rút tiền để dùng",
+        "response": "Dạ hoàn toàn được ạ. Khi sổ đáo hạn Anh/Chị có thể rút toàn bộ gốc và lãi bình thường. Nếu chỉ cần một phần, Anh/Chị có thể tái tục phần còn lại để tiếp tục sinh lời. Em sẽ làm thủ tục hỗ trợ Anh/Chị nhanh nhất ạ."
+      },
+      {
+        "objection": "Lãi suất ngân hàng khác cao hơn",
+        "response": "Dạ, Anh/Chị có thể cho em biết ngân hàng nào đang cao hơn không ạ? Thường các ngân hàng nhỏ có thể cao hơn 0.1-0.2% nhưng độ an toàn và tiện lợi dịch vụ sẽ khác. Bank A còn có ưu đãi vay cầm cố sổ tiết kiệm lãi suất thấp nếu Anh/Chị cần vốn gấp mà không muốn phá sổ ạ."
+      },
+      {
+        "objection": "Đang cân nhắc đầu tư chứng khoán",
+        "response": "Dạ, đầu tư chứng khoán có tiềm năng sinh lời cao hơn nhưng rủi ro cũng cao hơn ạ. Nhiều khách hàng của em chọn giữ một phần tiết kiệm làm nền tảng an toàn, phần còn lại đầu tư. Em có thể giới thiệu gói quản lý quỹ của Bank A nếu Anh/Chị muốn tham khảo ạ."
+      }
+    ],
+    "closing": "Dạ vậy em xin phép ghi nhận là Anh/Chị muốn [phương án] nhé. Em sẽ chuẩn bị hồ sơ và liên hệ lại [ngày] để hỗ trợ Anh/Chị hoàn tất thủ tục. Cảm ơn Anh/Chị đã tin tưởng Bank A ạ.",
+    "rating": 4.7,
+    "use_count": 89,
+    "tags": ["tiet_kiem", "renewal", "Premium", "dao_han"]
+  },
+  {
+    "script_id": "SCRIPT_004",
+    "objective": "appointment_scheduling",
+    "product": "vay_kinh_doanh",
+    "segment": "SME",
+    "stage": "Qualified",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Qua thông tin Anh/Chị đã đăng ký, em biết doanh nghiệp mình đang có nhu cầu về vốn kinh doanh. Em gọi để hẹn lịch gặp trực tiếp để trao đổi cụ thể hơn ạ.",
+    "main_content": "Bank A có gói vay kinh doanh dành riêng cho SME với hạn mức từ 500 triệu đến 10 tỷ, lãi suất từ 9%/năm, thủ tục đơn giản chỉ cần báo cáo tài chính 2 năm gần nhất và phương án kinh doanh. Thời gian phê duyệt nhanh chỉ 5-7 ngày làm việc. Em muốn hẹn gặp Anh/Chị để tìm hiểu kỹ hơn về nhu cầu và đề xuất phương án phù hợp nhất ạ.",
+    "objection_handling": [
+      {
+        "objection": "Bận chưa có thời gian",
+        "response": "Dạ em hoàn toàn hiểu Anh/Chị bận rộn ạ. Cuộc gặp chỉ cần khoảng 30-45 phút thôi ạ. Hoặc em có thể đến văn phòng Anh/Chị vào giờ Anh/Chị thuận tiện nhất, sáng sớm hay cuối giờ chiều cũng được ạ."
+      },
+      {
+        "objection": "Gửi thông tin qua email đi",
+        "response": "Dạ em sẽ gửi thông tin cơ bản ngay ạ. Nhưng vay kinh doanh thường cần trao đổi trực tiếp để em hiểu đúng nhu cầu và đặc thù ngành của mình, từ đó đề xuất phương án tối ưu nhất. Gặp trực tiếp cũng giúp quy trình nhanh hơn nhiều so với trao đổi qua email ạ."
+      },
+      {
+        "objection": "Đang làm việc với ngân hàng khác rồi",
+        "response": "Dạ, Anh/Chị hoàn toàn có thể so sánh nhiều nơi ạ. Em chỉ cần 30 phút để trình bày phương án của Bank A, nếu không phù hợp không sao cả. Nhiều khách hàng sau khi nghe xong đã chuyển hoặc mở thêm hạn mức ở Bank A vì lãi suất cạnh tranh và thủ tục nhanh hơn ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị có thể sắp xếp gặp em vào [ngày đề xuất] lúc [giờ] tại [địa điểm/văn phòng] không ạ? Em sẽ chuẩn bị đầy đủ tài liệu và phân tích sơ bộ phương án vay cho doanh nghiệp mình trước ạ.",
+    "rating": 4.5,
+    "use_count": 34,
+    "tags": ["vay_kinh_doanh", "appointment", "SME", "qualified"]
+  },
+  {
+    "script_id": "SCRIPT_005",
+    "objective": "follow_up_proposal",
+    "product": "bao_hiem_nhan_tho",
+    "segment": "Premium",
+    "stage": "Negotiation",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Lần trước mình có trao đổi về gói bảo hiểm nhân thọ kết hợp tiết kiệm. Anh/Chị đã có thêm thông tin hay có câu hỏi gì muốn em giải đáp thêm không ạ?",
+    "main_content": "Em biết quyết định về bảo hiểm nhân thọ cần cân nhắc kỹ ạ. Điểm khác biệt của gói mình đang xem xét là vừa có bảo vệ tính mạng, vừa tích lũy tiết kiệm, lại có thể rút một phần giá trị hoàn lại sau 5 năm nếu cần. Với mức đóng phí [X triệu]/tháng thì sau [Y năm] Anh/Chị có thể nhận về [Z tỷ] quy đổi, cao hơn tiết kiệm thông thường và còn được bảo vệ rủi ro trong suốt thời gian đó ạ.",
+    "objection_handling": [
+      {
+        "objection": "Phí cao quá",
+        "response": "Dạ em hiểu ạ. Thực ra Anh/Chị có thể chọn gói nhỏ hơn với phí từ [X triệu]/tháng để bắt đầu, sau đó tăng dần khi điều kiện cho phép. Điều quan trọng là tạo thói quen bảo vệ sớm cho gia đình, phí sau này có thể điều chỉnh ạ."
+      },
+      {
+        "objection": "Sợ không đủ tiền đóng dài hạn",
+        "response": "Dạ, đây là băn khoăn rất thực tế ạ. Gói này có điều khoản miễn đóng phí nếu gặp rủi ro sức khỏe, và có thể tạm hoãn đóng phí trong trường hợp khó khăn tài chính mà không mất quyền lợi. Em sẽ giải thích rõ hơn các điều khoản bảo vệ này ạ."
+      },
+      {
+        "objection": "Không tin vào bảo hiểm",
+        "response": "Dạ, em gặp nhiều khách hàng có suy nghĩ tương tự ban đầu ạ. Điểm em muốn nhấn mạnh là đây không chỉ là bảo hiểm thuần túy mà là công cụ tích lũy tài chính có bảo vệ. Anh/Chị có thể xem hợp đồng mẫu để thấy rõ quyền lợi cụ thể bằng số trước khi quyết định ạ."
+      }
+    ],
+    "closing": "Dạ, để Anh/Chị có thêm cơ sở quyết định, em sẽ chuẩn bị bảng so sánh chi tiết giữa các gói và minh họa số liệu cụ thể theo thu nhập của Anh/Chị. Em gửi trong hôm nay và mình nói chuyện lại vào [ngày] nhé ạ?",
+    "rating": 4.4,
+    "use_count": 28,
+    "tags": ["bao_hiem", "follow_up", "Premium", "negotiation"]
+  },
+  {
+    "script_id": "SCRIPT_006",
+    "objective": "product_introduction",
+    "product": "tiet_kiem_linh_hoat",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi vì thấy Anh/Chị đang có số dư tài khoản thanh toán khá lớn và muốn giới thiệu một sản phẩm có thể giúp tiền của mình sinh lời mà vẫn linh hoạt rút khi cần ạ.",
+    "main_content": "Sản phẩm tiết kiệm linh hoạt của Bank A cho phép Anh/Chị gửi và rút bất kỳ lúc nào mà vẫn được hưởng lãi suất 5.5%/năm, cao hơn tài khoản thanh toán thông thường 10 lần. Không cần kỳ hạn cố định, không phạt rút sớm, tối thiểu chỉ 1 triệu đồng. Đây là cách tốt nhất để số tiền nhàn rỗi trong tài khoản sinh lời mỗi ngày ạ.",
+    "objection_handling": [
+      {
+        "objection": "Lãi suất vậy có cao không",
+        "response": "Dạ 5.5%/năm là mức tốt nhất cho sản phẩm linh hoạt không kỳ hạn ạ. Nếu Anh/Chị gửi kỳ hạn cố định thì lãi cao hơn, 6.8% cho 12 tháng, nhưng sẽ không rút được giữa chừng. Tiết kiệm linh hoạt phù hợp nhất cho khoản tiền mình không chắc khi nào cần ạ."
+      },
+      {
+        "objection": "Không cần, tiền trong tài khoản thanh toán là đủ",
+        "response": "Dạ nếu Anh/Chị để 50 triệu trong tài khoản thanh toán, một năm chỉ được khoảng 50 nghìn tiền lãi ạ. Còn tiết kiệm linh hoạt sẽ được 2.75 triệu, gần như miễn phí mà không cần làm gì cả. Chỉ cần chuyển tiền sang, tiền vẫn xài được bình thường qua ứng dụng ạ."
+      }
+    ],
+    "closing": "Anh/Chị muốn em hướng dẫn mở tiết kiệm linh hoạt luôn không ạ? Chỉ cần vài phút trên ứng dụng Bank A là xong, em có thể hỗ trợ từng bước ngay bây giờ ạ.",
+    "rating": 4.3,
+    "use_count": 112,
+    "tags": ["tiet_kiem", "introduction", "Mass", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_007",
+    "objective": "follow_up_call",
+    "product": "vay_mua_xe",
+    "segment": "Mass",
+    "stage": "Proposal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Tuần trước mình có hỏi về vay mua xe, em gọi lại để xem Anh/Chị cần thêm thông tin gì không ạ?",
+    "main_content": "Gói vay mua xe của Bank A đang có lãi suất 9.9%/năm cố định trong 12 tháng đầu, hạn mức đến 85% giá xe mới, thời hạn đến 8 năm. Với xe 600 triệu vay 80% thì góp khoảng 7-8 triệu/tháng ạ. Thủ tục đơn giản, chỉ cần giấy tờ cơ bản và phê duyệt trong 24 giờ. Hiện tại đang có ưu đãi phí thẩm định 0% cho hồ sơ nộp trong tháng này ạ.",
+    "objection_handling": [
+      {
+        "objection": "Góp hàng tháng cao quá",
+        "response": "Dạ, Anh/Chị có thể giảm số tiền góp bằng cách tăng thời hạn vay lên 7-8 năm. Ví dụ với xe 600 triệu, vay 60% trong 8 năm thì góp chỉ khoảng 5 triệu/tháng ạ. Hoặc mình chọn xe giá phù hợp hơn một chút cũng được ạ."
+      },
+      {
+        "objection": "Muốn vay công ty tài chính lãi suất 0%",
+        "response": "Dạ, lãi suất 0% thường chỉ áp dụng cho kỳ hạn ngắn 12-24 tháng và số tiền góp hàng tháng rất cao ạ. Với Bank A lãi suất 9.9% nhưng thời hạn linh hoạt đến 8 năm, số tiền góp hàng tháng thấp hơn nhiều và phù hợp với dòng tiền hơn ạ. Em tính thử cho Anh/Chị so sánh nhé?"
+      }
+    ],
+    "closing": "Dạ Anh/Chị muốn em gửi bảng tính phân tích chi tiết các phương án không ạ? Em sẽ gửi trong hôm nay và mình nói chuyện lại vào [ngày] ạ.",
+    "rating": 4.2,
+    "use_count": 56,
+    "tags": ["vay_mua_xe", "follow_up", "Mass", "proposal"]
+  },
+  {
+    "script_id": "SCRIPT_008",
+    "objective": "product_introduction",
+    "product": "the_ghi_no",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi để giới thiệu thẻ ghi nợ mới của Bank A có nhiều tính năng tiện ích và ưu đãi đặc biệt ạ.",
+    "main_content": "Thẻ ghi nợ nội địa Bank A mới có hoàn tiền 2% tại siêu thị và cửa hàng tiện lợi, miễn phí chuyển khoản 24/7, thanh toán contactless nhanh chóng và tích hợp ví điện tử. Phí thường niên chỉ 99 nghìn/năm, miễn phí năm đầu cho khách hàng mới ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đã có thẻ rồi",
+        "response": "Dạ, thẻ cũ của Anh/Chị có ưu đãi hoàn tiền không ạ? Thẻ mới của Bank A hoàn 2% tại siêu thị và cửa hàng tiện lợi, nếu mỗi tháng Anh/Chị mua sắm 5 triệu thì được hoàn 100 nghìn, một năm là 1.2 triệu, hơn phí thường niên nhiều ạ."
+      }
+    ],
+    "closing": "Anh/Chị muốn đăng ký luôn không ạ? Chỉ cần CMND/CCCD là làm ngay tại chi nhánh hoặc online qua ứng dụng, thẻ được giao trong 5-7 ngày làm việc ạ.",
+    "rating": 4.0,
+    "use_count": 134,
+    "tags": ["the_ghi_no", "introduction", "Mass", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_009",
+    "objective": "follow_up_proposal",
+    "product": "vay_mua_nha",
+    "segment": "Premium",
+    "stage": "Negotiation",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Mình đã trao đổi được vài lần về khoản vay mua nhà rồi. Anh/Chị đang cân nhắc điểm nào, em muốn hỗ trợ thêm để giúp mình quyết định được ạ.",
+    "main_content": "Em biết quyết định mua nhà rất lớn và quan trọng ạ. Để giúp Anh/Chị tự tin hơn, Bank A có chính sách phê duyệt vay sơ bộ trước, chỉ cần nộp hồ sơ cơ bản mà không cần tài sản bảo đảm cụ thể ngay. Khi có kết quả phê duyệt sơ bộ, Anh/Chị biết chắc mình vay được bao nhiêu, lãi suất bao nhiêu để đàm phán mua nhà tốt hơn ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đang chờ lãi suất giảm thêm",
+        "response": "Dạ, dự báo lãi suất rất khó chính xác ạ. Nhưng có một điều chắc chắn là giá nhà đang tăng liên tục, mỗi tháng chần chừ giá nhà có thể tăng thêm hàng chục triệu. Hơn nữa lãi suất hiện tại đã ở mức thấp trong 3 năm qua rồi ạ. Anh/Chị có thể vay bây giờ, sau này nếu lãi suất giảm mình tái cơ cấu hoặc trả bớt đều được ạ."
+      },
+      {
+        "objection": "Muốn trả thêm vốn tự có trước",
+        "response": "Dạ đó là tư duy tài chính rất tốt ạ. Nhưng Anh/Chị có thể vừa tích lũy thêm vừa đăng ký phê duyệt sơ bộ để biết hạn mức. Khi đủ số vốn tự có như kế hoạch thì xử lý ngay, đỡ mất thời gian làm hồ sơ sau này ạ."
+      },
+      {
+        "objection": "Sợ rủi ro nếu thu nhập giảm",
+        "response": "Dạ đây là lo ngại rất thực tế ạ. Bank A có sản phẩm bảo hiểm khoản vay, nếu Anh/Chị gặp rủi ro mất việc hoặc sức khỏe thì bảo hiểm sẽ trả thay khoản vay trong thời gian nhất định. Chi phí bảo hiểm rất nhỏ so với khoản vay, thường chỉ 0.2-0.3%/năm ạ."
+      }
+    ],
+    "closing": "Dạ để tiết kiệm thời gian cho Anh/Chị, em xin phép chuẩn bị sẵn checklist hồ sơ phê duyệt sơ bộ và gửi cho mình xem qua nhé? Không mất chi phí hay cam kết gì cả, chỉ để mình có cơ sở thương lượng khi tìm được nhà ưng ý ạ.",
+    "rating": 4.9,
+    "use_count": 31,
+    "tags": ["vay_mua_nha", "follow_up", "Premium", "negotiation"]
+  },
+  {
+    "script_id": "SCRIPT_010",
+    "objective": "product_introduction",
+    "product": "quy_mo",
+    "segment": "VIP",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Gần đây em thấy lãi suất tiết kiệm đang có xu hướng điều chỉnh, nên muốn chia sẻ với Anh/Chị về một kênh đầu tư có thể mang lại hiệu quả tốt hơn cho phần tài sản dài hạn ạ.",
+    "main_content": "Bank A hiện phân phối quỹ mở của [Công ty Quản lý Quỹ], đây là quỹ cổ phiếu đã có track record 5 năm với lợi nhuận trung bình 15-18%/năm. Tất nhiên đầu tư quỹ có rủi ro cao hơn tiết kiệm nhưng với khung thời gian 3-5 năm thì lịch sử cho thấy hiệu quả vượt trội. Tối thiểu chỉ 10 triệu và có thể mua bán bất kỳ ngày nào ạ.",
+    "objection_handling": [
+      {
+        "objection": "Rủi ro quá, sợ mất tiền",
+        "response": "Dạ rủi ro là có ạ nhưng quỹ có đội ngũ quản lý chuyên nghiệp và đa dạng hóa danh mục 30-50 cổ phiếu, rủi ro thấp hơn mua cổ phiếu riêng lẻ nhiều. Nhiều khách hàng của em chọn để 70% tiết kiệm, 30% đầu tư quỹ để cân bằng lợi nhuận và rủi ro ạ."
+      },
+      {
+        "objection": "Không biết gì về đầu tư",
+        "response": "Dạ đó chính là lý do tại sao quỹ mở phù hợp với Anh/Chị ạ. Mình không cần biết gì, chỉ cần bỏ tiền vào và để đội ngũ chuyên gia quản lý. Em sẽ hỗ trợ theo dõi danh mục và báo cáo định kỳ cho Anh/Chị ạ."
+      },
+      {
+        "objection": "Đang đầu tư bất động sản rồi",
+        "response": "Dạ tuyệt vời ạ. Đầu tư đa dạng là chiến lược của những người giàu ạ. Bất động sản cần vốn lớn và thanh khoản thấp, quỹ mở ngược lại, vốn linh hoạt và thanh khoản cao. Hai kênh bổ trợ cho nhau rất tốt ạ."
+      }
+    ],
+    "closing": "Em sẽ gửi Anh/Chị bản thuyết minh quỹ và báo cáo hiệu suất 5 năm để tham khảo nhé? Anh/Chị xem xong mình nói chuyện lại, không có áp lực gì cả ạ.",
+    "rating": 4.5,
+    "use_count": 22,
+    "tags": ["quy_mo", "introduction", "VIP", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_011",
+    "objective": "follow_up_proposal",
+    "product": "the_tin_dung_visa_platinum",
+    "segment": "Premium",
+    "stage": "Proposal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hôm trước em có gửi thông tin về thẻ Visa Platinum, Anh/Chị đã xem qua chưa ạ? Em muốn hỏi thêm có điểm nào Anh/Chị muốn tìm hiểu kỹ hơn không?",
+    "main_content": "Dạ, ưu điểm lớn nhất của thẻ này là hoàn tiền 5% không giới hạn danh mục và phòng chờ sân bay miễn phí. Với mức chi tiêu trung bình của khách hàng Premium khoảng 15-20 triệu/tháng thì tiền hoàn về khoảng 9-12 triệu/năm, đã bù phí thường niên và còn dư nhiều ạ.",
+    "objection_handling": [
+      {
+        "objection": "Hạn mức thấp quá",
+        "response": "Dạ hạn mức ban đầu tùy thu nhập nhưng sau 6 tháng sử dụng tốt Bank A sẽ tự động tăng hạn mức. Em có thể làm hồ sơ với mức thu nhập hiện tại của Anh/Chị để biết hạn mức cụ thể trước khi quyết định ạ."
+      },
+      {
+        "objection": "Quy trình mở thẻ phức tạp không",
+        "response": "Dạ rất đơn giản ạ. Với khách hàng Premium như Anh/Chị, em sẽ hỗ trợ làm hồ sơ online chỉ cần CCCD và sao kê lương. Phê duyệt trong 3-5 ngày, thẻ giao tận nơi ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị muốn em bắt đầu hồ sơ luôn không ạ? Em sẽ thu thập thông tin qua điện thoại và gửi link form online, Anh/Chị chỉ cần xác nhận là xong ạ.",
+    "rating": 4.4,
+    "use_count": 41,
+    "tags": ["the_tin_dung", "follow_up", "Premium", "proposal"]
+  },
+  {
+    "script_id": "SCRIPT_012",
+    "objective": "renewal_reminder",
+    "product": "vay_mua_nha",
+    "segment": "VIP",
+    "stage": "Renewal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi để thông báo khoản vay mua nhà của Anh/Chị sắp hết thời gian lãi suất ưu đãi vào [ngày]. Sau ngày đó lãi suất sẽ chuyển sang thả nổi, em muốn cùng Anh/Chị xem xét phương án tốt nhất ạ.",
+    "main_content": "Có 3 phương án Anh/Chị có thể cân nhắc: một là tiếp tục với lãi suất thả nổi hiện tại khoảng 10.5%/năm, hai là cố định lại 12 tháng với 9.8%/năm tiết kiệm khoảng 2-3 triệu/năm, ba là tất toán một phần để giảm gốc và giảm tiền lãi lâu dài. Em sẽ tính cụ thể từng phương án cho Anh/Chị xem ạ.",
+    "objection_handling": [
+      {
+        "objection": "Để lãi suất thả nổi cũng được",
+        "response": "Dạ được ạ nhưng lãi suất thả nổi thường biến động theo thị trường, có thể tăng thêm trong năm tới. Nếu Anh/Chị cố định 12 tháng thì biết chắc số tiền phải trả và lập kế hoạch tài chính tốt hơn ạ. Chi phí chuyển đổi không đáng kể ạ."
+      },
+      {
+        "objection": "Đang tính tất toán sớm",
+        "response": "Dạ nếu Anh/Chị có kế hoạch tất toán trong 12 tháng tới thì để thả nổi là ổn vì phí trả nợ trước hạn đã miễn sau 3 năm rồi ạ. Em sẽ tính xem tất toán ngay bây giờ so với chờ thêm 6-12 tháng thì phương án nào lợi hơn ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị muốn em gửi bảng phân tích chi tiết cả 3 phương án không ạ? Em sẽ gửi trong hôm nay và mình nói chuyện lại [ngày] để quyết định trước ngày hết ưu đãi nhé ạ.",
+    "rating": 4.6,
+    "use_count": 29,
+    "tags": ["vay_mua_nha", "renewal", "VIP", "het_uu_dai"]
+  },
+  {
+    "script_id": "SCRIPT_013",
+    "objective": "product_introduction",
+    "product": "bao_hiem_suc_khoe",
+    "segment": "Premium",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Gần đây nhiều khách hàng của em bắt đầu quan tâm đến bảo hiểm sức khỏe sau dịch Covid. Em muốn giới thiệu gói bảo hiểm sức khỏe toàn diện được Bank A phân phối ạ.",
+    "main_content": "Gói bảo hiểm sức khỏe của chúng em chi trả chi phí nằm viện, phẫu thuật, điều trị ung thư đến 1 tỷ/năm, không giới hạn số ngày nằm viện, khám ngoại trú tại 500 bệnh viện toàn quốc. Phí bảo hiểm từ [X triệu]/năm tùy tuổi và gói, thanh toán hàng năm hoặc hàng tháng đều được ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đã có BHYT rồi",
+        "response": "Dạ BHYT rất tốt nhưng chỉ chi trả một phần và thường phải nằm bệnh viện công ạ. Bảo hiểm sức khỏe tư nhân bổ sung phần còn lại và cho phép Anh/Chị chọn bệnh viện tư, phòng riêng, dịch vụ tốt hơn mà không lo chi phí ạ."
+      },
+      {
+        "objection": "Còn trẻ khỏe, chưa cần",
+        "response": "Dạ mua bảo hiểm khi còn trẻ khỏe là thời điểm tốt nhất vì phí rẻ hơn và không bị loại trừ bệnh có sẵn ạ. Sau 40 tuổi phí tăng rất nhiều và nhiều bệnh mãn tính có thể bị loại trừ. Đây là đầu tư bảo vệ sức khỏe dài hạn ạ."
+      },
+      {
+        "objection": "Phí cao quá",
+        "response": "Dạ có thể chọn gói cơ bản từ [X triệu]/tháng để bắt đầu ạ. Gói cơ bản vẫn chi trả nội trú và các trường hợp khẩn cấp, sau này thu nhập tốt hơn có thể nâng cấp dễ dàng ạ."
+      }
+    ],
+    "closing": "Em sẽ gửi Anh/Chị bảng so sánh 3 gói chính và bảng tính phí theo độ tuổi để tham khảo nhé? Anh/Chị xem rồi mình nói chuyện tiếp, không cần quyết định vội ạ.",
+    "rating": 4.3,
+    "use_count": 38,
+    "tags": ["bao_hiem_suc_khoe", "introduction", "Premium", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_014",
+    "objective": "appointment_scheduling",
+    "product": "quan_ly_tai_san",
+    "segment": "VIP",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em biết Anh/Chị đang có danh mục tài sản đáng kể và muốn giới thiệu dịch vụ quản lý tài sản cao cấp của Bank A, có thể tối ưu hóa danh mục đầu tư và tư vấn kế hoạch tài chính toàn diện ạ.",
+    "main_content": "Dịch vụ Private Banking của Bank A cung cấp chuyên gia tư vấn tài chính riêng, tiếp cận các sản phẩm đầu tư exclusive không có ở kênh thông thường, ưu đãi lãi suất tiết kiệm và vay đặc biệt, cùng nhiều dịch vụ đặc quyền khác. Em muốn hẹn Anh/Chị gặp chuyên gia tư vấn cấp cao của Bank A để có buổi tư vấn sơ bộ miễn phí về kế hoạch tài sản ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đang có đơn vị tư vấn khác rồi",
+        "response": "Dạ hoàn toàn bình thường ạ. Góc nhìn đa chiều từ nhiều đơn vị tư vấn thường mang lại quyết định tốt hơn. Buổi tư vấn miễn phí không có cam kết gì, Anh/Chị có thể tham khảo thêm quan điểm của Bank A để so sánh ạ."
+      },
+      {
+        "objection": "Không có thời gian",
+        "response": "Dạ em hoàn toàn hiểu ạ. Chuyên gia của em có thể gặp Anh/Chị tại văn phòng hoặc nhà riêng vào bất kỳ thời điểm nào Anh/Chị thuận tiện, kể cả cuối tuần ạ. Chỉ cần 45-60 phút thôi ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị có thể sắp xếp gặp chuyên gia của chúng em vào tuần tới không ạ? Em sẽ book lịch và chuẩn bị đầy đủ tài liệu tham khảo trước ạ.",
+    "rating": 4.7,
+    "use_count": 15,
+    "tags": ["quan_ly_tai_san", "appointment", "VIP", "private_banking"]
+  },
+  {
+    "script_id": "SCRIPT_015",
+    "objective": "follow_up_call",
+    "product": "tiet_kiem_co_ky_han",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hôm trước Anh/Chị có hỏi về các gói tiết kiệm, em gọi để cung cấp thêm thông tin và giải đáp thắc mắc nếu có ạ.",
+    "main_content": "Hiện Bank A đang có nhiều kỳ hạn tiết kiệm từ 1-36 tháng với lãi suất từ 4.5% đến 6.8%/năm. Lãi suất cao nhất là kỳ hạn 12 và 24 tháng. Gửi tối thiểu chỉ 500 nghìn đồng, lĩnh lãi cuối kỳ hoặc hàng tháng đều được, có thể cầm cố sổ để vay nếu cần tiền gấp mà không muốn phá sổ ạ.",
+    "objection_handling": [
+      {
+        "objection": "Lãi suất có thấp không",
+        "response": "Dạ 6.8%/năm là mức cạnh tranh nhất hiện tại với ngân hàng có uy tín ạ. Một số ngân hàng nhỏ hơn có thể cao hơn 0.2-0.5% nhưng Anh/Chị cũng cần cân nhắc về độ an toàn và chất lượng dịch vụ ạ."
+      },
+      {
+        "objection": "Muốn rút linh hoạt",
+        "response": "Dạ Anh/Chị có thể chọn tiết kiệm linh hoạt lãi suất 5.5% rút bất cứ lúc nào, hoặc gửi kỳ hạn ngắn 1-3 tháng để linh hoạt hơn. Em sẽ tư vấn phương án phù hợp nhất với nhu cầu của Anh/Chị ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị muốn gửi bao nhiêu và kỳ hạn nào thì em tính lãi cụ thể và hỗ trợ mở ngay ạ. Có thể làm online qua ứng dụng chỉ mất 5 phút ạ.",
+    "rating": 4.1,
+    "use_count": 98,
+    "tags": ["tiet_kiem", "follow_up", "Mass", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_016",
+    "objective": "product_introduction",
+    "product": "vay_tieu_dung",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em muốn giới thiệu gói vay tiêu dùng không tài sản bảo đảm của Bank A, thủ tục nhanh và hạn mức cao ạ.",
+    "main_content": "Gói vay tiêu dùng tín chấp của Bank A cho vay đến 10 lần lương, tối đa 500 triệu, lãi suất từ 12%/năm, phê duyệt trong 24 giờ chỉ cần hợp đồng lao động và 3 tháng sao kê lương. Thời hạn vay đến 60 tháng, trả góp đều hàng tháng hoặc linh hoạt theo thu nhập ạ.",
+    "objection_handling": [
+      {
+        "objection": "Lãi suất cao quá",
+        "response": "Dạ vay tín chấp không tài sản bảo đảm thì lãi suất sẽ cao hơn vay thế chấp ạ. Nhưng bù lại thủ tục cực kỳ đơn giản và nhanh, đặc biệt khi cần tiền gấp. Nếu Anh/Chị có tài sản bảo đảm thì em có thể tư vấn gói khác lãi suất thấp hơn ạ."
+      },
+      {
+        "objection": "Thu nhập không ổn định",
+        "response": "Dạ Bank A cũng có gói vay linh hoạt cho người thu nhập không ổn định như kinh doanh tự do hay freelance ạ. Cần thêm một số giấy tờ chứng minh thu nhập như hóa đơn, hợp đồng khách hàng. Em có thể hỗ trợ chuẩn bị hồ sơ ạ."
+      }
+    ],
+    "closing": "Anh/Chị muốn em gửi link đăng ký online không ạ? Điền form trong 10 phút, Bank A sẽ liên hệ lại trong vòng 24 giờ ạ.",
+    "rating": 4.0,
+    "use_count": 145,
+    "tags": ["vay_tieu_dung", "introduction", "Mass", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_017",
+    "objective": "follow_up_proposal",
+    "product": "vay_kinh_doanh",
+    "segment": "SME",
+    "stage": "Proposal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hôm trước mình đã gặp và em đã gửi phương án vay vốn kinh doanh. Anh/Chị và hội đồng quản trị đã có dịp xem xét chưa ạ?",
+    "main_content": "Dạ em biết quyết định vay vốn cho doanh nghiệp cần sự đồng thuận của nhiều bên ạ. Em muốn hỏi cụ thể phương án nào đang được cân nhắc nhất, và có điểm nào cần em điều chỉnh hoặc bổ sung thêm thông tin không ạ? Bank A cũng có thể làm việc trực tiếp với kế toán hay giám đốc tài chính của mình nếu cần ạ.",
+    "objection_handling": [
+      {
+        "objection": "Ban giám đốc chưa thống nhất",
+        "response": "Dạ, em có thể chuẩn bị tài liệu tóm tắt và tham dự buổi họp của ban giám đốc để giải đáp trực tiếp các thắc mắc không ạ? Đôi khi có chuyên gia ngân hàng trình bày trực tiếp sẽ thuyết phục hơn ạ."
+      },
+      {
+        "objection": "Phương án tài chính chưa phù hợp",
+        "response": "Dạ Anh/Chị cho em biết điểm nào chưa phù hợp để em điều chỉnh ạ? Lãi suất, thời hạn, hạn mức hay điều kiện tài sản đảm bảo? Bank A có nhiều cấu trúc khoản vay khác nhau, em tin có thể tìm được phương án tốt hơn ạ."
+      },
+      {
+        "objection": "Đang xem xét thêm ngân hàng khác",
+        "response": "Dạ rất hợp lý ạ. Anh/Chị có thể cho em biết ngân hàng kia đang đề xuất điều kiện gì không? Em muốn đảm bảo mình đang so sánh đúng và Bank A có thể cạnh tranh được ạ."
+      }
+    ],
+    "closing": "Dạ, em sẽ gửi thêm case study về các doanh nghiệp cùng ngành đã vay thành công và kết quả kinh doanh sau đó nhé? Hy vọng sẽ giúp ích cho quyết định của Anh/Chị ạ.",
+    "rating": 4.5,
+    "use_count": 19,
+    "tags": ["vay_kinh_doanh", "follow_up", "SME", "proposal"]
+  },
+  {
+    "script_id": "SCRIPT_018",
+    "objective": "product_introduction",
+    "product": "ngan_hang_so",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em thấy Anh/Chị chưa đăng ký ứng dụng ngân hàng số của Bank A nên muốn giới thiệu vì có nhiều tính năng tiện ích và ưu đãi hấp dẫn ạ.",
+    "main_content": "Ứng dụng Bank A có thể chuyển khoản miễn phí 24/7, mở tiết kiệm online lãi suất cao hơn quầy 0.1%, thanh toán hóa đơn tự động, nạp tiền điện thoại và đặc biệt là quản lý chi tiêu thông minh theo danh mục. Đăng ký online không cần ra chi nhánh, xác thực eKYC qua video call ạ.",
+    "objection_handling": [
+      {
+        "objection": "Sợ mất tiền do hack",
+        "response": "Dạ Bank A áp dụng xác thực 2 lớp, mã OTP và sinh trắc học khuôn mặt/vân tay cho mọi giao dịch. Hệ thống bảo mật đạt chuẩn ISO và được kiểm tra độc lập hàng năm. Ngân hàng có chính sách bồi thường nếu mất tiền do lỗi hệ thống ạ."
+      },
+      {
+        "objection": "Không quen dùng điện thoại",
+        "response": "Dạ em sẽ hướng dẫn Anh/Chị từng bước cài đặt và sử dụng ạ. Ứng dụng Bank A thiết kế rất đơn giản, cỡ chữ lớn, thao tác ít bước. Nhiều khách hàng lớn tuổi sau khi được hướng dẫn đã dùng rất thành thạo ạ."
+      }
+    ],
+    "closing": "Em gửi Anh/Chị link tải ứng dụng và sẽ hỗ trợ cài đặt trực tiếp qua điện thoại nhé? Chỉ mất khoảng 10-15 phút là xong ạ.",
+    "rating": 4.2,
+    "use_count": 201,
+    "tags": ["ngan_hang_so", "introduction", "Mass", "digital"]
+  },
+  {
+    "script_id": "SCRIPT_019",
+    "objective": "follow_up_proposal",
+    "product": "bao_hiem_nhan_tho",
+    "segment": "VIP",
+    "stage": "Negotiation",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Mình đã trao đổi về gói bảo hiểm nhân thọ kết hợp đầu tư khá nhiều lần rồi. Hôm nay em muốn tóm tắt lại những điểm chính và xem Anh/Chị còn băn khoăn điều gì không ạ.",
+    "main_content": "Điểm em muốn nhấn mạnh lần này là yếu tố thừa kế và bảo vệ tài sản ạ. Với gói này, khi xảy ra rủi ro, gia đình Anh/Chị sẽ nhận ngay [X tỷ] tiền bảo hiểm không bị ảnh hưởng bởi các nghĩa vụ tài chính khác như thuế thừa kế hay tranh chấp di sản. Đây là công cụ lập kế hoạch tài sản rất được ưa chuộng ở tầng lớp VIP trên thế giới ạ.",
+    "objection_handling": [
+      {
+        "objection": "Phí quá lớn mỗi năm",
+        "response": "Dạ Anh/Chị thử nhìn từ góc độ khác nhé: phí này là khoản tiết kiệm bắt buộc có bảo vệ. Sau [Y năm] Anh/Chị có thể rút về giá trị hoàn lại còn cao hơn cả tiết kiệm thông thường. Thực chất không mất tiền mà là chuyển tài sản sang dạng được bảo vệ tốt hơn ạ."
+      },
+      {
+        "objection": "Muốn con cái tự lo được",
+        "response": "Dạ đó là mong muốn rất tuyệt vời ạ. Nhưng bảo hiểm nhân thọ không phải để con cái trông chờ mà là đảm bảo kế hoạch cho con như học bổng, học phí đại học không bị gián đoạn dù có chuyện gì xảy ra với Anh/Chị trong giai đoạn đó ạ."
+      }
+    ],
+    "closing": "Dạ, em biết đây là quyết định quan trọng và cần thêm thời gian ạ. Em sẽ chuẩn bị hợp đồng mẫu để Anh/Chị xem điều khoản cụ thể và có thể cho luật sư hoặc chuyên gia tài chính cùng xem xét trước khi ký ạ.",
+    "rating": 4.8,
+    "use_count": 11,
+    "tags": ["bao_hiem_nhan_tho", "follow_up", "VIP", "negotiation", "ke_hoach_tai_san"]
+  },
+  {
+    "script_id": "SCRIPT_020",
+    "objective": "product_introduction",
+    "product": "vay_mua_nha",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em gọi vì biết Anh/Chị đang có kế hoạch mua nhà và Bank A đang có chương trình vay mua nhà ưu đãi đặc biệt ạ.",
+    "main_content": "Gói vay mua nhà xã hội của Bank A lãi suất chỉ 7%/năm cố định 5 năm đầu, dành cho người mua nhà lần đầu thu nhập dưới 15 triệu/tháng. Hạn mức đến 80% giá trị nhà, thời hạn đến 25 năm, thủ tục hỗ trợ tận nơi. Đây là cơ hội rất tốt cho người trẻ muốn an cư lạc nghiệp ạ.",
+    "objection_handling": [
+      {
+        "objection": "Chưa đủ tiền đặt cọc",
+        "response": "Dạ tối thiểu cần 20% giá nhà làm vốn tự có ạ. Nếu Anh/Chị chưa đủ, em có thể tư vấn kế hoạch tiết kiệm để đủ vốn trong 12-24 tháng. Hoặc có nhà cha mẹ có thể hỗ trợ đặt cọc thì sau đó vay ngân hàng trả lại ạ."
+      },
+      {
+        "objection": "Sợ không trả được hàng tháng",
+        "response": "Dạ thông thường ngân hàng không cho vay quá 40% thu nhập tháng để đảm bảo an toàn tài chính. Với thu nhập của Anh/Chị, em sẽ tính khoản vay phù hợp để góp hàng tháng không quá gánh nặng ạ."
+      },
+      {
+        "objection": "Nhà xã hội chất lượng không tốt",
+        "response": "Dạ nhà ở xã hội bây giờ khác nhiều rồi ạ. Nhiều dự án có chất lượng rất tốt, hạ tầng đầy đủ, vị trí thuận tiện. Em có thể gửi danh sách các dự án đang mở bán trong khu vực Anh/Chị muốn mua để tham khảo ạ."
+      }
+    ],
+    "closing": "Anh/Chị cho em biết mình đang nhắm đến khu vực nào và ngân sách tổng khoảng bao nhiêu? Em sẽ tư vấn phương án phù hợp nhất và kết nối với nhân viên tư vấn bất động sản đối tác của Bank A ạ.",
+    "rating": 4.2,
+    "use_count": 73,
+    "tags": ["vay_mua_nha", "introduction", "Mass", "nha_o_xa_hoi"]
+  },
+  {
+    "script_id": "SCRIPT_021",
+    "objective": "follow_up_call",
+    "product": "the_tin_dung_visa_platinum",
+    "segment": "VIP",
+    "stage": "Closed_Won",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Thẻ Platinum của Anh/Chị vừa được kích hoạt được 1 tháng rồi. Em gọi để xem Anh/Chị có hài lòng và cần hỗ trợ gì không ạ.",
+    "main_content": "Dạ em muốn chia sẻ một số tính năng hữu ích Anh/Chị có thể chưa biết: đặt phòng chờ sân bay qua ứng dụng trước 24 giờ để chắc chắn có chỗ, hoàn tiền sẽ cộng vào tài khoản vào ngày 15 hàng tháng và có thể dùng trả hóa đơn hoặc quy đổi, ngoài ra có bảo hiểm hành lý thất lạc khi đi máy bay cũng nằm trong gói ạ.",
+    "objection_handling": [
+      {
+        "objection": "Chưa dùng nhiều",
+        "response": "Dạ không sao ạ. Em muốn gợi ý Anh/Chị dùng thẻ cho các chi tiêu thường ngày như siêu thị, nhà hàng, xăng xe vì đây là những danh mục hoàn tiền nhiều nhất. Sau 3 tháng đầu nếu chưa ưng thì mình cũng có thể điều chỉnh gói ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị có muốn em setup tự động thanh toán toàn bộ số dư cuối kỳ để tránh lãi và tận dụng hoàn tiền tối đa không? Em hướng dẫn ngay trong vài phút ạ.",
+    "rating": 4.6,
+    "use_count": 67,
+    "tags": ["the_tin_dung", "after_sales", "VIP", "activation"]
+  },
+  {
+    "script_id": "SCRIPT_022",
+    "objective": "product_introduction",
+    "product": "vay_mua_xe",
+    "segment": "Premium",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em biết Anh/Chị đang có kế hoạch đổi xe mới. Bank A đang có chương trình vay mua xe lãi suất ưu đãi kết hợp với các đại lý xe chính hãng ạ.",
+    "main_content": "Bank A đang hợp tác với Toyota, Mercedes, BMW và một số hãng xe khác, khi vay qua Bank A sẽ được ưu đãi lãi suất 0% trong 6 tháng đầu sau đó chỉ 8.9%/năm, cộng thêm giảm giá xe từ đại lý 2-5%. Hạn mức đến 90% giá xe không giới hạn mức tối đa ạ.",
+    "objection_handling": [
+      {
+        "objection": "Mua xe trả thẳng không cần vay",
+        "response": "Dạ trả thẳng cũng tốt nhưng với lãi suất 0% trong 6 tháng thì thực ra vay sẽ có lợi hơn ạ. Anh/Chị giữ tiền mặt đầu tư chỗ khác 6 tháng kiếm thêm trong khi tiền xe đang được Bank A cho vay miễn lãi. Đây là chiến lược tài chính thông minh ạ."
+      },
+      {
+        "objection": "Xe hàng chưa về",
+        "response": "Dạ không sao ạ. Anh/Chị có thể đăng ký phê duyệt trước, khi xe về giải ngân ngay trong vòng 24 giờ. Phê duyệt trước có hiệu lực 3 tháng ạ."
+      }
+    ],
+    "closing": "Anh/Chị đang nhắm đến dòng xe nào? Em kết nối ngay với chuyên viên đại lý và cùng tư vấn gói vay phù hợp nhất cho mình ạ.",
+    "rating": 4.4,
+    "use_count": 44,
+    "tags": ["vay_mua_xe", "introduction", "Premium", "promotion"]
+  },
+  {
+    "script_id": "SCRIPT_023",
+    "objective": "follow_up_proposal",
+    "product": "quy_mo",
+    "segment": "VIP",
+    "stage": "Negotiation",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hôm trước mình trao đổi về quỹ đầu tư mở, em thấy Anh/Chị có quan tâm nhưng còn thắc mắc về rủi ro. Em gọi để giải đáp kỹ hơn ạ.",
+    "main_content": "Dạ em muốn chia sẻ thêm về chiến lược phân bổ tài sản ạ. Thay vì bỏ toàn bộ vào quỹ cổ phiếu, Anh/Chị có thể chọn danh mục hỗn hợp 60% trái phiếu ổn định và 40% cổ phiếu tăng trưởng. Lợi nhuận kỳ vọng khoảng 10-12%/năm với biến động thấp hơn nhiều. Đây là phương án cân bằng rủi ro rất được ưa chuộng ạ.",
+    "objection_handling": [
+      {
+        "objection": "Thị trường đang xấu",
+        "response": "Dạ thị trường xấu thực ra là thời điểm mua vào tốt ạ. Lịch sử thị trường chứng khoán Việt Nam cho thấy sau mỗi giai đoạn điều chỉnh đều phục hồi và tăng cao hơn. Đầu tư định kỳ lúc thị trường thấp sẽ mua được nhiều đơn vị quỹ hơn, khi thị trường phục hồi lợi nhuận càng cao ạ."
+      },
+      {
+        "objection": "Muốn xem thêm 6 tháng",
+        "response": "Dạ hoàn toàn được ạ. Nhưng cơ hội thì không chờ người ạ. Anh/Chị có thể bắt đầu với số tiền nhỏ 50-100 triệu để trải nghiệm và theo dõi thực tế trước khi tăng thêm. Không cần cam kết số lớn ngay ạ."
+      }
+    ],
+    "closing": "Dạ, em sẽ setup cho Anh/Chị một buổi họp trực tuyến với chuyên gia quản lý quỹ trình bày chiến lược và trả lời trực tiếp mọi câu hỏi nhé? Buổi họp chỉ 30 phút và rất thú vị ạ.",
+    "rating": 4.6,
+    "use_count": 17,
+    "tags": ["quy_mo", "follow_up", "VIP", "negotiation"]
+  },
+  {
+    "script_id": "SCRIPT_024",
+    "objective": "renewal_reminder",
+    "product": "bao_hiem_suc_khoe",
+    "segment": "Premium",
+    "stage": "Renewal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hợp đồng bảo hiểm sức khỏe của Anh/Chị sẽ hết hạn vào [ngày]. Em gọi để nhắc và hỗ trợ gia hạn hoặc nâng cấp gói nếu Anh/Chị muốn ạ.",
+    "main_content": "Nếu Anh/Chị gia hạn đúng hạn thì không cần khai báo sức khỏe lại và mọi quyền lợi được giữ nguyên ạ. Năm nay có thêm quyền lợi mới là bao gồm điều trị ngoại trú và khám sức khỏe định kỳ toàn diện không thêm phí nếu Anh/Chị chọn gói tương đương. Phí tăng nhẹ khoảng 5-8% do tuổi và chi phí y tế ạ.",
+    "objection_handling": [
+      {
+        "objection": "Phí năm nay tăng nhiều",
+        "response": "Dạ phí bảo hiểm sức khỏe tăng theo tuổi và chi phí y tế, đây là tiêu chuẩn toàn ngành ạ. Nếu đổi sang công ty khác sẽ phải khai báo lại sức khỏe và có thể bị loại trừ một số bệnh đã có sẵn. Gia hạn tại chỗ an toàn hơn và quyền lợi liên tục ạ."
+      },
+      {
+        "objection": "Năm vừa rồi không dùng",
+        "response": "Dạ bảo hiểm không dùng là điều rất may mắn ạ. Nhưng cũng như bình chữa cháy, mua để không dùng đến mới tốt. Năm tới quyền lợi mở rộng thêm ngoại trú nên cơ hội sử dụng cũng nhiều hơn ạ."
+      }
+    ],
+    "closing": "Dạ để tránh gián đoạn quyền lợi, Anh/Chị gia hạn trước [ngày] nhé ạ. Em sẽ gửi thông báo và hỗ trợ thanh toán phí online tiện nhất ạ.",
+    "rating": 4.5,
+    "use_count": 52,
+    "tags": ["bao_hiem_suc_khoe", "renewal", "Premium", "gia_han"]
+  },
+  {
+    "script_id": "SCRIPT_025",
+    "objective": "appointment_scheduling",
+    "product": "vay_mua_nha",
+    "segment": "Premium",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em được biết Anh/Chị đang tìm hiểu về mua nhà và muốn hẹn gặp để tư vấn chi tiết hơn về phương án tài chính ạ.",
+    "main_content": "Trong buổi tư vấn chúng ta sẽ phân tích khả năng vay dựa trên thu nhập và tài sản hiện tại, so sánh các gói vay và tính toán khoản góp hàng tháng phù hợp, đồng thời review các dự án nhà trong tầm giá đang mở bán tại khu vực Anh/Chị quan tâm. Tất cả hoàn toàn miễn phí và không có cam kết gì ạ.",
+    "objection_handling": [
+      {
+        "objection": "Chưa tìm được nhà ưng ý",
+        "response": "Dạ không cần có nhà cụ thể trước ạ. Thực ra nên biết mình vay được bao nhiêu trước, sau đó tìm nhà trong tầm đó sẽ hiệu quả hơn. Em có đối tác môi giới bất động sản tốt cũng có thể kết nối Anh/Chị ạ."
+      },
+      {
+        "objection": "Tự làm hồ sơ được",
+        "response": "Dạ Anh/Chị hoàn toàn có thể tự làm ạ. Nhưng gặp em giúp tiết kiệm thời gian vì em biết chính xác hồ sơ cần gì, cách trình bày thu nhập tốt nhất để được duyệt hạn mức cao nhất có thể. Nhiều khách hàng tự nộp bị duyệt thấp hơn em giúp 20-30% ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị có thể sắp xếp gặp em vào [ngày đề xuất] lúc [giờ] tại văn phòng Bank A hoặc quán cà phê gần nhà Anh/Chị cũng được ạ. Buổi tư vấn khoảng 45-60 phút thôi ạ.",
+    "rating": 4.3,
+    "use_count": 48,
+    "tags": ["vay_mua_nha", "appointment", "Premium", "tu_van"]
+  },
+  {
+    "script_id": "SCRIPT_026",
+    "objective": "follow_up_call",
+    "product": "bao_hiem_nhan_tho",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hôm trước em có gửi thông tin về bảo hiểm nhân thọ, Anh/Chị đã xem qua chưa ạ? Em muốn biết Anh/Chị có thắc mắc gì không ạ.",
+    "main_content": "Điểm em muốn nhấn mạnh là gói bảo hiểm nhân thọ kết hợp tiết kiệm rất phù hợp cho người có thu nhập trung bình vì vừa tích lũy dần vừa được bảo vệ. Chỉ cần [X triệu]/tháng là có thể bảo vệ tính mạng đến [Y tỷ] và tích lũy được số tiền đáng kể sau [Z năm] ạ.",
+    "objection_handling": [
+      {
+        "objection": "Thu nhập thấp không đủ tiền đóng",
+        "response": "Dạ gói nhỏ nhất chỉ [X triệu]/tháng thôi ạ, tương đương 1-2 ly cà phê mỗi ngày. Quan trọng là tạo được thói quen bảo vệ sớm, sau này thu nhập tăng có thể nâng gói dễ dàng ạ."
+      },
+      {
+        "objection": "Còn trẻ chưa cần lo",
+        "response": "Dạ mua khi còn trẻ thì phí rẻ nhất ạ. Ví dụ 25 tuổi mua phí bằng một nửa so với 35 tuổi cho cùng quyền lợi. Đây là khoản đầu tư sinh lời tốt nhất khi bắt đầu sớm ạ."
+      }
+    ],
+    "closing": "Dạ để Anh/Chị có quyết định đúng đắn nhất, em sẽ gửi thêm ví dụ minh họa cụ thể với các con số thực tế phù hợp thu nhập của mình nhé ạ?",
+    "rating": 4.0,
+    "use_count": 85,
+    "tags": ["bao_hiem_nhan_tho", "follow_up", "Mass", "lead"]
+  },
+  {
+    "script_id": "SCRIPT_027",
+    "objective": "product_introduction",
+    "product": "tiet_kiem_co_ky_han",
+    "segment": "VIP",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em muốn thông báo Bank A vừa ra sản phẩm tiết kiệm đặc biệt dành riêng cho khách hàng VIP với lãi suất cao hơn 0.3% so với thông thường ạ.",
+    "main_content": "Gói Tiết kiệm VIP Premium lãi suất 7.1%/năm kỳ hạn 12 tháng, gửi tối thiểu 500 triệu. Ngoài lãi suất cao hơn còn có ưu đãi tặng quà trị giá 5 triệu khi gửi lần đầu và ưu tiên queue riêng khi giao dịch tại chi nhánh ạ.",
+    "objection_handling": [
+      {
+        "objection": "Lãi suất đang có xu hướng giảm",
+        "response": "Dạ chính vì vậy gửi ngay lúc này để lock lãi suất cao trước khi điều chỉnh ạ. Kỳ hạn 12 tháng với lãi suất 7.1% cố định sẽ không bị ảnh hưởng dù thị trường biến động trong năm tới ạ."
+      },
+      {
+        "objection": "Muốn kỳ hạn ngắn hơn",
+        "response": "Dạ có thể chọn kỳ hạn 6 tháng lãi 6.9% hoặc 3 tháng lãi 6.5% ạ. Tuy nhiên kỳ hạn 12 tháng chênh lệch khá đáng kể, với 500 triệu thì tiền lãi hơn khoảng 3 triệu so với kỳ hạn ngắn ạ."
+      }
+    ],
+    "closing": "Dạ chương trình này chỉ áp dụng đến hết tháng nên Anh/Chị muốn tranh thủ thì em sẽ đặt lịch hẹn tại chi nhánh ngay hôm nay hoặc ngày mai nhé ạ?",
+    "rating": 4.7,
+    "use_count": 26,
+    "tags": ["tiet_kiem", "introduction", "VIP", "premium_product"]
+  },
+  {
+    "script_id": "SCRIPT_028",
+    "objective": "follow_up_proposal",
+    "product": "vay_tieu_dung",
+    "segment": "Mass",
+    "stage": "Proposal",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Hồ sơ vay tiêu dùng của Anh/Chị em đã nộp và đang chờ phê duyệt. Em gọi để cập nhật tình trạng và xem Anh/Chị cần bổ sung gì không ạ.",
+    "main_content": "Hồ sơ đang ở bước thẩm định thu nhập, dự kiến có kết quả trong [X ngày] làm việc ạ. Để đảm bảo phê duyệt nhanh nhất, Anh/Chị có thể bổ sung sao kê ngân hàng 6 tháng gần nhất nếu chưa có để chứng minh nguồn thu nhập đa dạng ạ.",
+    "objection_handling": [
+      {
+        "objection": "Sao lâu vậy",
+        "response": "Dạ quy trình thẩm định cần đảm bảo chính xác để Anh/Chị không bị ảnh hưởng bởi khoản vay không phù hợp ạ. Em đã request ưu tiên xử lý và thường rút ngắn được 1-2 ngày ạ."
+      },
+      {
+        "objection": "Cần tiền gấp",
+        "response": "Dạ em sẽ đẩy nhanh hồ sơ ạ. Đồng thời Anh/Chị có thể cân nhắc sản phẩm overdraft tài khoản nếu có nhu cầu ngay trong vài ngày tới, hạn mức nhỏ hơn nhưng giải quyết được nhu cầu cấp bách ạ."
+      }
+    ],
+    "closing": "Dạ em sẽ thông báo ngay khi có kết quả phê duyệt ạ. Trong thời gian chờ Anh/Chị có thắc mắc gì cứ nhắn tin em bất kỳ lúc nào ạ.",
+    "rating": 4.1,
+    "use_count": 77,
+    "tags": ["vay_tieu_dung", "follow_up", "Mass", "processing"]
+  },
+  {
+    "script_id": "SCRIPT_029",
+    "objective": "product_introduction",
+    "product": "vay_mua_nha",
+    "segment": "Premium",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em biết Anh/Chị đang cân nhắc nâng cấp nhà ở và Bank A đang có gói vay mua nhà cao cấp rất phù hợp ạ.",
+    "main_content": "Gói Premium Home Loan lãi suất 8.2%/năm cố định 36 tháng, hạn mức đến 10 tỷ, thủ tục ưu tiên nhanh chỉ 3-5 ngày làm việc. Đặc biệt với khách hàng Premium của Bank A sẽ được miễn phí thẩm định, miễn phí bảo hiểm tài sản năm đầu và được hỗ trợ pháp lý từ A đến Z ạ.",
+    "objection_handling": [
+      {
+        "objection": "Muốn vay nhiều hơn hạn mức",
+        "response": "Dạ hạn mức phụ thuộc vào thu nhập và tài sản bảo đảm ạ. Anh/Chị có thể bổ sung tài sản bảo đảm phụ hoặc có người đồng vay để tăng hạn mức. Em sẽ phân tích cụ thể theo profile của Anh/Chị ạ."
+      },
+      {
+        "objection": "Đang chờ quy hoạch mới",
+        "response": "Dạ hoàn toàn hợp lý khi chờ thêm thông tin quy hoạch ạ. Trong thời gian đó Anh/Chị có thể đăng ký phê duyệt trước để khi tìm được nhà phù hợp là giải quyết được ngay ạ."
+      }
+    ],
+    "closing": "Dạ Anh/Chị có thể cho em biết ngân sách và khu vực đang nhắm đến để em tư vấn phương án cụ thể nhất không ạ?",
+    "rating": 4.5,
+    "use_count": 38,
+    "tags": ["vay_mua_nha", "introduction", "Premium", "premium_product"]
+  },
+  {
+    "script_id": "SCRIPT_030",
+    "objective": "follow_up_call",
+    "product": "vay_kinh_doanh",
+    "segment": "SME",
+    "stage": "Closed_Won",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Khoản vay kinh doanh của công ty đã giải ngân được 3 tháng rồi. Em gọi để hỏi thăm tình hình kinh doanh và xem có cần hỗ trợ gì thêm không ạ.",
+    "main_content": "Dạ em muốn cập nhật một số thông tin hữu ích: hạn mức tín dụng của công ty có thể tăng thêm nếu doanh thu 6 tháng tốt hơn kế hoạch ban đầu, Bank A cũng có dịch vụ quản lý dòng tiền doanh nghiệp giúp tối ưu lãi suất và phí dịch vụ ngân hàng, ngoài ra có thể xem xét bảo lãnh ngân hàng nếu công ty cần mở rộng quan hệ với đối tác ạ.",
+    "objection_handling": [
+      {
+        "objection": "Đang ổn, chưa cần gì",
+        "response": "Dạ tốt quá ạ. Em chỉ muốn chắc chắn Anh/Chị biết các dịch vụ hỗ trợ khi cần ạ. Nếu sau này cần thêm vốn hoặc dịch vụ tài chính, cứ liên hệ em trước nhé, em sẽ ưu tiên hỗ trợ ạ."
+      }
+    ],
+    "closing": "Dạ cảm ơn Anh/Chị đã tin tưởng Bank A. Em sẽ định kỳ liên hệ cập nhật thông tin hữu ích và hỗ trợ Anh/Chị khi cần ạ.",
+    "rating": 4.5,
+    "use_count": 43,
+    "tags": ["vay_kinh_doanh", "after_sales", "SME", "relationship"]
+  },
+  {
+    "script_id": "SCRIPT_031",
+    "objective": "product_introduction",
+    "product": "bao_hiem_nhan_tho",
+    "segment": "Mass",
+    "stage": "Lead",
+    "opening": "Xin chào Anh/Chị [Tên], em là [Tên RM] từ Bank A. Em muốn giới thiệu gói bảo vệ tài chính gia đình, một sản phẩm rất phù hợp cho những người làm trụ cột kinh tế như Anh/Chị ạ.",
+    "main_content": "Gói bảo hiểm kỳ hạn 20 năm chỉ đóng phí 10 năm, quyền lợi tử vong và thương tật toàn bộ vĩnh viễn lên đến [X tỷ]. Đây là sản phẩm thuần bảo vệ nên phí rất thấp, chỉ [Y triệu]/tháng. Nếu không may có chuyện, gia đình có khoản tiền đảm bảo cuộc sống và học hành cho con cái ạ.",
+    "objection_handling": [
+      {
+        "objection": "Sẽ không có chuyện gì xảy ra",
+        "response": "Dạ em cũng mong vậy ạ. Nhưng bảo hiểm là mua cho trường hợp không may, không ai muốn dùng đến nhưng khi cần thì vô cùng quan trọng. Phí chỉ bằng một bữa ăn nhà hàng mỗi tháng thôi ạ."
+      },
+      {
+        "objection": "Gia đình không phụ thuộc vào mình",
+        "response": "Dạ dù gia đình có tự lo được nhưng nếu có chuyện xảy ra trong lúc con còn nhỏ hay đang học đại học thì vẫn cần có quỹ dự phòng ạ. Khoản bảo hiểm giúp duy trì chất lượng cuộc sống mà không cần thay đổi kế hoạch ạ."
+      }
+    ],
+    "closing": "Dạ em sẽ gửi bảng tính phí theo độ tuổi và minh họa quyền lợi cụ thể để Anh/Chị tham khảo nhé? Không có cam kết gì ạ.",
+    "rating": 4.1,
+    "use_count": 91,
+    "tags": ["bao_hiem_nhan_tho", "introduction", "Mass", "ki_han"]
+  }
+]

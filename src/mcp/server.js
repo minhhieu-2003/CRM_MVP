@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -43,17 +44,17 @@ server.tool(
   {},
   async () => {
     audit("crm_list_customers", ["GET /customers"]);
-    return ok(listCustomers());
+    return ok(await listCustomers());
   }
 );
 
 server.tool(
   "crm_get_customer",
-  "Lấy hồ sơ khách hàng theo tên (khớp một phần, không phân biệt hoa thường).",
+  "Lấy hồ sơ khách hàng theo tên, hỗ trợ có dấu và không dấu.",
   { name: z.string().describe("Tên khách hàng cần tra cứu") },
   async ({ name }) => {
     audit("crm_get_customer", ["GET /customers"]);
-    const customer = getCustomerByName(name);
+    const customer = await getCustomerByName(name);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng "${name}".` });
     return ok(customer);
   }
@@ -61,11 +62,11 @@ server.tool(
 
 server.tool(
   "crm_customers_due",
-  "Lấy khách hàng có tiết kiệm đến hạn trong N ngày tới (mặc định 7).",
+  "Lấy khách hàng có tiết kiệm đến hạn trong N ngày tới.",
   { daysAhead: z.number().int().positive().default(7) },
   async ({ daysAhead }) => {
     audit("crm_customers_due", ["GET /customers"]);
-    return ok(getMaturityCustomers(daysAhead));
+    return ok(await getMaturityCustomers(daysAhead));
   }
 );
 
@@ -75,7 +76,7 @@ server.tool(
   { customerId: z.string().optional() },
   async ({ customerId }) => {
     audit("crm_list_opportunities", ["GET /opportunities"]);
-    return ok(customerId ? getCustomerOpportunities(customerId) : listOpportunities());
+    return ok(customerId ? await getCustomerOpportunities(customerId) : await listOpportunities());
   }
 );
 
@@ -85,7 +86,7 @@ server.tool(
   { customerId: z.string().optional() },
   async ({ customerId }) => {
     audit("crm_list_interactions", ["GET /interactions"]);
-    return ok(customerId ? getCustomerInteractions(customerId) : listInteractions());
+    return ok(customerId ? await getCustomerInteractions(customerId) : await listInteractions());
   }
 );
 
@@ -95,45 +96,45 @@ server.tool(
   {},
   async () => {
     audit("crm_list_campaigns", ["GET /campaigns"]);
-    return ok(listCampaigns());
+    return ok(await listCampaigns());
   }
 );
 
 server.tool(
   "crm_draft_email",
-  "Soạn email follow-up cá nhân hóa cho một khách hàng (theo id).",
+  "Soạn email follow-up cá nhân hóa cho một khách hàng.",
   {
     customerId: z.string().describe("Mã khách hàng, ví dụ C001"),
     suggestion: z.string().optional().describe("Gợi ý sản phẩm chèn vào email")
   },
   async ({ customerId, suggestion }) => {
     audit("crm_draft_email", ["GET /customers", "POST /draft-email"]);
-    const customer = getCustomerById(customerId);
+    const customer = await getCustomerById(customerId);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng ${customerId}.` });
     const tip =
       suggestion ??
       (customer.segment === "Affluent"
         ? "Em đề xuất thêm gói bảo hiểm liên kết vay mua nhà để tối ưu bảo vệ tài chính."
         : "Em đề xuất tái tục tự động kỳ hạn linh hoạt để tối ưu dòng tiền.");
-    return ok(draftEmailForCustomer(customer, tip));
+    return ok(await draftEmailForCustomer(customer, tip));
   }
 );
 
 server.tool(
   "crm_call_script",
-  "Tạo call script cá nhân hóa cho một khách hàng (theo id).",
+  "Tạo call script cá nhân hóa cho một khách hàng.",
   {
     customerId: z.string().describe("Mã khách hàng, ví dụ C001"),
     suggestion: z.string().optional()
   },
   async ({ customerId, suggestion }) => {
     audit("crm_call_script", ["GET /customers", "POST /call-script"]);
-    const customer = getCustomerById(customerId);
+    const customer = await getCustomerById(customerId);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng ${customerId}.` });
     const tip =
       suggestion ??
       "Ngoài ra, em có thể gửi đề xuất bảo hiểm/lãi suất ưu đãi ngay sau cuộc gọi.";
-    return ok({ script: draftCallScript(customer, tip) });
+    return ok({ script: await draftCallScript(customer, tip) });
   }
 );
 
