@@ -144,16 +144,22 @@
     "id": "TC18",
     "type": "crm_endpoint",
     "endpoint": "customers",
-    "expectedCountAtLeast": 20
+    "expectedCountAtLeast": 10000
   },
   {
     "id": "TC19",
     "type": "crm_endpoint",
     "endpoint": "opportunities",
-    "expectedCountAtLeast": 16
+    "expectedCountAtLeast": 2000
   },
   {
     "id": "TC20",
+    "type": "crm_endpoint",
+    "endpoint": "interactions",
+    "expectedCountAtLeast": 5000
+  },
+  {
+    "id": "TC20_campaigns",
     "type": "crm_endpoint",
     "endpoint": "campaigns",
     "expectedCountAtLeast": 5

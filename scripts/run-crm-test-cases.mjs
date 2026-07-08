@@ -6,6 +6,7 @@ import {
   getCustomerById,
   listCampaigns,
   listCustomers,
+  listInteractions,
   listOpportunities
 } from "../src/services/crmService.js";
 
@@ -16,6 +17,7 @@ const testCases = JSON.parse(
 const endpointMap = {
   customers: listCustomers,
   opportunities: listOpportunities,
+  interactions: listInteractions,
   campaigns: listCampaigns
 };
 

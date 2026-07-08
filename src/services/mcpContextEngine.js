@@ -29,7 +29,7 @@ async function detectCustomerName(message) {
   const normalized = normalizeVietnamese(message);
   const customers = await listCustomers();
   const mentionedCustomer = customers.find((customer) =>
-    normalized.includes(normalizeVietnamese(customer.name))
+    normalized.includes(customer.normalizedName)
   );
   if (mentionedCustomer) return mentionedCustomer.name;
 
@@ -141,20 +141,28 @@ async function processConversation({ conversationId, message }) {
 
   if (isTodayCareIntent) {
     const dueCustomers = await getMaturityCustomers(7);
+    const maxItems = 15;
+    const displayedCustomers = dueCustomers.slice(0, maxItems);
+
     state.currentModule = "customer-profile";
-    state.focusedCustomers = dueCustomers.map((item) => item.id);
+    state.focusedCustomers = displayedCustomers.map((item) => item.id);
     state.lastIntent = "today-care-list";
 
-    const lines = dueCustomers.map(
+    const lines = displayedCustomers.map(
       (item, index) =>
         `${index + 1}. ${item.name} - ${item.savingsProduct} - ${formatVnd(item.savingsAmountVnd)} - đến hạn ${item.maturityDate}`
     );
 
+    let summaryText;
+    if (dueCustomers.length > 0) {
+      const displayNote = dueCustomers.length > maxItems ? ` (hiển thị ${maxItems} khách hàng ưu tiên nhất)` : "";
+      summaryText = `Hôm nay em đề xuất RM ưu tiên tiếp/chăm sóc ${dueCustomers.length} khách hàng có tiết kiệm sắp đến hạn trong 7 ngày tới${displayNote}:\n${lines.join("\n")}\n\nAnh/chị có thể nhắn "soạn email cho nhóm này" hoặc "kịch bản gọi" để em chuẩn bị nội dung chăm sóc.`;
+    } else {
+      summaryText = "Hôm nay chưa có khách hàng nào cần ưu tiên tiếp/chăm sóc theo dữ liệu CRM sandbox.";
+    }
+
     return {
-      reply:
-        dueCustomers.length > 0
-          ? `Hôm nay em đề xuất RM ưu tiên tiếp/chăm sóc ${dueCustomers.length} khách hàng có tiết kiệm sắp đến hạn trong 7 ngày tới:\n${lines.join("\n")}\n\nAnh/chị có thể nhắn "soạn email cho nhóm này" hoặc "kịch bản gọi" để em chuẩn bị nội dung chăm sóc.`
-          : "Hôm nay chưa có khách hàng nào cần ưu tiên tiếp/chăm sóc theo dữ liệu CRM sandbox.",
+      reply: summaryText,
       sources: sourceTrace(["GET /customers"]),
       context: state
     };
@@ -162,20 +170,28 @@ async function processConversation({ conversationId, message }) {
 
   if (isReminderIntent) {
     const dueCustomers = await getMaturityCustomers(7);
+    const maxItems = 15;
+    const displayedCustomers = dueCustomers.slice(0, maxItems);
+
     state.currentModule = "customer-profile";
-    state.focusedCustomers = dueCustomers.map((item) => item.id);
+    state.focusedCustomers = displayedCustomers.map((item) => item.id);
     state.lastIntent = "maturity-reminder";
 
-    const lines = dueCustomers.map(
+    const lines = displayedCustomers.map(
       (item, index) =>
         `${index + 1}. ${item.name} - ${item.savingsProduct} - ${formatVnd(item.savingsAmountVnd)} - đến hạn ${item.maturityDate}`
     );
 
+    let summaryText;
+    if (dueCustomers.length > 0) {
+      const displayNote = dueCustomers.length > maxItems ? ` (hiển thị ${maxItems} khách hàng)` : "";
+      summaryText = `Em đã lọc ${dueCustomers.length} khách hàng có tiết kiệm đến hạn trong 7 ngày tới${displayNote}:\n${lines.join("\n")}\n\nAnh/chị có muốn em soạn email nhắc hạn cho danh sách này không?`;
+    } else {
+      summaryText = "Hiện không có khách hàng nào đến hạn tiết kiệm trong 7 ngày tới.";
+    }
+
     return {
-      reply:
-        dueCustomers.length > 0
-          ? `Em đã lọc ${dueCustomers.length} khách hàng có tiết kiệm đến hạn trong 7 ngày tới:\n${lines.join("\n")}\n\nAnh/chị có muốn em soạn email nhắc hạn cho danh sách này không?`
-          : "Hiện không có khách hàng nào đến hạn tiết kiệm trong 7 ngày tới.",
+      reply: summaryText,
       sources: sourceTrace(["GET /customers"]),
       context: state
     };

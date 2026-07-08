@@ -6,18 +6,29 @@ let emailTemplates = [];
 let callScripts = [];
 try {
   emailTemplates = readJson("../data/mock/email_templates.json");
-} catch (err) {
-  console.error(
-    "Warning: Failed to load email templates from skills/email_templates.json. Using fallback empty list."
-  );
+} catch {
+  // ignore
 }
 try {
   callScripts = readJson("../data/mock/call_scripts.json");
-} catch (err) {
-  console.error(
-    "Warning: Failed to load call scripts from skills/call_scripts.json. Using fallback empty list."
-  );
+} catch {
+  // ignore
 }
+
+let largeCustomers = [];
+let largeOpportunities = [];
+let largeInteractions = [];
+try {
+  largeCustomers = readJson("../data/mock/large_customers.json");
+  largeOpportunities = readJson("../data/mock/large_opportunities.json");
+  largeInteractions = readJson("../data/mock/large_interactions.json");
+} catch {
+  // ignore
+}
+
+let cachedCustomers = null;
+let cachedOpportunities = null;
+let cachedInteractions = null;
 const useSandboxApi = process.env.CRM_USE_SANDBOX_API === "true";
 const fallbackToMock = process.env.CRM_FALLBACK_TO_MOCK !== "false";
 
@@ -143,15 +154,29 @@ function daysBetween(fromDateValue, toDateValue) {
 }
 
 export async function listCustomers() {
-  return withFallback(() => crmRequest("/customers"), customers);
+  if (cachedCustomers) return cachedCustomers;
+  const data = await withFallback(() => crmRequest("/customers"), customers);
+  const result = data === customers && largeCustomers.length > 0 ? [...customers, ...largeCustomers] : data;
+
+  cachedCustomers = result.map(c => {
+    if (!c.normalizedName) c.normalizedName = normalizeVietnamese(c.name);
+    return c;
+  });
+  return cachedCustomers;
 }
 
 export async function listOpportunities() {
-  return withFallback(() => crmRequest("/opportunities"), opportunities);
+  if (cachedOpportunities) return cachedOpportunities;
+  const data = await withFallback(() => crmRequest("/opportunities"), opportunities);
+  cachedOpportunities = data === opportunities && largeOpportunities.length > 0 ? [...opportunities, ...largeOpportunities] : data;
+  return cachedOpportunities;
 }
 
 export async function listInteractions() {
-  return withFallback(() => crmRequest("/interactions"), interactions);
+  if (cachedInteractions) return cachedInteractions;
+  const data = await withFallback(() => crmRequest("/interactions"), interactions);
+  cachedInteractions = data === interactions && largeInteractions.length > 0 ? [...interactions, ...largeInteractions] : data;
+  return cachedInteractions;
 }
 
 export async function listCampaigns() {
@@ -162,7 +187,7 @@ export async function getCustomerByName(name) {
   const normalizedName = normalizeVietnamese(name);
   const allCustomers = await listCustomers();
   return (
-    allCustomers.find((item) => normalizeVietnamese(item.name).includes(normalizedName)) ?? null
+    allCustomers.find((item) => item.normalizedName.includes(normalizedName)) ?? null
   );
 }
 
