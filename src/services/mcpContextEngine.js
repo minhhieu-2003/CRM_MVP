@@ -76,6 +76,7 @@ export async function routeConversation({ conversationId, message }) {
   const state = getState(conversationId);
   const normalized = normalizeVietnamese(message);
   const compact = normalized.replace(/\s+/g, " ").trim();
+  const askedName = await detectCustomerName(message);
 
   const isReminderIntent =
     compact === "1" ||
@@ -88,6 +89,13 @@ export async function routeConversation({ conversationId, message }) {
     ((hasAny(normalized, ["soan", "draft"]) &&
       hasAny(normalized, ["email", "khach hang", "tiep", "follow up"])) ||
       normalized.includes("soan tiep"));
+
+  const isOpportunityIntent =
+    !askedName &&
+    (compact === "3" ||
+      normalized.includes("co hoi") ||
+      normalized.includes("opportunity") ||
+      normalized.includes("goi y"));
 
   const isCampaignIntent =
     compact === "4" || normalized.includes("chien dich") || normalized.includes("campaign");
@@ -201,6 +209,31 @@ export async function routeConversation({ conversationId, message }) {
     };
   }
 
+  if (isOpportunityIntent) {
+    state.currentModule = "opportunity";
+    state.lastIntent = "suggest_opportunity";
+    if (state.focusedCustomers.length > 0) {
+      const customerId = state.focusedCustomers[0];
+      const opps = await getCustomerOpportunities(customerId);
+      const list = opps.map((o) => {
+        const name = o.product || o.name || "";
+        const val = o.estimatedValueVnd !== undefined ? formatVnd(o.estimatedValueVnd) : (o.valueVnd ? `${o.valueVnd.toLocaleString("vi-VN")}đ` : "");
+        return `- ${name}: ${val} (Độ ấm: ${o.stage})`;
+      }).join("\n");
+      return {
+        reply: `Cơ hội kinh doanh cho khách hàng:\n${list || "Chưa ghi nhận cơ hội mới."}`,
+        sources: sourceTrace(["GET /opportunities"]),
+        context: state
+      };
+    } else {
+      return {
+        reply: "RM muốn gợi ý cơ hội cho khách hàng nào? Vui lòng cung cấp tên khách hàng để em tra cứu.",
+        sources: [],
+        context: state
+      };
+    }
+  }
+
   if (isCampaignIntent) {
     const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
     state.currentModule = "campaign";
@@ -215,7 +248,6 @@ export async function routeConversation({ conversationId, message }) {
     };
   }
 
-  const askedName = await detectCustomerName(message);
   if (askedName) {
     const customer = await getCustomerByName(askedName);
     if (!customer) {

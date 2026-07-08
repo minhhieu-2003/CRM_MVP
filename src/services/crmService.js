@@ -7,8 +7,18 @@ import {
 } from "./crmData.js";
 import { normalizeVietnamese } from "./textUtils.js";
 
-const emailTemplates = readJson("../data/mock/email_templates.json");
-const callScripts = readJson("../data/mock/call_scripts.json");
+let emailTemplates = [];
+let callScripts = [];
+try {
+  emailTemplates = readJson("../data/mock/email_templates.json");
+} catch (err) {
+  console.error("Warning: Failed to load email templates from skills/email_templates.json. Using fallback empty list.");
+}
+try {
+  callScripts = readJson("../data/mock/call_scripts.json");
+} catch (err) {
+  console.error("Warning: Failed to load call scripts from skills/call_scripts.json. Using fallback empty list.");
+}
 const useSandboxApi = process.env.CRM_USE_SANDBOX_API === "true";
 const fallbackToMock = process.env.CRM_FALLBACK_TO_MOCK !== "false";
 

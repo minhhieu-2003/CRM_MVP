@@ -1,0 +1,172 @@
+<mxfile host="Electron">
+  <diagram name="CRM_MVP Architecture Diagram" id="d">
+    <mxGraphModel dx="2540" dy="1528" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1799" pageHeight="808" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="root" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="" vertex="1">
+          <mxGeometry height="678" width="1719" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="client_ui" parent="root" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FB;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="Client UI (Browser)" vertex="1">
+          <mxGeometry height="646" width="261" x="16" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="index_html" parent="client_ui" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="index.html (HTML5 User Interface)" vertex="1">
+          <mxGeometry height="62" width="173" x="44" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="app_js" parent="client_ui" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="app.js (Fetch API &amp; Event handlers)" vertex="1">
+          <mxGeometry height="62" width="213" x="24" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="styles_css" parent="client_ui" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="styles.css (CSS Layouts &amp; Styles)" vertex="1">
+          <mxGeometry height="62" width="173" x="44" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="api_express" parent="root" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FB;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="API Express Gateway" vertex="1">
+          <mxGeometry height="646" width="248" x="341" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="express_server" parent="api_express" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.traditional_server;" value="server.js (Express Server)" vertex="1">
+          <mxGeometry height="48" width="48" x="100" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="chat_endpoint" parent="api_express" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="POST /api/chat (Agent Router Entry)" vertex="1">
+          <mxGeometry height="62" width="160" x="44" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="crm_endpoints" parent="api_express" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="GET /api/crm/* (Direct CRM Queries)" vertex="1">
+          <mxGeometry height="62" width="160" x="44" y="236" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp_engine" parent="root" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FB;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="MCP Context Engine Layer" vertex="1">
+          <mxGeometry height="646" width="413" x="653" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_service" parent="mcp_engine" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="agentService.js (Turn Orchestrator)" vertex="1">
+          <mxGeometry height="62" width="153" x="130" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="intent_engine" parent="mcp_engine" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;strokeColor=#879196;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#879196;dashed=0;strokeColor=#8C4FFF;" value="mcpContextEngine.js (Rule-based Intent Matching)" vertex="1">
+          <mxGeometry height="220" width="365" x="24" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" parent="intent_engine" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="Intent Rules &amp; Shortcut Routing (1: Reminder, 2: Email, 3: Opps, 4: Campaign)" vertex="1">
+          <mxGeometry height="62" width="260" x="53" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="context_store" parent="intent_engine" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="Context Store (focusedCustomers, lastIntent)" vertex="1">
+          <mxGeometry height="62" width="226" x="70" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="router_group" parent="mcp_engine" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_subnet;strokeColor=#879196;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#879196;dashed=0;fillColor=light-dark(#eef5e6,#1a2410);strokeColor=#7AA116;" value="router.js (Agent Registry)" vertex="1">
+          <mxGeometry height="240" width="220" x="97" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="smalltalk_agent" parent="router_group" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="smalltalk-agent" vertex="1">
+          <mxGeometry height="44" width="127" x="47" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="capability_agent" parent="router_group" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="capability-agent" vertex="1">
+          <mxGeometry height="44" width="134" x="43" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_fallback_agent" parent="router_group" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="llm-fallback-agent" vertex="1">
+          <mxGeometry height="44" width="147" x="37" y="172" as="geometry" />
+        </mxCell>
+        <mxCell id="crm_services" parent="root" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FB;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="CRM Services Layer" vertex="1">
+          <mxGeometry height="646" width="261" x="1130" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="crm_service_js" parent="crm_services" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#01A88D;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.server_migration_service;" value="crmService.js (Drafts &amp; Queries)" vertex="1">
+          <mxGeometry height="48" width="48" x="107" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="crm_configs" parent="crm_services" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_subnet;strokeColor=#879196;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#879196;dashed=0;fillColor=light-dark(#eef5e6,#1a2410);strokeColor=#7AA116;" value="Local Configs &amp; Templates" vertex="1">
+          <mxGeometry height="220" width="213" x="24" y="162" as="geometry" />
+        </mxCell>
+        <mxCell id="email_templates" parent="crm_configs" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="email_templates.json (Email Templates)" vertex="1">
+          <mxGeometry height="62" width="160" x="27" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="call_scripts" parent="crm_configs" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=0;verticalAlign=middle;" value="call_scripts.json (Call Scripts)" vertex="1">
+          <mxGeometry height="62" width="140" x="37" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="storage_layer" parent="root" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F8FB;strokeColor=#5A6B7B;fontColor=#1A1A1A;fontSize=11;fontStyle=1;verticalAlign=top;" value="Database &amp; Logger Layer" vertex="1">
+          <mxGeometry height="646" width="248" x="1455" y="16" as="geometry" />
+        </mxCell>
+        <mxCell id="crm_db" parent="storage_layer" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.database;" value="crmData.js (Mock DB Sandbox)" vertex="1">
+          <mxGeometry height="48" width="48" x="100" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="audit_log" parent="storage_layer" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.fsx_for_windows_file_server;" value="audit.log (Audit Logs)" vertex="1">
+          <mxGeometry height="48" width="48" x="100" y="166" as="geometry" />
+        </mxCell>
+        <mxCell id="__title" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=14;fontColor=light-dark(#232F3E,#E8E8E8);" value="CRM_MVP Architecture Diagram (Generated via drawio-ai-kit)" vertex="1">
+          <mxGeometry height="30" width="1799" y="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ed1" edge="1" parent="1" source="app_js" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.333;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="chat_endpoint" value="REST (JSON)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="357" y="255" />
+              <mxPoint x="357" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed2" edge="1" parent="1" source="app_js" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.667;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="crm_endpoints" value="REST (JSON)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="341" y="275" />
+              <mxPoint x="341" y="363" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed3" edge="1" parent="1" source="chat_endpoint" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="agent_service" value="Invoke agent turn">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="645" y="285" />
+              <mxPoint x="645" y="187" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed4" edge="1" parent="1" source="crm_endpoints" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.667;entryDx=0;entryDy=0;" target="crm_service_js" value="Direct query">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="661" y="363" />
+              <mxPoint x="661" y="149" />
+              <mxPoint x="1146" y="149" />
+              <mxPoint x="1146" y="188" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed5" edge="1" parent="1" source="agent_service" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="intent_engine" value="Process &amp; route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ed6" edge="1" parent="1" source="intent_engine" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="router_group" value="Fallback dispatch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ed7" edge="1" parent="1" source="intent_engine" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.333;entryDx=0;entryDy=0;" target="crm_service_js" value="Service Query">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1114" y="348" />
+              <mxPoint x="1114" y="172" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed8" edge="1" parent="1" source="agent_service" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;dashed=1;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="audit_log" value="Write audit logs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1146" y="187" />
+              <mxPoint x="1146" y="286" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed9" edge="1" parent="1" source="llm_fallback_agent" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" target="crm_service_js" value="Context retrieval">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1130" y="672" />
+              <mxPoint x="1130" y="228" />
+              <mxPoint x="1289" y="228" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ed10" edge="1" parent="1" source="crm_service_js" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;flowAnimation=1;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="crm_db" value="Query Database">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ed11" edge="1" parent="1" source="crm_service_js" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="email_templates" value="Load templates">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ed12" edge="1" parent="1" source="crm_service_js" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;jettySize=auto;orthogonalLoop=1;fontSize=10;fontColor=light-dark(#1B2733,#CFE0F0);strokeColor=light-dark(#2D6A9F,#5B9BD5);strokeWidth=2;labelBackgroundColor=light-dark(#FFFFFF,#0B0F14);exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="call_scripts" value="Load scripts">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1349" y="192" />
+              <mxPoint x="1349" y="311" />
+              <mxPoint x="1431" y="311" />
+              <mxPoint x="1431" y="423" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
