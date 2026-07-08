@@ -1,0 +1,25 @@
+node_modules
+package-lock.json
+logs
+evidence
+.vercel
+.firebase
+firebase-debug.log
+docs/*.drawio
+docs/.$*
+
+# Legacy project files are not normalized yet. Phase 1 only gates new quality/test
+# harness files to avoid a repo-wide formatting-only diff.
+.agents
+.github
+docs
+public
+src
+skills
+AGENTS.md
+ORIGINAL_REQUEST.md
+README.md
+RULES.md
+firebase.json
+mcp.config.json
+scripts/generate-architecture.mjs

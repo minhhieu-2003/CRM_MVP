@@ -1,0 +1,4 @@
+interface:
+  display_name: "Report Git Issues"
+  short_description: "Turn review findings into GitHub issues or local issue drafts."
+  default_prompt: "Report the latest review findings as GitHub issues."

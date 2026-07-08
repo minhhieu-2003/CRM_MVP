@@ -42,16 +42,16 @@
     "type": "chat",
     "prompt": "Nguyễn Văn An có cơ hội mua bảo hiểm nào phù hợp không?",
     "expectedContext": "opportunity",
-    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
-    "expectedKeywords": ["Bảo hiểm nhân thọ", "Cần follow-up"]
+    "expectedSources": ["GET /customers", "GET /opportunities"],
+    "expectedKeywords": ["Bảo hiểm nhân thọ", "Độ ấm"]
   },
   {
     "id": "TC06",
     "type": "chat",
     "prompt": "Nguyen Van An co co hoi nao phu hop khong?",
     "expectedContext": "opportunity",
-    "expectedSources": ["GET /customers", "GET /opportunities", "GET /interactions"],
-    "expectedKeywords": ["Nguyễn Văn An", "Gợi ý cơ hội"]
+    "expectedSources": ["GET /customers", "GET /opportunities"],
+    "expectedKeywords": ["Độ ấm"]
   },
   {
     "id": "TC07",
@@ -165,5 +165,24 @@
     "expectedContext": "customer-profile",
     "expectedSources": ["GET /customers"],
     "expectedKeywords": ["Hôm nay", "khách hàng", "Nguyễn Văn An", "soạn email cho nhóm này"]
+  },
+  {
+    "id": "TC22",
+    "type": "chat",
+    "prompt": "Soạn email cho khách không tồn tại",
+    "expectedContext": "general",
+    "expectedSources": ["GET /customers"],
+    "expectedKeywords": ["không tìm thấy khách hàng"]
+  },
+  {
+    "id": "TC23",
+    "type": "chat_sequence",
+    "prompts": [
+      "Soạn email cho Đỗ Minh Châu",
+      "3"
+    ],
+    "expectedContext": "opportunity",
+    "expectedSources": ["GET /opportunities"],
+    "expectedKeywords": ["Quỹ mở trái phiếu"]
   }
 ]

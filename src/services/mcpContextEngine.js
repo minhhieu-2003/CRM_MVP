@@ -34,14 +34,7 @@ async function detectCustomerName(message) {
   if (mentionedCustomer) return mentionedCustomer.name;
 
   if (
-    hasAny(normalized, [
-      "bao nhieu",
-      "liet ke",
-      "danh sach",
-      "hom nay",
-      "tiep khach",
-      "cham soc"
-    ])
+    hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "hom nay", "tiep khach", "cham soc"])
   ) {
     return null;
   }
@@ -72,7 +65,49 @@ function renewalSuggestion(customer) {
   return "Em đề xuất tái tục tự động kỳ hạn linh hoạt để tối ưu dòng tiền.";
 }
 
-export async function routeConversation({ conversationId, message }) {
+async function resolveTargetCustomers({ askedName, state, fallbackDue }) {
+  if (askedName) {
+    const customer = await getCustomerByName(askedName);
+    if (customer) {
+      if (!state.focusedCustomers.includes(customer.id)) {
+        state.focusedCustomers = [customer.id];
+      }
+      return [customer];
+    }
+    return { notFound: true, name: askedName };
+  }
+  if (state.focusedCustomers.length > 0) {
+    const candidates = await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id)));
+    const valid = candidates.filter(Boolean);
+    if (valid.length > 0) return valid;
+  }
+  if (fallbackDue) {
+    return await getMaturityCustomers(7);
+  }
+  return [];
+}
+
+export async function routeConversation(payload) {
+  const result = await processConversation(payload);
+
+  if (result.sources) {
+    const uniqueSources = new Map();
+    for (const source of result.sources) {
+      if (!uniqueSources.has(source.endpoint)) {
+        uniqueSources.set(source.endpoint, source);
+      }
+    }
+    result.sources = Array.from(uniqueSources.values());
+  }
+
+  if (result.context) {
+    result.context = JSON.parse(JSON.stringify(result.context));
+  }
+
+  return result;
+}
+
+async function processConversation({ conversationId, message }) {
   const state = getState(conversationId);
   const normalized = normalizeVietnamese(message);
   const compact = normalized.replace(/\s+/g, " ").trim();
@@ -86,16 +121,15 @@ export async function routeConversation({ conversationId, message }) {
 
   const isEmailIntent =
     compact === "2" ||
-    ((hasAny(normalized, ["soan", "draft"]) &&
+    (hasAny(normalized, ["soan", "draft"]) &&
       hasAny(normalized, ["email", "khach hang", "tiep", "follow up"])) ||
-      normalized.includes("soan tiep"));
+    normalized.includes("soan tiep");
 
   const isOpportunityIntent =
-    !askedName &&
-    (compact === "3" ||
-      normalized.includes("co hoi") ||
-      normalized.includes("opportunity") ||
-      normalized.includes("goi y"));
+    compact === "3" ||
+    normalized.includes("co hoi") ||
+    normalized.includes("opportunity") ||
+    normalized.includes("goi y");
 
   const isCampaignIntent =
     compact === "4" || normalized.includes("chien dich") || normalized.includes("campaign");
@@ -148,50 +182,66 @@ export async function routeConversation({ conversationId, message }) {
   }
 
   if (isEmailIntent) {
-    state.currentModule = "interaction";
-    state.lastIntent = "email-draft";
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: true });
 
-    const candidates =
-      state.focusedCustomers.length > 0
-        ? (await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id)))).filter(Boolean)
-        : [];
-
-    const targets = candidates.length > 0 ? candidates : await getMaturityCustomers(7);
-
-    if (targets.length === 0) {
+    if (targets.notFound) {
       return {
-        reply: "Em chưa có danh sách khách hàng mục tiêu. Anh/chị hãy yêu cầu nhắc đến hạn hoặc chỉ định tên khách hàng cụ thể.",
+        reply: `Em không tìm thấy khách hàng "${targets.name}" trong CRM sandbox.`,
         sources: sourceTrace(["GET /customers"]),
         context: state
       };
     }
 
+    state.currentModule = "interaction";
+    state.lastIntent = "email-draft";
+
+    if (targets.length === 0) {
+      return {
+        reply:
+          "Em chưa có danh sách khách hàng mục tiêu. Anh/chị hãy yêu cầu nhắc đến hạn hoặc chỉ định tên khách hàng cụ thể.",
+        sources: sourceTrace(["internal://clarification"]),
+        context: state
+      };
+    }
+
+    const maxTargets = targets.slice(0, 5);
     const drafts = await Promise.all(
-      targets.slice(0, 5).map((customer) =>
-        draftEmailForCustomer(customer, renewalSuggestion(customer))
-      )
+      maxTargets.map((customer) => draftEmailForCustomer(customer, renewalSuggestion(customer)))
     );
 
+    let reply = drafts
+      .map((item, index) => `Email ${index + 1}\nTiêu đề: ${item.subject}\nNội dung:\n${item.body}`)
+      .join("\n\n---\n\n");
+
+    if (targets.length > 5) {
+      reply = `Đã giới hạn tạo 5 email cho các khách hàng đầu tiên.\n\n` + reply;
+    }
+
     return {
-      reply: drafts
-        .map(
-          (item, index) =>
-            `Email ${index + 1}\nTiêu đề: ${item.subject}\nNội dung:\n${item.body}`
-        )
-        .join("\n\n---\n\n"),
+      reply,
       sources: sourceTrace(["GET /customers", "POST /draft-email"]),
       context: state
     };
   }
 
   if (normalized.includes("call script") || normalized.includes("kich ban goi")) {
-    const targetId = state.focusedCustomers[0];
-    const targetCustomer = targetId ? await getCustomerById(targetId) : null;
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false });
+
+    if (targets.notFound) {
+      return {
+        reply: `Em không tìm thấy khách hàng "${targets.name}" trong CRM sandbox.`,
+        sources: sourceTrace(["GET /customers"]),
+        context: state
+      };
+    }
+
+    const targetCustomer = targets[0] || null;
 
     if (!targetCustomer) {
       return {
-        reply: "Em chưa xác định được khách hàng. Anh/chị vui lòng yêu cầu theo tên khách hàng trước.",
-        sources: sourceTrace(["GET /customers"]),
+        reply:
+          "Em chưa xác định được khách hàng. Anh/chị vui lòng yêu cầu theo tên khách hàng trước.",
+        sources: sourceTrace(["internal://clarification"]),
         context: state
       };
     }
@@ -212,23 +262,48 @@ export async function routeConversation({ conversationId, message }) {
   if (isOpportunityIntent) {
     state.currentModule = "opportunity";
     state.lastIntent = "suggest_opportunity";
-    if (state.focusedCustomers.length > 0) {
-      const customerId = state.focusedCustomers[0];
-      const opps = await getCustomerOpportunities(customerId);
-      const list = opps.map((o) => {
-        const name = o.product || o.name || "";
-        const val = o.estimatedValueVnd !== undefined ? formatVnd(o.estimatedValueVnd) : (o.valueVnd ? `${o.valueVnd.toLocaleString("vi-VN")}đ` : "");
-        return `- ${name}: ${val} (Độ ấm: ${o.stage})`;
-      }).join("\n");
+
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false });
+
+    if (targets.notFound) {
+      return {
+        reply: `Em không tìm thấy khách hàng "${targets.name}" trong CRM sandbox.`,
+        sources: sourceTrace(["GET /customers"]),
+        context: state
+      };
+    }
+
+    const targetCustomer = targets[0] || null;
+
+    if (targetCustomer) {
+      if (!state.focusedCustomers.includes(targetCustomer.id)) {
+        state.focusedCustomers = [targetCustomer.id];
+      }
+      const opps = await getCustomerOpportunities(targetCustomer.id);
+      const list = opps
+        .map((o) => {
+          const name = o.product || o.name || "";
+          const val =
+            o.estimatedValueVnd !== undefined
+              ? formatVnd(o.estimatedValueVnd)
+              : o.valueVnd
+                ? `${o.valueVnd.toLocaleString("vi-VN")}đ`
+                : "";
+          return `- ${name}: ${val} (Độ ấm: ${o.stage})`;
+        })
+        .join("\n");
       return {
         reply: `Cơ hội kinh doanh cho khách hàng:\n${list || "Chưa ghi nhận cơ hội mới."}`,
-        sources: sourceTrace(["GET /opportunities"]),
+        sources: sourceTrace(
+          askedName ? ["GET /customers", "GET /opportunities"] : ["GET /opportunities"]
+        ),
         context: state
       };
     } else {
       return {
-        reply: "RM muốn gợi ý cơ hội cho khách hàng nào? Vui lòng cung cấp tên khách hàng để em tra cứu.",
-        sources: [],
+        reply:
+          "RM muốn gợi ý cơ hội cho khách hàng nào? Vui lòng cung cấp tên khách hàng để em tra cứu.",
+        sources: sourceTrace(["internal://clarification"]),
         context: state
       };
     }
@@ -272,11 +347,7 @@ export async function routeConversation({ conversationId, message }) {
 
     return {
       reply: `Thông tin khách hàng ${customer.name}:\n- Segment: ${customer.segment}\n- Sản phẩm tiết kiệm: ${customer.savingsProduct}\n- Số dư: ${formatVnd(customer.savingsAmountVnd)}\n- Gợi ý cơ hội tiếp theo: ${recommendation}\n- Ghi chú lần tương tác gần nhất: ${followUp}`,
-      sources: sourceTrace([
-        "GET /customers",
-        "GET /opportunities",
-        "GET /interactions"
-      ]),
+      sources: sourceTrace(["GET /customers", "GET /opportunities", "GET /interactions"]),
       context: state
     };
   }
@@ -287,7 +358,7 @@ export async function routeConversation({ conversationId, message }) {
   return {
     reply:
       "Em đang sẵn sàng hỗ trợ anh/chị. Anh/chị có thể nhắn tự nhiên, ví dụ: nhắc khách hàng sắp đến hạn, soạn email chăm sóc, hỏi cơ hội cho một khách hàng cụ thể, hoặc xem chiến dịch đang chạy.",
-    sources: sourceTrace(["GET /customers", "GET /opportunities", "GET /campaigns"]),
+    sources: sourceTrace(["internal://clarification"]),
     context: state,
     fallback: true
   };

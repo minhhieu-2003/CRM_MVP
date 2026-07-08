@@ -1,10 +1,5 @@
 import fs from "fs";
-import {
-  campaigns,
-  customers,
-  interactions,
-  opportunities
-} from "./crmData.js";
+import { campaigns, customers, interactions, opportunities } from "./crmData.js";
 import { normalizeVietnamese } from "./textUtils.js";
 
 let emailTemplates = [];
@@ -12,18 +7,37 @@ let callScripts = [];
 try {
   emailTemplates = readJson("../data/mock/email_templates.json");
 } catch (err) {
-  console.error("Warning: Failed to load email templates from skills/email_templates.json. Using fallback empty list.");
+  console.error(
+    "Warning: Failed to load email templates from skills/email_templates.json. Using fallback empty list."
+  );
 }
 try {
   callScripts = readJson("../data/mock/call_scripts.json");
 } catch (err) {
-  console.error("Warning: Failed to load call scripts from skills/call_scripts.json. Using fallback empty list.");
+  console.error(
+    "Warning: Failed to load call scripts from skills/call_scripts.json. Using fallback empty list."
+  );
 }
 const useSandboxApi = process.env.CRM_USE_SANDBOX_API === "true";
 const fallbackToMock = process.env.CRM_FALLBACK_TO_MOCK !== "false";
 
 function toDate(value) {
   return new Date(`${value}T00:00:00+07:00`);
+}
+
+export function getBusinessDate() {
+  if (process.env.CRM_BUSINESS_DATE) {
+    return toDate(process.env.CRM_BUSINESS_DATE);
+  }
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return toDate(`${values.year}-${values.month}-${values.day}`);
 }
 
 function readJson(relativePath) {
@@ -81,7 +95,8 @@ function pickBest(items, predicate) {
 
 function fillPlaceholders(text, customer, extra = {}) {
   const reminderDate = extra.reminderDate ?? shiftDate(customer.maturityDate, -3);
-  const daysUntilMaturity = extra.daysUntilMaturity ?? daysBetween("2026-07-07", customer.maturityDate);
+  const daysUntilMaturity =
+    extra.daysUntilMaturity ?? daysBetween(formatDate(getBusinessDate()), customer.maturityDate);
 
   return text
     .replaceAll("[Tên]", customer.name)
@@ -147,9 +162,7 @@ export async function getCustomerByName(name) {
   const normalizedName = normalizeVietnamese(name);
   const allCustomers = await listCustomers();
   return (
-    allCustomers.find((item) =>
-      normalizeVietnamese(item.name).includes(normalizedName)
-    ) ?? null
+    allCustomers.find((item) => normalizeVietnamese(item.name).includes(normalizedName)) ?? null
   );
 }
 
@@ -168,7 +181,8 @@ export async function getCustomerInteractions(customerId) {
   return allInteractions.filter((item) => item.customerId === customerId);
 }
 
-export async function getMaturityCustomers(daysAhead = 7, now = new Date("2026-07-07T08:00:00+07:00")) {
+export async function getMaturityCustomers(daysAhead = 7, now = null) {
+  now = now || getBusinessDate();
   const maxDate = new Date(now);
   maxDate.setDate(now.getDate() + daysAhead);
   const allCustomers = await listCustomers();
