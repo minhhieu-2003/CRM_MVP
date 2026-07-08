@@ -31,7 +31,7 @@ export async function runAgentTurn({ conversationId, message }) {
 
     if (dispatched) {
       reply = dispatched.reply;
-      sources = [...result.sources, ...dispatched.sources];
+      sources = dispatched.sources;
       llmProvider = `router:${dispatched.provider}`;
     }
   }

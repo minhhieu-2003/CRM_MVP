@@ -53,7 +53,20 @@ chatForm.addEventListener("submit", async (event) => {
 
   try {
     const data = await sendChatMessage(message);
-    addMessage("bot", data.reply);
+    let botReply = data.reply;
+
+    if (data.sources && data.sources.length > 0) {
+      const endpoints = data.sources.map(s => s.endpoint);
+      const hasCrmSources = endpoints.some(e => !e.startsWith("internal://"));
+
+      if (hasCrmSources) {
+        botReply += `\n\nNguồn dữ liệu: Hệ thống CRM`;
+      } else {
+        botReply += `\n\nNguồn dữ liệu: Nội bộ`;
+      }
+    }
+
+    addMessage("bot", botReply);
   } catch (error) {
     addMessage(
       "bot",

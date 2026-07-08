@@ -45,6 +45,32 @@ describe("HTTP API Tests", () => {
     assert.ok(typeof json.context === "object");
   });
 
+  test('POST /api/chat với message "xin chào em" không trả đồng thời clarification và smalltalk', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "xin chào em" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("internal://smalltalk"));
+    assert.ok(!endpoints.includes("internal://clarification"));
+  });
+
+  test('POST /api/chat với message "bạn làm được gì" không giữ clarification nếu capability-agent xử lý', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "bạn làm được gì" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("internal://capability"));
+    assert.ok(!endpoints.includes("internal://clarification"));
+  });
+
   test("POST /api/chat thiếu message trả 400", async () => {
     const res = await fetch(`${baseUrl}/api/chat`, {
       method: "POST",
