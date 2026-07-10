@@ -7,5 +7,10 @@ logs/
 .DS_Store
 npm-debug.log*
 tmp_*
+update_script*.py
+
+# draw.io temporary files
+.$*.drawio.bkp
+.$*.drawio.dtmp
 
 .vercel

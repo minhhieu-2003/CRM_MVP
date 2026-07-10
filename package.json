@@ -11,13 +11,13 @@
     "start": "node --env-file-if-exists=.env src/server.js",
     "dev": "node --env-file-if-exists=.env --watch src/server.js",
     "mcp": "node --env-file-if-exists=.env src/mcp/server.js",
-    "test": "node --test tests/*.test.mjs",
-    "test:http": "node --test tests/http-api.test.mjs",
+    "test": "node --test tests/**/*.test.mjs",
+    "test:http": "node --test tests/integration/http-api.test.mjs",
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "check": "npm run lint && npm test && npm run test:crm",
-    "smoke:local": "node scripts/smoke-local.mjs",
-    "test:crm": "node scripts/run-crm-test-cases.mjs"
+    "smoke:local": "node scripts/qa/smoke-local.mjs",
+    "test:crm": "node scripts/qa/run-crm-test-cases.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

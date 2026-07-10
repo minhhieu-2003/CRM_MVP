@@ -3,8 +3,8 @@
 // Execute with: node scripts/generate-architecture.mjs
 
 import { writeFileSync } from "node:fs";
-import { Diagram } from "../../../drawio-ai-kit-main/drawio-ai-kit-main/src/builder.mjs";
-import { group, frame, icon, box, renderTree } from "../../../drawio-ai-kit-main/drawio-ai-kit-main/src/layout-engine.mjs";
+import { Diagram } from "../../../../drawio-ai-kit-main/drawio-ai-kit-main/src/builder.mjs";
+import { group, frame, icon, box, renderTree } from "../../../../drawio-ai-kit-main/drawio-ai-kit-main/src/layout-engine.mjs";
 
 // Initialize diagram. Preset type: network.
 const d = new Diagram("network");

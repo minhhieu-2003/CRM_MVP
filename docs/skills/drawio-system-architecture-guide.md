@@ -56,6 +56,8 @@ Tài liệu này hướng dẫn cách thiết kế **kiến trúc hệ thống c
 
 ## 4) Quy ước ký hiệu (Shape Convention)
 
+Ưu tiên dùng shape có sẵn trong palette **General** và **Misc** của draw.io. Không dùng icon tự chế, emoji, ảnh trang trí hoặc shape lạ nếu không thật sự cần thiết.
+
 ### 4.1 Thành phần logic
 - **Actor/User/System ngoài**: hình người hoặc rounded rectangle màu xám nhạt.
 - **Frontend/Web/Mobile**: rectangle xanh dương nhạt.
@@ -66,6 +68,21 @@ Tài liệu này hướng dẫn cách thiết kế **kiến trúc hệ thống c
 - **Cache**: cylinder nhỏ màu cam nhạt.
 - **Message Broker/Queue/Topic**: queue shape hoặc parallelogram tím nhạt.
 - **External 3rd-party**: cloud shape.
+
+### 4.1.1 Mapping theo palette General/Misc
+
+| Thành phần | Palette | Shape |
+| --- | --- | --- |
+| User/RM/Actor | General | Stick figure hoặc rounded rectangle |
+| UI/Web chat | General | Rounded rectangle |
+| API/Backend/Agent service | General | Rectangle hoặc rounded rectangle |
+| IF/ELSE/Decision | General | Diamond |
+| DB/Data store/Cache | General | Cylinder |
+| File/log/template | General | Document |
+| External CRM/LLM/SIEM | General | Cloud hoặc cylinder có nhãn External |
+| Entity list/DB object list | Misc | Table hoặc List item |
+| Layer/swimlane/boundary | General | Large rectangle/container |
+| Group annotation | Misc | Brace/bracket |
 
 ### 4.2 Đường nối (Connector)
 - **Sync request/response**: đường liền, mũi tên đặc.

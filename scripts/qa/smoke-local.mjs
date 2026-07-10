@@ -3,7 +3,7 @@ import path from "node:path";
 
 process.env.AUDIT_LOG_DIR = path.join(os.tmpdir(), "crm_audit_smoke");
 
-const { app } = await import("../src/server.js");
+const { app } = await import("../../src/server.js");
 
 const server = app.listen(0, async () => {
   const port = server.address().port;

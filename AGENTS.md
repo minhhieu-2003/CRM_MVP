@@ -22,6 +22,7 @@ BankRM Copilot là **AI Agent cho CRM** hỗ trợ Relationship Manager (RM) c�
 
 ```text
 CRM_MVP/
+  api/                   # Vercel adapter, giữ ở root
   public/                # Chat UI (index.html, app.js, styles.css)
   src/
     server.js            # Express API + static hosting
@@ -32,6 +33,11 @@ CRM_MVP/
       agentService.js      # Orchestrate 1 lượt chat + audit
       auditLogger.js       # Ghi audit log
       textUtils.js         # Chuẩn hóa tiếng Việt (bỏ dấu)
+    plugins/             # Router/fallback agents
+    mcp/                 # MCP stdio server
+    data/mock/           # Mock/synthetic CRM data
+  tests/                 # Integration tests
+  scripts/               # Scripts cho data, qa, docs
   docs/                  # Kiến trúc + đề xuất tích hợp
   skills/                # Định nghĩa skill cho agent
   logs/                  # audit.log (tự sinh)
@@ -43,9 +49,10 @@ CRM_MVP/
 npm install     # cài dependency
 npm start       # chạy server tại http://localhost:3000
 npm run dev     # chạy với watch mode
+npm run check   # chạy lint, test, test:crm
+npm test        # chạy test suite
+npm run lint    # kiểm tra lỗi code style
 ```
-
-Không có test runner / linter được cấu hình. Nếu thêm, cập nhật mục này.
 
 ## 5. Quy ước code
 

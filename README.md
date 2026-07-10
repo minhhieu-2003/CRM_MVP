@@ -106,7 +106,7 @@ Khi chạy ở chế độ mock local, `crmService.js` tự gộp dữ liệu n�
 Sinh lại dữ liệu mock lớn:
 
 ```bash
-node scripts/generate-large-mock-data.mjs
+node scripts/data/generate-large-mock-data.mjs
 ```
 
 Script sinh dữ liệu deterministic bằng seeded random để kết quả ổn định giữa các lần chạy. Dữ liệu là synthetic/mock, gồm tên, phân khúc, sản phẩm, ngày đáo hạn, opportunity và interaction giả lập. Không chứa thông tin cá nhân thật.
@@ -297,6 +297,7 @@ Hiện repo có thể còn warning lint cũ ở một số file nếu chưa đư
 
 ```text
 CRM_MVP/
+  api/
   public/
     index.html              # Chat UI
     app.js                  # Gọi API chat + render phản hồi
@@ -327,17 +328,32 @@ CRM_MVP/
       call_scripts.json
       bank_a_crm_test_cases.json
   scripts/
-    generate-large-mock-data.mjs
-    run-crm-test-cases.mjs
-    smoke-local.mjs
+    data/
+      generate-large-mock-data.mjs
+    qa/
+      run-crm-test-cases.mjs
+      smoke-local.mjs
+    docs/
+      generate-architecture.mjs
   tests/
-    http-api.test.mjs
+    integration/
+      http-api.test.mjs
   docs/
-    architecture.md
-    integration-proposal.md
-    mcp-toolkit.md
-    multi-agent-router.md
+    architecture/
+      architecture.md
+      architecture.drawio
+      bankrm-if-else-workflow.drawio
+    plans/
+      AGENT_EXECUTION_PLAN.md
+      AGENT_UPGRADE_PLAN.md
+    integrations/
+      integration-proposal.md
+      mcp-toolkit.md
+      multi-agent-router.md
+    skills/
+      drawio-system-architecture-guide.md
   skills/
+  evidence/
   logs/                     # Tự sinh khi chạy local
   AGENTS.md
   RULES.md

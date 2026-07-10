@@ -1,5 +1,5 @@
 import fs from "fs";
-import { routeConversation } from "../src/services/mcpContextEngine.js";
+import { routeConversation } from "../../src/services/mcpContextEngine.js";
 import {
   draftCallScript,
   draftEmailForCustomer,
@@ -8,10 +8,10 @@ import {
   listCustomers,
   listInteractions,
   listOpportunities
-} from "../src/services/crmService.js";
+} from "../../src/services/crmService.js";
 
 const testCases = JSON.parse(
-  fs.readFileSync(new URL("../src/data/mock/bank_a_crm_test_cases.json", import.meta.url), "utf8")
+  fs.readFileSync(new URL("../../src/data/mock/bank_a_crm_test_cases.json", import.meta.url), "utf8")
 );
 
 const endpointMap = {

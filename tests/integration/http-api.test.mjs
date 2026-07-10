@@ -9,7 +9,7 @@ describe("HTTP API Tests", () => {
 
   before(async () => {
     process.env.AUDIT_LOG_DIR = path.join(os.tmpdir(), "crm_audit_test");
-    const { app } = await import("../src/server.js");
+    const { app } = await import("../../src/server.js");
 
     await new Promise((resolve) => {
       server = app.listen(0, () => {
