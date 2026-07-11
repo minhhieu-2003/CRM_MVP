@@ -8,6 +8,7 @@ import {
   getCustomerOpportunities,
   getMaturityCustomers,
   listCustomers,
+  listOpportunities,
   listCampaigns
 } from "./crmService.js";
 import { normalizeVietnamese } from "./textUtils.js";
@@ -34,12 +35,12 @@ async function detectCustomerName(message) {
   if (mentionedCustomer) return mentionedCustomer.name;
 
   if (
-    hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "hom nay", "tiep khach", "cham soc"])
+    hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "hom nay", "tiep khach", "cham soc", "nhom"])
   ) {
     return null;
   }
 
-  const match = normalized.match(/khach\s+([a-z\s]+)/i);
+  const match = normalized.match(/(?:khach|khach hang|cho)\s+([a-z\s]+)/i);
   if (!match) return null;
   return match[1].trim();
 }
@@ -50,6 +51,39 @@ function sourceTrace(entries) {
 
 function hasAny(text, keywords) {
   return keywords.some((keyword) => text.includes(keyword));
+}
+
+function uniqueNames(items) {
+  const seen = new Set();
+  const names = [];
+
+  for (const item of items) {
+    const name = typeof item === "string" ? item : item?.product || item?.name;
+    if (!name) continue;
+
+    const key = normalizeVietnamese(name);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    names.push(name);
+  }
+
+  return names;
+}
+
+function parseVndThreshold(normalized) {
+  const match = normalized.match(
+    /(?:lon hon|tren|hon|>=|>)\s*(\d+(?:[.,]\d+)?)\s*(ti|ty|ti dong|ty dong|b|trieu|m)?/
+  );
+  if (!match) return null;
+
+  const value = Number.parseFloat(match[1].replace(",", "."));
+  if (!Number.isFinite(value)) return null;
+
+  const unit = match[2] ?? "";
+  if (["ti", "ty", "ti dong", "ty dong", "b"].includes(unit)) return value * 1_000_000_000;
+  if (["trieu", "m"].includes(unit)) return value * 1_000_000;
+
+  return value < 1000 ? value * 1_000_000_000 : value;
 }
 
 function renewalSuggestion(customer) {
@@ -69,9 +103,7 @@ async function resolveTargetCustomers({ askedName, state, fallbackDue }) {
   if (askedName) {
     const customer = await getCustomerByName(askedName);
     if (customer) {
-      if (!state.focusedCustomers.includes(customer.id)) {
-        state.focusedCustomers = [customer.id];
-      }
+      state.focusedCustomers = [customer.id];
       return [customer];
     }
     return { notFound: true, name: askedName };
@@ -121,8 +153,8 @@ async function processConversation({ conversationId, message }) {
 
   const isEmailIntent =
     compact === "2" ||
-    (hasAny(normalized, ["soan", "draft"]) &&
-      hasAny(normalized, ["email", "khach hang", "tiep", "follow up"])) ||
+    (hasAny(normalized, ["soan", "viet", "draft"]) &&
+      hasAny(normalized, ["email", "mail", "khach hang", "khac hang", "nhom", "tiep", "follow up", "cham soc"])) ||
     normalized.includes("soan tiep");
 
   const isOpportunityIntent =
@@ -138,6 +170,16 @@ async function processConversation({ conversationId, message }) {
     hasAny(normalized, ["hom nay", "ngay nay"]) &&
     hasAny(normalized, ["khach", "tiep", "cham soc", "gap", "goi"]) &&
     hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "can"]);
+
+  const isProductSummaryIntent =
+    normalized.includes("san pham") &&
+    hasAny(normalized, ["bao nhieu", "liet ke", "danh sach", "tiep can", "khach hang", "khac hang"]);
+
+  const savingsThreshold = parseVndThreshold(normalized);
+  const isSavingsThresholdIntent =
+    savingsThreshold !== null &&
+    hasAny(normalized, ["tiet kiem", "khoan tiet kiem", "so du"]) &&
+    hasAny(normalized, ["bao nhieu", "nguoi", "khach", "liet ke", "danh sach"]);
 
   if (isTodayCareIntent) {
     const dueCustomers = await getMaturityCustomers(7);
@@ -164,6 +206,66 @@ async function processConversation({ conversationId, message }) {
     return {
       reply: summaryText,
       sources: sourceTrace(["GET /customers"]),
+      context: state
+    };
+  }
+
+  if (isSavingsThresholdIntent) {
+    const customers = await listCustomers();
+    const matchedCustomers = customers
+      .filter((customer) => customer.savingsAmountVnd > savingsThreshold)
+      .sort((a, b) => b.savingsAmountVnd - a.savingsAmountVnd);
+    const maxItems = 15;
+    const displayedCustomers = matchedCustomers.slice(0, maxItems);
+
+    state.currentModule = "customer-profile";
+    state.focusedCustomers = displayedCustomers.map((item) => item.id);
+    state.lastIntent = "savings-threshold-summary";
+
+    const lines = displayedCustomers.map(
+      (item, index) =>
+        `${index + 1}. ${item.name} - ${item.savingsProduct} - ${formatVnd(item.savingsAmountVnd)} - đến hạn ${item.maturityDate}`
+    );
+    const displayNote =
+      matchedCustomers.length > maxItems ? ` (hiển thị ${maxItems} khách hàng có số dư cao nhất)` : "";
+    const listText =
+      displayedCustomers.length > 0
+        ? `:\n${lines.join("\n")}`
+        : ".";
+
+    return {
+      reply: `Có ${matchedCustomers.length} khách hàng có khoản tiết kiệm lớn hơn ${formatVnd(
+        savingsThreshold
+      )}${displayNote}${listText}\n\nAnh/chị có thể nhắn "soạn mail" để em soạn email chăm sóc cho nhóm khách hàng này.`,
+      sources: sourceTrace(["GET /customers"]),
+      context: state
+    };
+  }
+
+  if (isProductSummaryIntent) {
+    const opportunities = await listOpportunities();
+    const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
+    const productNames = uniqueNames(opportunities);
+    const maxItems = 15;
+    const displayedProducts = productNames.slice(0, maxItems);
+
+    state.currentModule = "opportunity";
+    state.lastIntent = "product-summary";
+
+    const productLines = displayedProducts.map((name, index) => `${index + 1}. ${name}`);
+    const campaignLines = activeCampaigns.map(
+      (item, index) => `${index + 1}. ${item.name} (${item.targetSegment})`
+    );
+    const productNote =
+      productNames.length > maxItems ? ` (hiển thị ${maxItems} sản phẩm ưu tiên đầu tiên)` : "";
+
+    return {
+      reply: `Hiện CRM sandbox có ${productNames.length} sản phẩm/cơ hội tiếp cận khách hàng${productNote}:\n${productLines.join(
+        "\n"
+      )}\n\nNgoài ra có ${activeCampaigns.length} chiến dịch đang chạy:\n${campaignLines.join(
+        "\n"
+      )}\n\nAnh/chị có thể hỏi "gợi ý cơ hội cho khách hàng Nguyễn Văn An" để em lọc sản phẩm phù hợp cho từng khách hàng.`,
+      sources: sourceTrace(["GET /opportunities", "GET /campaigns"]),
       context: state
     };
   }
@@ -292,9 +394,7 @@ async function processConversation({ conversationId, message }) {
     const targetCustomer = targets[0] || null;
 
     if (targetCustomer) {
-      if (!state.focusedCustomers.includes(targetCustomer.id)) {
-        state.focusedCustomers = [targetCustomer.id];
-      }
+      state.focusedCustomers = [targetCustomer.id];
       const opps = await getCustomerOpportunities(targetCustomer.id);
       const list = opps
         .map((o) => {
