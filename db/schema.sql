@@ -1,9 +1,11 @@
-CREATE TABLE IF NOT EXISTS product_catalog (
+CREATE TABLE IF NOT EXISTS product_knowledge_base (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    category TEXT,
+    category TEXT CHECK(category IN ('tín dụng', 'tiết kiệm', 'bảo hiểm', 'thẻ', 'khác')),
     interest_rate_percent REAL,
     min_investment_vnd REAL,
+    conditions TEXT,
+    target_audience TEXT,
     description TEXT,
     status TEXT DEFAULT 'active',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -48,6 +50,15 @@ CREATE INDEX IF NOT EXISTS idx_customers_normalized_name ON customers(normalized
 CREATE INDEX IF NOT EXISTS idx_customers_maturity_date ON customers(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_customers_segment ON customers(segment);
 CREATE INDEX IF NOT EXISTS idx_customers_rm_id ON customers(rm_id);
+
+CREATE TABLE IF NOT EXISTS customer_consents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id TEXT NOT NULL,
+    consent_type TEXT NOT NULL, -- e.g., 'marketing_email', 'data_processing_nd13'
+    status TEXT CHECK(status IN ('granted', 'revoked')),
+    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS customer_tags (
     customer_id TEXT NOT NULL,
@@ -169,3 +180,37 @@ CREATE TABLE IF NOT EXISTS call_scripts (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS llm_audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rm_id TEXT NOT NULL,
+    conversation_id TEXT NOT NULL,
+    agent_intent TEXT,
+    prompt_tokens INTEGER,
+    completion_tokens INTEGER,
+    latency_ms INTEGER,
+    api_endpoint_called TEXT,
+    llm_provider TEXT,
+    request_payload TEXT, -- stored as JSON string
+    response_payload TEXT, -- stored as JSON string
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_rm_id ON llm_audit_logs(rm_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_conversation_id ON llm_audit_logs(conversation_id);
+
+CREATE TABLE IF NOT EXISTS next_best_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id TEXT NOT NULL,
+    rm_id TEXT NOT NULL,
+    action_type TEXT NOT NULL, -- e.g., 'cross_sell', 'retention', 'meeting'
+    recommended_product TEXT,
+    reasoning TEXT,
+    confidence_score REAL CHECK(confidence_score BETWEEN 0 AND 100),
+    status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'accepted', 'rejected', 'expired')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_nba_customer_id ON next_best_actions(customer_id);
