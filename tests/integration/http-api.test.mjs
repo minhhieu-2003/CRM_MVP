@@ -71,6 +71,71 @@ describe("HTTP API Tests", () => {
     assert.ok(!endpoints.includes("internal://clarification"));
   });
 
+  test('POST /api/chat với typo "caho bạn" vẫn xử lý smalltalk', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "caho bạn" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("internal://smalltalk"));
+    assert.ok(!endpoints.includes("internal://clarification"));
+  });
+
+  test('POST /api/chat với "có bao nhiêu sản phẩm tiếp cận khách hàng" trả summary CRM', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "có bao nhiêu sản phẩm tiếp cận khách hàng" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("GET /opportunities"));
+    assert.ok(endpoints.includes("GET /campaigns"));
+    assert.match(json.reply, /sản phẩm\/cơ hội/);
+  });
+
+  test('POST /api/chat với "khoản tiết kiệm lớn hơn 2 tỉ" trả số lượng khách hàng', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "co bao nhieu nguoi co khoan tiet kiem lon hon 2 ti" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("GET /customers"));
+    assert.match(json.reply, /khách hàng có khoản tiết kiệm lớn hơn/);
+    assert.match(json.reply, /2\.000\.000\.000/);
+  });
+
+  test('POST /api/chat với sequence "hôm nay..." rồi "soạn mail" dùng context khách hàng', async () => {
+    const conversationId = "email-mail-sequence";
+    await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversationId,
+        message: "hôm nay tiếp khách có bao nhiêu người liệt kê"
+      })
+    });
+
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId, message: "soạn mail" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    const endpoints = json.sources.map((s) => s.endpoint);
+    assert.ok(endpoints.includes("GET /customers"));
+    assert.ok(endpoints.includes("POST /draft-email"));
+    assert.match(json.reply, /Email 1/);
+  });
+
   test("POST /api/chat thiếu message trả 400", async () => {
     const res = await fetch(`${baseUrl}/api/chat`, {
       method: "POST",

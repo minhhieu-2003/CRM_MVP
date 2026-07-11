@@ -14,8 +14,32 @@ import {
   getMaturityCustomers,
   draftEmailForCustomer,
   draftCallScript
-} from "../services/crmService.js";
+} from "../services/crmRepository.js";
 import { writeAudit } from "../services/auditLogger.js";
+
+const env = process.env.NODE_ENV || "development";
+if ((env === "pilot" || env === "production") && process.env.AUTH_ENABLED !== "true") {
+  console.error("FATAL: Khởi động thất bại. Hệ thống bắt buộc phải bật xác thực (AUTH_ENABLED=true) trên môi trường pilot/production.");
+  process.exit(1);
+}
+
+function getIdentity() {
+  return {
+    userId: process.env.USER_ID || "mcp-user",
+    rmId: process.env.RM_ID || "default",
+    role: process.env.ROLE || "rm",
+    branchId: process.env.BRANCH_ID || "default"
+  };
+}
+
+function checkToolAuth(toolName) {
+  if (process.env.AUTH_ENABLED !== "true") return null;
+  const identity = getIdentity();
+  if (toolName === "crm_list_campaigns" && identity.role !== "admin") {
+    return "Lỗi: Tool này yêu cầu quyền admin.";
+  }
+  return null;
+}
 
 const server = new McpServer({
   name: "bankrm-crm-toolkit",
@@ -43,8 +67,12 @@ server.tool(
   "Liệt kê toàn bộ khách hàng trong CRM sandbox.",
   {},
   async () => {
+    const authError = checkToolAuth("crm_list_customers");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_list_customers", ["GET /customers"]);
-    return ok(await listCustomers());
+    return ok(await listCustomers(identity));
   }
 );
 
@@ -53,8 +81,12 @@ server.tool(
   "Lấy hồ sơ khách hàng theo tên, hỗ trợ có dấu và không dấu.",
   { name: z.string().describe("Tên khách hàng cần tra cứu") },
   async ({ name }) => {
+    const authError = checkToolAuth("crm_get_customer");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_get_customer", ["GET /customers"]);
-    const customer = await getCustomerByName(name);
+    const customer = await getCustomerByName(name, identity);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng "${name}".` });
     return ok(customer);
   }
@@ -65,8 +97,12 @@ server.tool(
   "Lấy khách hàng có tiết kiệm đến hạn trong N ngày tới.",
   { daysAhead: z.number().int().positive().default(7) },
   async ({ daysAhead }) => {
+    const authError = checkToolAuth("crm_customers_due");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_customers_due", ["GET /customers"]);
-    return ok(await getMaturityCustomers(daysAhead));
+    return ok(await getMaturityCustomers(daysAhead, identity));
   }
 );
 
@@ -75,8 +111,12 @@ server.tool(
   "Liệt kê cơ hội bán hàng; có thể lọc theo customerId.",
   { customerId: z.string().optional() },
   async ({ customerId }) => {
+    const authError = checkToolAuth("crm_list_opportunities");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_list_opportunities", ["GET /opportunities"]);
-    return ok(customerId ? await getCustomerOpportunities(customerId) : await listOpportunities());
+    return ok(customerId ? await getCustomerOpportunities(customerId, identity) : await listOpportunities(identity));
   }
 );
 
@@ -85,8 +125,12 @@ server.tool(
   "Liệt kê lịch sử tương tác; có thể lọc theo customerId.",
   { customerId: z.string().optional() },
   async ({ customerId }) => {
+    const authError = checkToolAuth("crm_list_interactions");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_list_interactions", ["GET /interactions"]);
-    return ok(customerId ? await getCustomerInteractions(customerId) : await listInteractions());
+    return ok(customerId ? await getCustomerInteractions(customerId, identity) : await listInteractions(identity));
   }
 );
 
@@ -95,8 +139,12 @@ server.tool(
   "Liệt kê các chiến dịch marketing/bán hàng.",
   {},
   async () => {
+    const authError = checkToolAuth("crm_list_campaigns");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_list_campaigns", ["GET /campaigns"]);
-    return ok(await listCampaigns());
+    return ok(await listCampaigns(identity));
   }
 );
 
@@ -108,8 +156,12 @@ server.tool(
     suggestion: z.string().optional().describe("Gợi ý sản phẩm chèn vào email")
   },
   async ({ customerId, suggestion }) => {
+    const authError = checkToolAuth("crm_draft_email");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_draft_email", ["GET /customers", "POST /draft-email"]);
-    const customer = await getCustomerById(customerId);
+    const customer = await getCustomerById(customerId, identity);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng ${customerId}.` });
     const tip =
       suggestion ??
@@ -128,8 +180,12 @@ server.tool(
     suggestion: z.string().optional()
   },
   async ({ customerId, suggestion }) => {
+    const authError = checkToolAuth("crm_call_script");
+    if (authError) return ok({ error: authError });
+    const identity = getIdentity();
+
     audit("crm_call_script", ["GET /customers", "POST /call-script"]);
-    const customer = await getCustomerById(customerId);
+    const customer = await getCustomerById(customerId, identity);
     if (!customer) return ok({ error: `Không tìm thấy khách hàng ${customerId}.` });
     const tip =
       suggestion ??

@@ -3,10 +3,10 @@ import { routeConversation } from "./mcpContextEngine.js";
 import { writeAudit } from "./auditLogger.js";
 import { dispatchFallback } from "../plugins/router.js";
 
-export async function runAgentTurn({ conversationId, message }) {
+export async function runAgentTurn({ conversationId, message, identity }) {
   const auditId = crypto.randomUUID();
   const startedAt = Date.now();
-  const result = await routeConversation({ conversationId, message });
+  const result = await routeConversation({ conversationId, message, identity });
 
   let reply = result.reply;
   let sources = result.sources;

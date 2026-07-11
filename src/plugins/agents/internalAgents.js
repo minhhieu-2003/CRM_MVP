@@ -16,8 +16,8 @@ export const smalltalkAgent = {
   priority: 10,
   enabled: () => true,
   match: ({ normalized }) =>
-    hasPhrase(normalized, ["xin chao", "chao em", "chao anh", "cam on", "tam biet"]) ||
-    hasWord(normalized, ["hello", "hi", "chao", "thanks", "thank", "bye"]),
+    hasPhrase(normalized, ["xin chao", "chao em", "chao anh", "chao ban", "cam on", "tam biet"]) ||
+    hasWord(normalized, ["hello", "hi", "hii", "helo", "chao", "caho", "thanks", "thank", "bye"]),
   run: async ({ normalized }) => {
     let reply;
     if (normalized.includes("cam on") || normalized.includes("thank")) {

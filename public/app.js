@@ -37,6 +37,25 @@ async function sendChatMessage(message) {
   return data;
 }
 
+function formatSourceLabel(sources = []) {
+  const endpoints = sources.map((source) => source.endpoint);
+  const hasLlmSources = endpoints.some((endpoint) => endpoint.includes("llm-proxy"));
+  const hasCrmSources = endpoints.some(
+    (endpoint) =>
+      endpoint.startsWith("GET /customers") ||
+      endpoint.startsWith("GET /opportunities") ||
+      endpoint.startsWith("GET /interactions") ||
+      endpoint.startsWith("GET /campaigns") ||
+      endpoint.startsWith("POST /draft-email") ||
+      endpoint.startsWith("POST /call-script")
+  );
+
+  if (hasCrmSources && hasLlmSources) return "Hệ thống CRM + AI nội bộ";
+  if (hasCrmSources) return "Hệ thống CRM";
+  if (hasLlmSources) return "AI nội bộ";
+  return "Nội bộ";
+}
+
 addMessage(
   "bot",
   "Xin chào RM. Em có thể nhắc lịch chăm sóc, soạn email, gợi ý cơ hội tiếp theo và chuyển context CRM."
@@ -56,14 +75,7 @@ chatForm.addEventListener("submit", async (event) => {
     let botReply = data.reply;
 
     if (data.sources && data.sources.length > 0) {
-      const endpoints = data.sources.map(s => s.endpoint);
-      const hasCrmSources = endpoints.some(e => !e.startsWith("internal://"));
-
-      if (hasCrmSources) {
-        botReply += `\n\nNguồn dữ liệu: Hệ thống CRM`;
-      } else {
-        botReply += `\n\nNguồn dữ liệu: Nội bộ`;
-      }
+      botReply += `\n\nNguồn dữ liệu: ${formatSourceLabel(data.sources)}`;
     }
 
     addMessage("bot", botReply);

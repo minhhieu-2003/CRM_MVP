@@ -10,7 +10,7 @@ import {
   listCustomers,
   listOpportunities,
   listCampaigns
-} from "./crmService.js";
+} from "./crmRepository.js";
 import { normalizeVietnamese } from "./textUtils.js";
 
 const contextStore = new Map();
@@ -26,9 +26,9 @@ function getState(conversationId) {
   return contextStore.get(conversationId);
 }
 
-async function detectCustomerName(message) {
+async function detectCustomerName(message, identity) {
   const normalized = normalizeVietnamese(message);
-  const customers = await listCustomers();
+  const customers = await listCustomers(identity);
   const mentionedCustomer = customers.find((customer) =>
     normalized.includes(customer.normalizedName)
   );
@@ -99,9 +99,9 @@ function renewalSuggestion(customer) {
   return "Em đề xuất tái tục tự động kỳ hạn linh hoạt để tối ưu dòng tiền.";
 }
 
-async function resolveTargetCustomers({ askedName, state, fallbackDue }) {
+async function resolveTargetCustomers({ askedName, state, fallbackDue, identity }) {
   if (askedName) {
-    const customer = await getCustomerByName(askedName);
+    const customer = await getCustomerByName(askedName, identity);
     if (customer) {
       state.focusedCustomers = [customer.id];
       return [customer];
@@ -109,12 +109,12 @@ async function resolveTargetCustomers({ askedName, state, fallbackDue }) {
     return { notFound: true, name: askedName };
   }
   if (state.focusedCustomers.length > 0) {
-    const candidates = await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id)));
+    const candidates = await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id, identity)));
     const valid = candidates.filter(Boolean);
     if (valid.length > 0) return valid;
   }
   if (fallbackDue) {
-    return await getMaturityCustomers(7);
+    return await getMaturityCustomers(7, identity);
   }
   return [];
 }
@@ -139,11 +139,11 @@ export async function routeConversation(payload) {
   return result;
 }
 
-async function processConversation({ conversationId, message }) {
+async function processConversation({ conversationId, message, identity }) {
   const state = getState(conversationId);
   const normalized = normalizeVietnamese(message);
   const compact = normalized.replace(/\s+/g, " ").trim();
-  const askedName = await detectCustomerName(message);
+  const askedName = await detectCustomerName(message, identity);
 
   const isReminderIntent =
     compact === "1" ||
@@ -182,7 +182,7 @@ async function processConversation({ conversationId, message }) {
     hasAny(normalized, ["bao nhieu", "nguoi", "khach", "liet ke", "danh sach"]);
 
   if (isTodayCareIntent) {
-    const dueCustomers = await getMaturityCustomers(7);
+    const dueCustomers = await getMaturityCustomers(7, identity);
     const maxItems = 15;
     const displayedCustomers = dueCustomers.slice(0, maxItems);
 
@@ -211,7 +211,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (isSavingsThresholdIntent) {
-    const customers = await listCustomers();
+    const customers = await listCustomers(identity);
     const matchedCustomers = customers
       .filter((customer) => customer.savingsAmountVnd > savingsThreshold)
       .sort((a, b) => b.savingsAmountVnd - a.savingsAmountVnd);
@@ -243,7 +243,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (isProductSummaryIntent) {
-    const opportunities = await listOpportunities();
+    const opportunities = await listOpportunities(identity);
     const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
     const productNames = uniqueNames(opportunities);
     const maxItems = 15;
@@ -271,7 +271,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (isReminderIntent) {
-    const dueCustomers = await getMaturityCustomers(7);
+    const dueCustomers = await getMaturityCustomers(7, identity);
     const maxItems = 15;
     const displayedCustomers = dueCustomers.slice(0, maxItems);
 
@@ -300,7 +300,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (isEmailIntent) {
-    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: true });
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: true, identity });
 
     if (targets.notFound) {
       return {
@@ -343,7 +343,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (normalized.includes("call script") || normalized.includes("kich ban goi")) {
-    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false });
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false, identity });
 
     if (targets.notFound) {
       return {
@@ -381,7 +381,7 @@ async function processConversation({ conversationId, message }) {
     state.currentModule = "opportunity";
     state.lastIntent = "suggest_opportunity";
 
-    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false });
+    const targets = await resolveTargetCustomers({ askedName, state, fallbackDue: false, identity });
 
     if (targets.notFound) {
       return {
@@ -440,7 +440,7 @@ async function processConversation({ conversationId, message }) {
   }
 
   if (askedName) {
-    const customer = await getCustomerByName(askedName);
+    const customer = await getCustomerByName(askedName, identity);
     if (!customer) {
       return {
         reply: `Em không tìm thấy khách hàng "${askedName}" trong CRM sandbox.`,
@@ -449,8 +449,8 @@ async function processConversation({ conversationId, message }) {
       };
     }
 
-    const opps = await getCustomerOpportunities(customer.id);
-    const logs = await getCustomerInteractions(customer.id);
+    const opps = await getCustomerOpportunities(customer.id, identity);
+    const logs = await getCustomerInteractions(customer.id, identity);
     state.currentModule = "opportunity";
     state.focusedCustomers = [customer.id];
     state.lastIntent = "customer-insight";
