@@ -1,9 +1,10 @@
--- Canonical schema for a new database.
--- SQLite foreign-key enforcement is connection-scoped, so every connection must
--- execute this PRAGMA (the schema and migrations do it for their own sessions).
-PRAGMA foreign_keys = ON;
+-- Upgrade the original unversioned Issue #8 schema (user_version = 0) to v1.
+-- Apply exactly once. The schema_migrations row and user_version are the gate
+-- used by a migration runner to skip this file on already-upgraded databases.
+-- PRAGMA foreign_keys cannot be changed while a transaction is active.
+PRAGMA foreign_keys = OFF;
+-- Zero dropped payload pages instead of leaving sensitive text on the freelist.
 PRAGMA secure_delete = ON;
-
 BEGIN IMMEDIATE;
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -12,7 +13,8 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
     applied_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
-CREATE TABLE IF NOT EXISTS product_knowledge_base (
+ALTER TABLE product_knowledge_base RENAME TO product_knowledge_base_v0;
+CREATE TABLE product_knowledge_base (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     category TEXT,
@@ -32,42 +34,26 @@ CREATE TABLE IF NOT EXISTS product_knowledge_base (
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     CHECK(effective_to IS NULL OR effective_from IS NULL OR effective_to >= effective_from)
 );
+INSERT INTO product_knowledge_base (
+    id, name, category, interest_rate_percent, min_investment_vnd,
+    eligibility, target_audience, description, version, status, created_at, updated_at
+)
+SELECT id, name, category, interest_rate_percent, min_investment_vnd,
+       conditions, target_audience, description, 1,
+       CASE lower(COALESCE(status, 'active'))
+           WHEN 'active' THEN 'ACTIVE'
+           WHEN 'inactive' THEN 'INACTIVE'
+           WHEN 'expired' THEN 'EXPIRED'
+           WHEN 'draft' THEN 'DRAFT'
+           ELSE 'INACTIVE'
+       END,
+       COALESCE(created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       COALESCE(updated_at, created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+FROM product_knowledge_base_v0;
+DROP TABLE product_knowledge_base_v0;
 
-CREATE TABLE IF NOT EXISTS customers (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    normalized_name TEXT NOT NULL,
-    segment TEXT,
-    savings_product TEXT,
-    savings_amount_vnd REAL CHECK(savings_amount_vnd >= 0),
-    maturity_date TEXT,
-    risk_profile TEXT,
-    location TEXT,
-    email TEXT UNIQUE,
-    phone TEXT UNIQUE,
-    dob TEXT,
-    gender TEXT,
-    marital_status TEXT,
-    number_of_dependents INTEGER CHECK(number_of_dependents >= 0),
-    occupation TEXT,
-    employer_name TEXT,
-    income_vnd REAL CHECK(income_vnd >= 0),
-    monthly_expenses_vnd REAL CHECK(monthly_expenses_vnd >= 0),
-    total_assets_vnd REAL CHECK(total_assets_vnd >= 0),
-    credit_score INTEGER CHECK(credit_score BETWEEN 0 AND 1000),
-    kyc_status TEXT DEFAULT 'verified',
-    kyc_last_updated TEXT,
-    onboarding_date TEXT,
-    branch_code TEXT,
-    rm_id TEXT,
-    preferred_channel TEXT,
-    status TEXT DEFAULT 'active',
-    last_interaction_date TEXT,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
-);
-
-CREATE TABLE IF NOT EXISTS customer_consents (
+ALTER TABLE customer_consents RENAME TO customer_consents_v0;
+CREATE TABLE customer_consents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id TEXT NOT NULL,
     purpose TEXT NOT NULL,
@@ -84,74 +70,34 @@ CREATE TABLE IF NOT EXISTS customer_consents (
     FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE,
     CHECK(expires_at IS NULL OR expires_at >= captured_at)
 );
+INSERT INTO customer_consents (
+    id, customer_id, purpose, legal_basis, source, status, captured_at,
+    version, is_current, created_at, updated_at
+)
+SELECT id, customer_id, consent_type, 'UNSPECIFIED_LEGACY', 'LEGACY_MIGRATION',
+       CASE lower(COALESCE(status, ''))
+           WHEN 'granted' THEN 'GRANTED'
+           WHEN 'denied' THEN 'DENIED'
+           WHEN 'revoked' THEN 'REVOKED'
+           WHEN 'expired' THEN 'EXPIRED'
+           ELSE 'UNKNOWN'
+       END,
+       COALESCE(last_updated, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       ROW_NUMBER() OVER (
+           PARTITION BY customer_id, consent_type
+           ORDER BY COALESCE(last_updated, '') ASC, id ASC
+       ),
+       CASE WHEN ROW_NUMBER() OVER (
+           PARTITION BY customer_id, consent_type
+           ORDER BY COALESCE(last_updated, '') DESC, id DESC
+       ) = 1 THEN 1 ELSE 0 END,
+       COALESCE(last_updated, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       COALESCE(last_updated, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+FROM customer_consents_v0;
+DROP TABLE customer_consents_v0;
 
-CREATE TABLE IF NOT EXISTS customer_tags (
-    customer_id TEXT NOT NULL,
-    tag TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    PRIMARY KEY (customer_id, tag),
-    FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS campaigns (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    target_segment TEXT,
-    type TEXT,
-    status TEXT,
-    start_date TEXT,
-    end_date TEXT,
-    budget_vnd REAL CHECK(budget_vnd >= 0),
-    total_sent INTEGER DEFAULT 0,
-    total_responses INTEGER DEFAULT 0,
-    roi_vnd REAL,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
-);
-
-CREATE TABLE IF NOT EXISTS opportunities (
-    id TEXT PRIMARY KEY,
-    customer_id TEXT NOT NULL,
-    product TEXT,
-    stage TEXT,
-    score REAL CHECK(score >= 0),
-    estimated_value_vnd REAL CHECK(estimated_value_vnd >= 0),
-    expected_close_date TEXT,
-    probability INTEGER CHECK(probability BETWEEN 0 AND 100),
-    lead_source TEXT,
-    lost_reason TEXT,
-    competitor TEXT,
-    next_step TEXT,
-    next_step_date TEXT,
-    campaign_id TEXT,
-    owner_rm_id TEXT,
-    notes TEXT,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE,
-    FOREIGN KEY(campaign_id) REFERENCES campaigns(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS interactions (
-    id TEXT PRIMARY KEY,
-    customer_id TEXT NOT NULL,
-    channel TEXT,
-    direction TEXT,
-    interaction_type TEXT,
-    occurred_at TEXT NOT NULL,
-    outcome TEXT,
-    note TEXT,
-    sentiment TEXT,
-    duration_minutes INTEGER CHECK(duration_minutes >= 0),
-    products_discussed TEXT,
-    follow_up_required INTEGER NOT NULL DEFAULT 0 CHECK(follow_up_required IN (0, 1)),
-    recording_url TEXT,
-    rm_id TEXT,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tasks (
+ALTER TABLE tasks RENAME TO tasks_v0;
+CREATE TABLE tasks (
     id TEXT PRIMARY KEY,
     rm_id TEXT NOT NULL,
     customer_id TEXT,
@@ -164,41 +110,30 @@ CREATE TABLE IF NOT EXISTS tasks (
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
+INSERT INTO tasks (
+    id, rm_id, customer_id, title, description, due_date, status, priority, created_at, updated_at
+)
+SELECT id, rm_id, customer_id, title, description, due_date,
+       CASE lower(COALESCE(status, 'pending'))
+           WHEN 'snoozed' THEN 'SNOOZED'
+           WHEN 'done' THEN 'DONE'
+           WHEN 'completed' THEN 'DONE'
+           WHEN 'dismissed' THEN 'DISMISSED'
+           WHEN 'cancelled' THEN 'DISMISSED'
+           WHEN 'canceled' THEN 'DISMISSED'
+           ELSE 'OPEN'
+       END,
+       priority,
+       COALESCE(created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       COALESCE(updated_at, created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+FROM tasks_v0;
+DROP TABLE tasks_v0;
 
-CREATE TABLE IF NOT EXISTS email_templates (
-    template_id TEXT PRIMARY KEY,
-    type TEXT,
-    product TEXT,
-    stage TEXT,
-    subject TEXT,
-    body TEXT,
-    rating REAL CHECK(rating BETWEEN 0 AND 5),
-    use_count INTEGER DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
-);
-
-CREATE TABLE IF NOT EXISTS call_scripts (
-    script_id TEXT PRIMARY KEY,
-    objective TEXT,
-    product TEXT,
-    segment TEXT,
-    stage TEXT,
-    opening TEXT,
-    main_content TEXT,
-    objection_handling TEXT,
-    closing TEXT,
-    rating REAL CHECK(rating BETWEEN 0 AND 5),
-    use_count INTEGER DEFAULT 0,
-    tags TEXT,
-    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
-);
-
--- Never store prompts, generated text, raw errors, PII, or credentials here.
--- Hashes are produced by the application before insertion; *_ref values must
--- point to separately governed, redacted records.
-CREATE TABLE IF NOT EXISTS llm_audit_logs (
+-- Deliberately discard v0 request_payload/response_payload. Standard SQLite has
+-- no built-in cryptographic hash, so migration must not retain raw data or label
+-- a non-cryptographic value as a hash.
+ALTER TABLE llm_audit_logs RENAME TO llm_audit_logs_v0;
+CREATE TABLE llm_audit_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     actor_type TEXT NOT NULL DEFAULT 'RM' CHECK(actor_type IN ('RM', 'SYSTEM', 'SERVICE')),
     actor_ref TEXT NOT NULL,
@@ -228,8 +163,24 @@ CREATE TABLE IF NOT EXISTS llm_audit_logs (
     CHECK(total_tokens IS NULL OR prompt_tokens IS NULL OR completion_tokens IS NULL OR total_tokens = prompt_tokens + completion_tokens),
     CHECK(status = 'ERROR' OR error_code IS NULL)
 );
+INSERT INTO llm_audit_logs (
+    id, actor_type, actor_ref, scope, conversation_ref, agent_intent,
+    request_ref, response_ref, api_endpoint_called, model_provider,
+    prompt_tokens, completion_tokens, total_tokens, latency_ms, status, created_at
+)
+SELECT id, 'RM', rm_id, 'CRM_ASSISTANT', printf('legacy-audit-%d', id), agent_intent,
+       CASE WHEN request_payload IS NULL THEN NULL ELSE 'LEGACY_PAYLOAD_DISCARDED' END,
+       CASE WHEN response_payload IS NULL THEN NULL ELSE 'LEGACY_PAYLOAD_DISCARDED' END,
+       api_endpoint_called, llm_provider, prompt_tokens, completion_tokens,
+       CASE WHEN prompt_tokens IS NOT NULL AND completion_tokens IS NOT NULL
+            THEN prompt_tokens + completion_tokens ELSE NULL END,
+       latency_ms, 'UNKNOWN',
+       COALESCE(created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+FROM llm_audit_logs_v0;
+DROP TABLE llm_audit_logs_v0;
 
-CREATE TABLE IF NOT EXISTS next_best_actions (
+ALTER TABLE next_best_actions RENAME TO next_best_actions_v0;
+CREATE TABLE next_best_actions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id TEXT NOT NULL,
     rm_id TEXT NOT NULL,
@@ -253,10 +204,33 @@ CREATE TABLE IF NOT EXISTS next_best_actions (
     UNIQUE(customer_id, rm_id, dedupe_key),
     CHECK(expires_at IS NULL OR expires_at >= created_at)
 );
+INSERT INTO next_best_actions (
+    id, customer_id, rm_id, action_type, product_id, product_snapshot,
+    reasoning_ref, confidence_score, recommendation_version, dedupe_key,
+    status, created_at, updated_at
+)
+SELECT nba.id, nba.customer_id, nba.rm_id, nba.action_type,
+       COALESCE(
+           (SELECT pkb.id FROM product_knowledge_base AS pkb
+            WHERE pkb.id = nba.recommended_product LIMIT 1),
+           (SELECT pkb.id FROM product_knowledge_base AS pkb
+            WHERE pkb.name = nba.recommended_product ORDER BY pkb.id LIMIT 1)
+       ),
+       nba.recommended_product,
+       CASE WHEN nba.reasoning IS NULL THEN NULL ELSE printf('legacy-nba-%d-reasoning-redacted', nba.id) END,
+       nba.confidence_score, 1, printf('legacy-nba-%d', nba.id),
+       CASE lower(COALESCE(nba.status, 'pending'))
+           WHEN 'accepted' THEN 'ACCEPTED'
+           WHEN 'rejected' THEN 'REJECTED'
+           WHEN 'expired' THEN 'EXPIRED'
+           ELSE 'PENDING'
+       END,
+       COALESCE(nba.created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       COALESCE(nba.updated_at, nba.created_at, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+FROM next_best_actions_v0 AS nba;
+DROP TABLE next_best_actions_v0;
 
--- Context payloads stay outside this event ledger. Only governed references and
--- hashes are retained so context switching remains traceable without copying PII.
-CREATE TABLE IF NOT EXISTS context_events (
+CREATE TABLE context_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     rm_id TEXT NOT NULL,
     branch_code TEXT,
@@ -275,49 +249,36 @@ CREATE TABLE IF NOT EXISTS context_events (
     CHECK(context_hash IS NULL OR length(context_hash) >= 32)
 );
 
-CREATE INDEX IF NOT EXISTS idx_customers_normalized_name ON customers(normalized_name);
-CREATE INDEX IF NOT EXISTS idx_customers_maturity_date ON customers(maturity_date);
-CREATE INDEX IF NOT EXISTS idx_customers_segment ON customers(segment);
-CREATE INDEX IF NOT EXISTS idx_customers_rm_id ON customers(rm_id);
 CREATE INDEX IF NOT EXISTS idx_customers_branch_rm_status ON customers(branch_code, rm_id, status);
-CREATE UNIQUE INDEX IF NOT EXISTS uq_customer_consents_current
+CREATE UNIQUE INDEX uq_customer_consents_current
     ON customer_consents(customer_id, purpose) WHERE is_current = 1;
-CREATE INDEX IF NOT EXISTS idx_customer_consents_query
+CREATE INDEX idx_customer_consents_query
     ON customer_consents(customer_id, purpose, is_current, status);
-CREATE INDEX IF NOT EXISTS idx_product_kb_effective
+CREATE INDEX idx_product_kb_effective
     ON product_knowledge_base(status, effective_from, effective_to);
-CREATE INDEX IF NOT EXISTS idx_opportunities_customer_id ON opportunities(customer_id);
-CREATE INDEX IF NOT EXISTS idx_opportunities_stage ON opportunities(stage);
-CREATE INDEX IF NOT EXISTS idx_opportunities_product ON opportunities(product);
-CREATE INDEX IF NOT EXISTS idx_opportunities_campaign_id ON opportunities(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_opportunities_rm_query ON opportunities(owner_rm_id, stage, expected_close_date);
-CREATE INDEX IF NOT EXISTS idx_interactions_customer_id_occurred_at ON interactions(customer_id, occurred_at);
-CREATE INDEX IF NOT EXISTS idx_interactions_channel ON interactions(channel);
-CREATE INDEX IF NOT EXISTS idx_interactions_type ON interactions(interaction_type);
 CREATE INDEX IF NOT EXISTS idx_interactions_rm_query ON interactions(rm_id, occurred_at DESC);
-CREATE INDEX IF NOT EXISTS idx_tasks_rm_id_status ON tasks(rm_id, status);
-CREATE INDEX IF NOT EXISTS idx_tasks_rm_query ON tasks(rm_id, status, due_date);
-CREATE INDEX IF NOT EXISTS idx_audit_actor_created ON llm_audit_logs(actor_ref, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_conversation_ref ON llm_audit_logs(conversation_ref);
-CREATE INDEX IF NOT EXISTS idx_audit_scope_status ON llm_audit_logs(scope, status, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_query_hash ON llm_audit_logs(query_hash);
-CREATE INDEX IF NOT EXISTS idx_nba_customer_id ON next_best_actions(customer_id);
-CREATE INDEX IF NOT EXISTS idx_nba_rm_query ON next_best_actions(rm_id, status, expires_at);
-CREATE INDEX IF NOT EXISTS idx_nba_product_id ON next_best_actions(product_id);
-CREATE INDEX IF NOT EXISTS idx_context_events_rm_query ON context_events(rm_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_context_events_branch_query ON context_events(branch_code, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_context_events_customer_query ON context_events(customer_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_context_events_conversation_query ON context_events(conversation_ref, created_at);
+CREATE INDEX idx_tasks_rm_id_status ON tasks(rm_id, status);
+CREATE INDEX idx_tasks_rm_query ON tasks(rm_id, status, due_date);
+CREATE INDEX idx_audit_actor_created ON llm_audit_logs(actor_ref, created_at DESC);
+CREATE INDEX idx_audit_conversation_ref ON llm_audit_logs(conversation_ref);
+CREATE INDEX idx_audit_scope_status ON llm_audit_logs(scope, status, created_at DESC);
+CREATE INDEX idx_audit_query_hash ON llm_audit_logs(query_hash);
+CREATE INDEX idx_nba_customer_id ON next_best_actions(customer_id);
+CREATE INDEX idx_nba_rm_query ON next_best_actions(rm_id, status, expires_at);
+CREATE INDEX idx_nba_product_id ON next_best_actions(product_id);
+CREATE INDEX idx_context_events_rm_query ON context_events(rm_id, created_at DESC);
+CREATE INDEX idx_context_events_branch_query ON context_events(branch_code, created_at DESC);
+CREATE INDEX idx_context_events_customer_query ON context_events(customer_id, created_at DESC);
+CREATE INDEX idx_context_events_conversation_query ON context_events(conversation_ref, created_at);
 
--- Keep updated_at correct even for writers that omit it. Explicitly supplied
--- updated_at values are respected for controlled imports/backfills.
-CREATE TRIGGER IF NOT EXISTS trg_product_kb_updated_at
+CREATE TRIGGER trg_product_kb_updated_at
 AFTER UPDATE ON product_knowledge_base FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE product_knowledge_base SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
 CREATE TRIGGER IF NOT EXISTS trg_customers_updated_at
 AFTER UPDATE ON customers FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE customers SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
-CREATE TRIGGER IF NOT EXISTS trg_customer_consents_updated_at
+CREATE TRIGGER trg_customer_consents_updated_at
 AFTER UPDATE ON customer_consents FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE customer_consents SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
 CREATE TRIGGER IF NOT EXISTS trg_campaigns_updated_at
@@ -326,7 +287,7 @@ BEGIN UPDATE campaigns SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WH
 CREATE TRIGGER IF NOT EXISTS trg_opportunities_updated_at
 AFTER UPDATE ON opportunities FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE opportunities SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
-CREATE TRIGGER IF NOT EXISTS trg_tasks_updated_at
+CREATE TRIGGER trg_tasks_updated_at
 AFTER UPDATE ON tasks FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE tasks SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
 CREATE TRIGGER IF NOT EXISTS trg_email_templates_updated_at
@@ -335,12 +296,14 @@ BEGIN UPDATE email_templates SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'no
 CREATE TRIGGER IF NOT EXISTS trg_call_scripts_updated_at
 AFTER UPDATE ON call_scripts FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE call_scripts SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE script_id = NEW.script_id; END;
-CREATE TRIGGER IF NOT EXISTS trg_nba_updated_at
+CREATE TRIGGER trg_nba_updated_at
 AFTER UPDATE ON next_best_actions FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN UPDATE next_best_actions SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = NEW.id; END;
 
-INSERT OR IGNORE INTO schema_migrations(version, name)
+INSERT INTO schema_migrations(version, name)
 VALUES (1, 'harden_sqlite_schema');
-
 PRAGMA user_version = 1;
 COMMIT;
+
+PRAGMA foreign_keys = ON;
+PRAGMA foreign_key_check;
