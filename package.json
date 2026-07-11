@@ -17,11 +17,15 @@
     "format:check": "prettier --check .",
     "check": "npm run lint && npm test && npm run test:crm",
     "smoke:local": "node scripts/qa/smoke-local.mjs",
+    "db:init": "python scripts/db/init_db.py",
+    "db:verify": "python scripts/db/verify_db.py",
     "test:crm": "node scripts/qa/run-crm-test-cases.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "better-sqlite3": "^12.11.1",
     "express": "^4.19.2",
+    "pg": "^8.22.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

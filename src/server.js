@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { getCrmConfig } from "./services/dbClient.js";
 import { runAgentTurn } from "./services/agentService.js";
 import { getAuditLogs } from "./services/auditLogger.js";
 import { listAgents } from "./plugins/router.js";
@@ -23,6 +24,13 @@ const port = process.env.PORT || 3000;
 const env = process.env.NODE_ENV || "development";
 if ((env === "pilot" || env === "production") && process.env.AUTH_ENABLED !== "true") {
   console.error("FATAL: Khởi động thất bại. Hệ thống bắt buộc phải bật xác thực (AUTH_ENABLED=true) trên môi trường pilot/production.");
+  process.exit(1);
+}
+
+try {
+  getCrmConfig();
+} catch (error) {
+  console.error(`FATAL: Khởi động CRM thất bại. ${error.message}`);
   process.exit(1);
 }
 

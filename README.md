@@ -141,18 +141,28 @@ Các biến chính:
 | `PORT` | Cổng Express, mặc định `3000` |
 | `CORS_ORIGIN` | Origin được phép gọi API, mặc định `*` |
 | `AUDIT_LOG_DIR` | Thư mục ghi audit log, mặc định `logs/` hoặc `/tmp/bankrm-logs` trên Vercel |
-| `CRM_USE_SANDBOX_API` | `true` để gọi CRM sandbox API, mặc định dùng mock |
+| `CRM_MODE` | Nguồn CRM: `mock`, `sqlite`, `postgres` hoặc `sandbox`; pilot/production cấm `mock` |
+| `CRM_SQLITE_PATH` | File SQLite, mặc định `db/crm.db` tính từ repo root |
+| `CRM_POSTGRES_URL` | Chuỗi kết nối PostgreSQL, chỉ đặt qua secret của môi trường |
 | `CRM_API_BASE_URL` | Base URL của CRM sandbox API |
 | `CRM_API_KEY` | API key CRM sandbox |
 | `CRM_API_AUTH_SCHEME` | `api-key` hoặc `bearer` |
 | `CRM_API_KEY_HEADER` | Tên header API key, mặc định `X-API-Key` |
-| `CRM_FALLBACK_TO_MOCK` | Nếu API lỗi thì fallback mock, mặc định khác `false` là bật |
+| `CRM_TIMEOUT_MS` | Timeout CRM từ `1` đến `120000` ms, mặc định `5000` |
 | `CRM_BUSINESS_DATE` | Ngày nghiệp vụ cố định, ví dụ `2026-07-08` |
 | `LLM_API_URL` | Endpoint proxy LLM tương thích Chat Completions |
 | `LLM_API_KEY` | Key gọi proxy LLM đã được phê duyệt |
 | `LLM_MODEL` | Model LLM, mặc định `gpt-4o-mini` |
 
 Nếu không đặt `LLM_API_URL` và `LLM_API_KEY`, hệ thống không gọi LLM bên ngoài. Fallback chỉ dùng agent nội bộ và câu trả lời tĩnh.
+
+Khởi tạo và kiểm tra SQLite local:
+
+```bash
+npm run db:init
+npm run db:verify
+CRM_MODE=sqlite npm run test:crm
+```
 
 ---
 

@@ -14,9 +14,16 @@ import {
 } from "./crmService.js";
 import { planQueryContext, enforceScope } from "./queryPlanner.js";
 
+function ensureArray(value, operation) {
+  if (!Array.isArray(value)) {
+    throw new Error(`Dữ liệu CRM không hợp lệ khi ${operation}: cần một mảng.`);
+  }
+  return value;
+}
+
 export async function listCustomers(identity) {
   const plan = planQueryContext(identity);
-  const data = await baseListCustomers();
+  const data = ensureArray(await baseListCustomers(), "liệt kê khách hàng");
   return enforceScope(data, plan, "customer");
 }
 
@@ -38,37 +45,37 @@ export async function getCustomerByName(name, identity) {
 
 export async function getMaturityCustomers(daysAhead, identity) {
   const plan = planQueryContext(identity);
-  const data = await baseGetMaturityCustomers(daysAhead);
+  const data = ensureArray(await baseGetMaturityCustomers(daysAhead), "lọc khách hàng đến hạn");
   return enforceScope(data, plan, "customer");
 }
 
 export async function listOpportunities(identity) {
   const plan = planQueryContext(identity);
-  const data = await baseListOpportunities();
+  const data = ensureArray(await baseListOpportunities(), "liệt kê cơ hội");
   return enforceScope(data, plan, "opportunity");
 }
 
 export async function getCustomerOpportunities(customerId, identity) {
   const plan = planQueryContext(identity);
-  const data = await baseGetCustomerOpportunities(customerId);
+  const data = ensureArray(await baseGetCustomerOpportunities(customerId), "lọc cơ hội khách hàng");
   return enforceScope(data, plan, "opportunity");
 }
 
 export async function listInteractions(identity) {
   const plan = planQueryContext(identity);
-  const data = await baseListInteractions();
+  const data = ensureArray(await baseListInteractions(), "liệt kê tương tác");
   return enforceScope(data, plan, "interaction");
 }
 
 export async function getCustomerInteractions(customerId, identity) {
   const plan = planQueryContext(identity);
-  const data = await baseGetCustomerInteractions(customerId);
+  const data = ensureArray(await baseGetCustomerInteractions(customerId), "lọc tương tác khách hàng");
   return enforceScope(data, plan, "interaction");
 }
 
 export async function listCampaigns(identity) {
   const plan = planQueryContext(identity);
-  const data = await baseListCampaigns();
+  const data = ensureArray(await baseListCampaigns(), "liệt kê chiến dịch");
   return enforceScope(data, plan, "campaign");
 }
 

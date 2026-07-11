@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { getCrmConfig } from "../services/dbClient.js";
 import {
   listCustomers,
   listOpportunities,
@@ -20,6 +21,13 @@ import { writeAudit } from "../services/auditLogger.js";
 const env = process.env.NODE_ENV || "development";
 if ((env === "pilot" || env === "production") && process.env.AUTH_ENABLED !== "true") {
   console.error("FATAL: Khởi động thất bại. Hệ thống bắt buộc phải bật xác thực (AUTH_ENABLED=true) trên môi trường pilot/production.");
+  process.exit(1);
+}
+
+try {
+  getCrmConfig();
+} catch (error) {
+  console.error(`FATAL: Khởi động CRM thất bại. ${error.message}`);
   process.exit(1);
 }
 

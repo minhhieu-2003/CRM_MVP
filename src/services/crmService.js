@@ -1,5 +1,6 @@
 import fs from "fs";
 import { campaigns, customers, interactions, opportunities } from "./crmData.js";
+import { getCrmConfig, readCrmCollection, requestCrmOperation } from "./dbClient.js";
 import { normalizeVietnamese } from "./textUtils.js";
 
 let emailTemplates = [];
@@ -26,9 +27,11 @@ try {
   // ignore
 }
 
+let cacheKey = null;
 let cachedCustomers = null;
 let cachedOpportunities = null;
 let cachedInteractions = null;
+let cachedCampaigns = null;
 
 function toDate(value) {
   return new Date(`${value}T00:00:00+07:00`);
@@ -54,80 +57,23 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(fileUrl, "utf8").replace(/^\uFEFF/, ""));
 }
 
-async function crmRequest(endpoint, options = {}) {
-  const currentMode = process.env.CRM_MODE || "mock";
-  if (currentMode === "mock") return null;
-
-  const baseUrl = process.env.CRM_API_BASE_URL?.replace(/\/$/, "");
-  const apiKey = process.env.CRM_API_KEY;
-
-  if (!baseUrl || !apiKey) {
-    throw new Error("Missing CRM API configuration (CRM_API_BASE_URL or CRM_API_KEY)");
-  }
-
-  const headers = {
-    Accept: "application/json",
-    ...(options.body ? { "Content-Type": "application/json" } : {})
-  };
-
-  if ((process.env.CRM_API_AUTH_SCHEME || "api-key") === "bearer") {
-    headers.Authorization = `Bearer ${apiKey}`;
-  } else {
-    headers[process.env.CRM_API_KEY_HEADER || "X-API-Key"] = apiKey;
-  }
-
-  const controller = new AbortController();
-  const timeoutMs = process.env.CRM_TIMEOUT_MS ? parseInt(process.env.CRM_TIMEOUT_MS) : 5000;
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(`${baseUrl}${endpoint}`, {
-      method: options.method ?? "GET",
-      headers,
-      body: options.body ? JSON.stringify(options.body) : undefined,
-      signal: controller.signal
-    });
-
-    if (!response.ok) {
-      throw new Error(`CRM API ${endpoint} trả HTTP ${response.status}`);
-    }
-
-    let payload;
-    try {
-      payload = await response.json();
-    } catch (err) {
-      throw new Error(`CRM API ${endpoint} trả dữ liệu không hợp lệ (malformed)`);
-    }
-
-    return payload.data ?? payload;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error(`CRM API ${endpoint} timeout sau ${timeoutMs}ms`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-async function withFallback(loader, fallbackValue) {
-  const currentMode = process.env.CRM_MODE || "mock";
-  try {
-    const data = await loader();
-    return data ?? fallbackValue;
-  } catch (error) {
-    if (currentMode === "sandbox" || currentMode === "production") {
-      throw error;
-    }
-    return fallbackValue;
+function refreshCacheForProvider() {
+  const nextKey = getCrmConfig().cacheKey;
+  if (nextKey !== cacheKey) {
+    cacheKey = nextKey;
+    cachedCustomers = null;
+    cachedOpportunities = null;
+    cachedInteractions = null;
+    cachedCampaigns = null;
   }
 }
 
 function pickBest(items, predicate) {
+  if (items.length === 0) throw new Error("Không có mẫu nội dung CRM phù hợp.");
   const candidates = items.filter(predicate);
   const pool = candidates.length > 0 ? candidates : items;
   return [...pool].sort(
-    (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.use_count ?? 0) - (a.use_count ?? 0)
+    (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.useCount ?? 0) - (a.useCount ?? 0)
   )[0];
 }
 
@@ -181,33 +127,38 @@ function daysBetween(fromDateValue, toDateValue) {
 }
 
 export async function listCustomers() {
+  refreshCacheForProvider();
   if (cachedCustomers) return cachedCustomers;
-  const data = await withFallback(() => crmRequest("/customers"), customers);
-  const result = data === customers && largeCustomers.length > 0 ? [...customers, ...largeCustomers] : data;
+  const mockData = largeCustomers.length > 0 ? [...customers, ...largeCustomers] : customers;
+  const result = await readCrmCollection("customers", mockData);
 
-  cachedCustomers = result.map(c => {
-    if (!c.normalizedName) c.normalizedName = normalizeVietnamese(c.name);
-    return c;
-  });
+  cachedCustomers = result.map((customer) => ({
+    ...customer,
+    normalizedName: customer.normalizedName || normalizeVietnamese(customer.name)
+  }));
   return cachedCustomers;
 }
 
 export async function listOpportunities() {
+  refreshCacheForProvider();
   if (cachedOpportunities) return cachedOpportunities;
-  const data = await withFallback(() => crmRequest("/opportunities"), opportunities);
-  cachedOpportunities = data === opportunities && largeOpportunities.length > 0 ? [...opportunities, ...largeOpportunities] : data;
+  const mockData = largeOpportunities.length > 0 ? [...opportunities, ...largeOpportunities] : opportunities;
+  cachedOpportunities = await readCrmCollection("opportunities", mockData);
   return cachedOpportunities;
 }
 
 export async function listInteractions() {
+  refreshCacheForProvider();
   if (cachedInteractions) return cachedInteractions;
-  const data = await withFallback(() => crmRequest("/interactions"), interactions);
-  cachedInteractions = data === interactions && largeInteractions.length > 0 ? [...interactions, ...largeInteractions] : data;
+  const mockData = largeInteractions.length > 0 ? [...interactions, ...largeInteractions] : interactions;
+  cachedInteractions = await readCrmCollection("interactions", mockData);
   return cachedInteractions;
 }
 
 export async function listCampaigns() {
-  return withFallback(() => crmRequest("/campaigns"), campaigns);
+  refreshCacheForProvider();
+  if (!cachedCampaigns) cachedCampaigns = await readCrmCollection("campaigns", campaigns);
+  return cachedCampaigns;
 }
 
 export async function getCustomerByName(name) {
@@ -246,18 +197,22 @@ export async function getMaturityCustomers(daysAhead = 7, now = null) {
 }
 
 export async function draftEmailForCustomer(customer, suggestion) {
-  const remoteDraft = await withFallback(
-    () =>
-      crmRequest("/draft-email", {
-        method: "POST",
-        body: { customerId: customer.id, suggestion }
-      }),
-    null
-  );
-  if (remoteDraft) return remoteDraft;
+  const mode = getCrmConfig().mode;
+  const remoteDraft = await requestCrmOperation("/draft-email", {
+    method: "POST",
+    body: { customerId: customer.id, suggestion }
+  });
+  if (mode === "sandbox") {
+    if (!remoteDraft || typeof remoteDraft !== "object" || Array.isArray(remoteDraft)) {
+      throw new Error("CRM Sandbox trả về bản nháp email không hợp lệ.");
+    }
+    return remoteDraft;
+  }
+
+  const templates = await readCrmCollection("emailTemplates", emailTemplates);
 
   const template = pickBest(
-    emailTemplates,
+    templates,
     (item) => item.type === "renewal_reminder" || item.stage === "pre_maturity"
   );
 
@@ -271,31 +226,33 @@ export async function draftEmailForCustomer(customer, suggestion) {
   return {
     subject,
     body,
-    templateId: template.template_id
+    templateId: template.templateId
   };
 }
 
 export async function draftCallScript(customer, suggestion) {
-  const remoteScript = await withFallback(
-    () =>
-      crmRequest("/call-script", {
-        method: "POST",
-        body: { customerId: customer.id, suggestion }
-      }),
-    null
-  );
-  if (remoteScript?.script) return remoteScript.script;
-  if (typeof remoteScript === "string") return remoteScript;
+  const mode = getCrmConfig().mode;
+  const remoteScript = await requestCrmOperation("/call-script", {
+    method: "POST",
+    body: { customerId: customer.id, suggestion }
+  });
+  if (mode === "sandbox") {
+    if (remoteScript?.script) return remoteScript.script;
+    if (typeof remoteScript === "string") return remoteScript;
+    throw new Error("CRM Sandbox trả về kịch bản gọi không hợp lệ.");
+  }
+
+  const scripts = await readCrmCollection("callScripts", callScripts);
 
   const script = pickBest(
-    callScripts,
+    scripts,
     (item) => item.objective === "renewal_reminder" || item.stage === "Renewal"
   );
 
-  const objection = script.objection_handling?.[0];
+  const objection = script.objectionHandling?.[0];
   return [
     fillPlaceholders(script.opening, customer),
-    fillPlaceholders(script.main_content, customer),
+    fillPlaceholders(script.mainContent, customer),
     objection
       ? `Nếu khách hàng nói "${objection.objection}": ${fillPlaceholders(objection.response, customer)}`
       : "",
