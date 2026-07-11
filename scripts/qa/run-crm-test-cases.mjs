@@ -1,4 +1,5 @@
 import fs from "fs";
+process.env.CRM_BUSINESS_DATE = "2026-07-07";
 import { routeConversation } from "../../src/services/mcpContextEngine.js";
 import {
   draftCallScript,
