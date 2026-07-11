@@ -29,8 +29,6 @@ try {
 let cachedCustomers = null;
 let cachedOpportunities = null;
 let cachedInteractions = null;
-const useSandboxApi = process.env.CRM_USE_SANDBOX_API === "true";
-const fallbackToMock = process.env.CRM_FALLBACK_TO_MOCK !== "false";
 
 function toDate(value) {
   return new Date(`${value}T00:00:00+07:00`);
@@ -57,9 +55,15 @@ function readJson(relativePath) {
 }
 
 async function crmRequest(endpoint, options = {}) {
+  const currentMode = process.env.CRM_MODE || "mock";
+  if (currentMode === "mock") return null;
+
   const baseUrl = process.env.CRM_API_BASE_URL?.replace(/\/$/, "");
   const apiKey = process.env.CRM_API_KEY;
-  if (!useSandboxApi || !baseUrl || !apiKey) return null;
+
+  if (!baseUrl || !apiKey) {
+    throw new Error("Missing CRM API configuration (CRM_API_BASE_URL or CRM_API_KEY)");
+  }
 
   const headers = {
     Accept: "application/json",
@@ -72,27 +76,50 @@ async function crmRequest(endpoint, options = {}) {
     headers[process.env.CRM_API_KEY_HEADER || "X-API-Key"] = apiKey;
   }
 
-  const response = await fetch(`${baseUrl}${endpoint}`, {
-    method: options.method ?? "GET",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
+  const controller = new AbortController();
+  const timeoutMs = process.env.CRM_TIMEOUT_MS ? parseInt(process.env.CRM_TIMEOUT_MS) : 5000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    throw new Error(`CRM API ${endpoint} trả HTTP ${response.status}`);
+  try {
+    const response = await fetch(`${baseUrl}${endpoint}`, {
+      method: options.method ?? "GET",
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(`CRM API ${endpoint} trả HTTP ${response.status}`);
+    }
+
+    let payload;
+    try {
+      payload = await response.json();
+    } catch (err) {
+      throw new Error(`CRM API ${endpoint} trả dữ liệu không hợp lệ (malformed)`);
+    }
+
+    return payload.data ?? payload;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(`CRM API ${endpoint} timeout sau ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const payload = await response.json();
-  return payload.data ?? payload;
 }
 
 async function withFallback(loader, fallbackValue) {
+  const currentMode = process.env.CRM_MODE || "mock";
   try {
     const data = await loader();
     return data ?? fallbackValue;
   } catch (error) {
-    if (fallbackToMock) return fallbackValue;
-    throw error;
+    if (currentMode === "sandbox" || currentMode === "production") {
+      throw error;
+    }
+    return fallbackValue;
   }
 }
 
