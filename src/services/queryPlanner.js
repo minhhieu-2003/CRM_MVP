@@ -2,6 +2,7 @@ export function planQueryContext(identity) {
   if (!identity || identity.role === "admin") {
     return { filters: {} };
   }
+
   return {
     filters: {
       location: identity.branchId,
@@ -10,25 +11,40 @@ export function planQueryContext(identity) {
   };
 }
 
-export function enforceScope(items, plan, entityType) {
+function hasFilter(plan, key) {
+  const value = plan.filters[key];
+  return Boolean(value && value !== "default");
+}
+
+export function enforceScope(items, plan, entityType, scope = {}) {
   if (Object.keys(plan.filters).length === 0) return items;
 
-  return items.filter((item) => {
-    if (entityType === "customer") {
-      // Allow if location matches branchId OR item has no location (global)
-      // For MVP, just match location with branchId.
-      const matchBranch = plan.filters.location && plan.filters.location !== "default"
-        ? item.location === plan.filters.location
-        : true;
-
-      const matchRm = plan.filters.rmId && plan.filters.rmId !== "default" && item.rmId
-        ? item.rmId === plan.filters.rmId
-        : true;
-
-      // Assuming match if either is true, or if branch matches.
+  if (entityType === "customer") {
+    return items.filter((item) => {
+      const matchBranch = !hasFilter(plan, "location") || item.location === plan.filters.location;
+      const matchRm =
+        !hasFilter(plan, "rmId") || !item.rmId || item.rmId === plan.filters.rmId;
       return matchBranch && matchRm;
-    }
-    // For other entities, assume they belong to scoped customers, or no scope for MVP
-    return true;
-  });
+    });
+  }
+
+  if (entityType === "opportunity" || entityType === "interaction") {
+    const customerIds = scope.customerIds ?? new Set();
+    return items.filter((item) => customerIds.has(item.customerId));
+  }
+
+  if (entityType === "campaign") {
+    const customerSegments = scope.customerSegments ?? new Set();
+    return items.filter((item) => {
+      const matchBranch =
+        !hasFilter(plan, "location") ||
+        (!item.branchId && !item.location) ||
+        item.branchId === plan.filters.location ||
+        item.location === plan.filters.location;
+      const matchSegment = !item.targetSegment || customerSegments.has(item.targetSegment);
+      return matchBranch && matchSegment;
+    });
+  }
+
+  return [];
 }

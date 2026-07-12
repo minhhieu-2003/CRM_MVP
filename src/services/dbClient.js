@@ -6,7 +6,7 @@ import pg from "pg";
 
 const { Pool } = pg;
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
-const REQUIRED_SQLITE_SCHEMA_VERSION = 1;
+const REQUIRED_SQLITE_SCHEMA_VERSION = 2;
 const CACHE_KEY_SECRET = randomBytes(32);
 
 const SUPPORTED_MODES = new Set(["mock", "sqlite", "postgres", "sandbox"]);
@@ -18,7 +18,13 @@ const TABLES = Object.freeze({
   interactions: "interactions",
   campaigns: "campaigns",
   emailTemplates: "email_templates",
-  callScripts: "call_scripts"
+  callScripts: "call_scripts",
+  // Added in migration 002
+  rmProfiles: "rm_profiles",
+  intentKeywords: "intent_keywords",
+  keywordAliases: "keyword_aliases",
+  savedQueries: "saved_queries",
+  rmNotifications: "rm_notifications"
 });
 
 let postgresPool = null;
@@ -93,11 +99,33 @@ function camelCaseKey(key) {
   return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
+/**
+ * Converts a single DB row's snake_case keys to camelCase.
+ * This is the canonical field-name normalization step that lets all
+ * downstream code (crmService, mcpContextEngine) use a single camelCase
+ * contract regardless of whether data comes from mock JSON, SQLite, or Postgres.
+ * @param {Record<string, unknown>} row - A raw DB row object.
+ * @returns {Record<string, unknown>} The same row with camelCase keys.
+ * @example
+ * mapRowToCamelCase({ savings_amount_vnd: 500, maturity_date: '2026-07-10' })
+ * // → { savingsAmountVnd: 500, maturityDate: '2026-07-10' }
+ */
 export function mapRowToCamelCase(row) {
   if (!row || typeof row !== "object" || Array.isArray(row)) return row;
   return Object.fromEntries(Object.entries(row).map(([key, value]) => [camelCaseKey(key), value]));
 }
 
+/**
+ * Maps an array of raw CRM rows to camelCase and applies collection-specific
+ * post-processing (e.g. interactions.occurredAt → timestamp,
+ * callScripts.objectionHandling JSON parse).
+ * Called for ALL data sources: mock, SQLite, Postgres, and Sandbox API.
+ * The output always uses camelCase keys so callers never need to branch on source.
+ * @param {unknown[]} rows - Raw rows from any data source.
+ * @param {string} collection - Collection name (e.g. 'customers', 'interactions').
+ * @param {string} provider - Human-readable source label for error messages.
+ * @returns {Record<string, unknown>[]} Normalized rows in camelCase.
+ */
 function normalizeRows(rows, collection, provider) {
   if (!Array.isArray(rows)) {
     throw new Error(`Dữ liệu ${collection} từ CRM ${provider} không hợp lệ: cần một mảng.`);

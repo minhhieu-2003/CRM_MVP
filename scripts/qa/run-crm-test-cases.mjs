@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 process.env.CRM_BUSINESS_DATE = "2026-07-07";
 import { routeConversation } from "../../src/services/mcpContextEngine.js";
 import {
@@ -12,7 +13,10 @@ import {
 } from "../../src/services/crmService.js";
 
 const testCases = JSON.parse(
-  fs.readFileSync(new URL("../../src/data/mock/bank_a_crm_test_cases.json", import.meta.url), "utf8")
+  fs.readFileSync(
+    new URL("../../src/data/mock/bank_a_crm_test_cases.json", import.meta.url),
+    "utf8"
+  )
 );
 
 const endpointMap = {
@@ -22,33 +26,105 @@ const endpointMap = {
   campaigns: listCampaigns
 };
 
-let failed = 0;
+const isReportMode = process.argv.includes("--report");
+let failedCount = 0;
+let passCount = 0;
+const results = [];
+let missingSourcesCount = 0;
 
 for (const testCase of testCases) {
+  const startTime = performance.now();
+  let testCaseResult = { id: testCase.id, type: testCase.type, passed: false };
+
   try {
-    await runTestCase(testCase);
+    const result = await runTestCase(testCase);
+    if (result && result.missingSources) {
+      missingSourcesCount++;
+      throw new Error("Response is missing sources");
+    }
+    passCount++;
+    testCaseResult.passed = true;
     console.log(`PASS ${testCase.id}`);
   } catch (error) {
-    failed += 1;
+    failedCount++;
+    testCaseResult.reason = error.message;
     console.error(`FAIL ${testCase.id}: ${error.message}`);
   }
+
+  const endTime = performance.now();
+  testCaseResult.latency = endTime - startTime;
+  results.push(testCaseResult);
 }
 
-if (failed > 0) {
-  console.error(`\n${failed}/${testCases.length} CRM test cases failed.`);
+const totalCases = testCases.length;
+const accuracy = passCount / totalCases;
+const latencies = results.map((r) => r.latency).sort((a, b) => a - b);
+const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length || 0;
+const p95Index = Math.max(0, Math.ceil(latencies.length * 0.95) - 1);
+const p95Latency = latencies[p95Index] || 0;
+const failedCasesList = results
+  .filter((r) => !r.passed)
+  .map((r) => ({ id: r.id, reason: r.reason }));
+
+console.log(`\n--- EVALUATION REPORT ---`);
+console.log(`Total Cases: ${totalCases}`);
+console.log(`Passed: ${passCount}`);
+console.log(`Failed: ${failedCount}`);
+console.log(`Accuracy: ${(accuracy * 100).toFixed(2)}%`);
+console.log(`Average Latency: ${avgLatency.toFixed(2)}ms`);
+console.log(`P95 Latency: ${p95Latency.toFixed(2)}ms`);
+console.log(`Missing Sources: ${missingSourcesCount}`);
+
+if (failedCount > 0) {
+  console.log(`\nFailed Cases:`);
+  failedCasesList.forEach((c) => console.log(`  - ${c.id}: ${c.reason}`));
+}
+
+const reportData = {
+  totalCases,
+  passCount,
+  failedCount,
+  accuracy,
+  avgLatencyMs: avgLatency,
+  p95LatencyMs: p95Latency,
+  missingSourcesCount,
+  failedCases: failedCasesList,
+  results
+};
+
+if (isReportMode) {
+  const reportsDir = path.join(process.cwd(), "reports");
+  if (!fs.existsSync(reportsDir)) {
+    fs.mkdirSync(reportsDir, { recursive: true });
+  }
+  const reportPath = path.join(reportsDir, "eval-report.json");
+  fs.writeFileSync(reportPath, JSON.stringify(reportData, null, 2), "utf8");
+  console.log(`\nReport saved to ${reportPath}`);
+}
+
+if (accuracy < 0.85 || missingSourcesCount > 0) {
+  console.error(
+    `\nFAILED CI: Accuracy must be >= 85% and no responses can be missing sources. Current accuracy: ${(accuracy * 100).toFixed(2)}%, Missing sources count: ${missingSourcesCount}`
+  );
   process.exit(1);
 }
 
-console.log(`\nAll ${testCases.length} CRM test cases passed.`);
+console.log(`\nAll criteria met successfully.`);
+process.exit(0);
 
 async function runTestCase(testCase) {
+  let missingSources = false;
+
   if (testCase.type === "chat") {
     const result = await routeConversation({
       conversationId: testCase.id,
       message: testCase.prompt
     });
+    if (!result.sources || result.sources.length === 0) {
+      missingSources = true;
+    }
     assertChatResult(testCase, result);
-    return;
+    return { missingSources };
   }
 
   if (testCase.type === "chat_sequence") {
@@ -58,9 +134,12 @@ async function runTestCase(testCase) {
         conversationId: testCase.id,
         message: prompt
       });
+      if (!result.sources || result.sources.length === 0) {
+        missingSources = true;
+      }
     }
     assertChatResult(testCase, result);
-    return;
+    return { missingSources };
   }
 
   if (testCase.type === "draft_email") {
@@ -71,7 +150,7 @@ async function runTestCase(testCase) {
     );
     const combined = `${draft.templateId}\n${draft.subject}\n${draft.body}`;
     assertKeywords(combined, testCase.expectedKeywords);
-    return;
+    return { missingSources: false };
   }
 
   if (testCase.type === "call_script") {
@@ -81,7 +160,7 @@ async function runTestCase(testCase) {
       "Em có thể gửi thêm đề xuất cá nhân hóa sau cuộc gọi."
     );
     assertKeywords(script, testCase.expectedKeywords);
-    return;
+    return { missingSources: false };
   }
 
   if (testCase.type === "crm_endpoint") {
@@ -94,6 +173,7 @@ async function runTestCase(testCase) {
         `Expected at least ${testCase.expectedCountAtLeast} records, got ${list.length}`
       );
     }
+    return { missingSources: false };
   }
 }
 
@@ -104,7 +184,7 @@ function assertChatResult(testCase, result) {
     );
   }
 
-  const sourceEndpoints = result.sources.map((source) => source.endpoint);
+  const sourceEndpoints = result.sources ? result.sources.map((source) => source.endpoint) : [];
   for (const endpoint of testCase.expectedSources) {
     if (!sourceEndpoints.includes(endpoint)) {
       throw new Error(`Missing source ${endpoint}`);

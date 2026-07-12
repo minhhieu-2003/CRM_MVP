@@ -16,14 +16,32 @@ import { planQueryContext, enforceScope } from "./queryPlanner.js";
 
 function ensureArray(value, operation) {
   if (!Array.isArray(value)) {
-    throw new Error(`Dữ liệu CRM không hợp lệ khi ${operation}: cần một mảng.`);
+    throw new Error(`Du lieu CRM khong hop le khi ${operation}: can mot mang.`);
   }
   return value;
 }
 
+async function getCustomerScope(identity) {
+  const plan = planQueryContext(identity);
+  const customers = ensureArray(await baseListCustomers(), "liet ke khach hang");
+  const scopedCustomers = enforceScope(customers, plan, "customer");
+  return {
+    plan,
+    customerIds: new Set(scopedCustomers.map((customer) => customer.id)),
+    customerSegments: new Set(
+      scopedCustomers.map((customer) => customer.segment).filter(Boolean)
+    )
+  };
+}
+
+async function enforceCustomerLinkedScope(data, identity, entityType) {
+  const scope = await getCustomerScope(identity);
+  return enforceScope(data, scope.plan, entityType, scope);
+}
+
 export async function listCustomers(identity) {
   const plan = planQueryContext(identity);
-  const data = ensureArray(await baseListCustomers(), "liệt kê khách hàng");
+  const data = ensureArray(await baseListCustomers(), "liet ke khach hang");
   return enforceScope(data, plan, "customer");
 }
 
@@ -45,38 +63,40 @@ export async function getCustomerByName(name, identity) {
 
 export async function getMaturityCustomers(daysAhead, identity) {
   const plan = planQueryContext(identity);
-  const data = ensureArray(await baseGetMaturityCustomers(daysAhead), "lọc khách hàng đến hạn");
+  const data = ensureArray(await baseGetMaturityCustomers(daysAhead), "loc khach hang den han");
   return enforceScope(data, plan, "customer");
 }
 
 export async function listOpportunities(identity) {
-  const plan = planQueryContext(identity);
-  const data = ensureArray(await baseListOpportunities(), "liệt kê cơ hội");
-  return enforceScope(data, plan, "opportunity");
+  const data = ensureArray(await baseListOpportunities(), "liet ke co hoi");
+  return enforceCustomerLinkedScope(data, identity, "opportunity");
 }
 
 export async function getCustomerOpportunities(customerId, identity) {
-  const plan = planQueryContext(identity);
-  const data = ensureArray(await baseGetCustomerOpportunities(customerId), "lọc cơ hội khách hàng");
-  return enforceScope(data, plan, "opportunity");
+  const data = ensureArray(
+    await baseGetCustomerOpportunities(customerId),
+    "loc co hoi khach hang"
+  );
+  return enforceCustomerLinkedScope(data, identity, "opportunity");
 }
 
 export async function listInteractions(identity) {
-  const plan = planQueryContext(identity);
-  const data = ensureArray(await baseListInteractions(), "liệt kê tương tác");
-  return enforceScope(data, plan, "interaction");
+  const data = ensureArray(await baseListInteractions(), "liet ke tuong tac");
+  return enforceCustomerLinkedScope(data, identity, "interaction");
 }
 
 export async function getCustomerInteractions(customerId, identity) {
-  const plan = planQueryContext(identity);
-  const data = ensureArray(await baseGetCustomerInteractions(customerId), "lọc tương tác khách hàng");
-  return enforceScope(data, plan, "interaction");
+  const data = ensureArray(
+    await baseGetCustomerInteractions(customerId),
+    "loc tuong tac khach hang"
+  );
+  return enforceCustomerLinkedScope(data, identity, "interaction");
 }
 
 export async function listCampaigns(identity) {
-  const plan = planQueryContext(identity);
-  const data = ensureArray(await baseListCampaigns(), "liệt kê chiến dịch");
-  return enforceScope(data, plan, "campaign");
+  const data = ensureArray(await baseListCampaigns(), "liet ke chien dich");
+  const scope = await getCustomerScope(identity);
+  return enforceScope(data, scope.plan, "campaign", scope);
 }
 
 export { draftEmailForCustomer, draftCallScript, formatVnd };

@@ -6,8 +6,14 @@ import path from "node:path";
 describe("HTTP API Tests", () => {
   let server;
   let baseUrl;
+  let originalAuthEnabled;
+  let originalCrmMode;
 
   before(async () => {
+    originalAuthEnabled = process.env.AUTH_ENABLED;
+    originalCrmMode = process.env.CRM_MODE;
+    process.env.AUTH_ENABLED = "false";
+    process.env.CRM_MODE = "mock";
     process.env.AUDIT_LOG_DIR = path.join(os.tmpdir(), "crm_audit_test");
     const { app } = await import("../../src/server.js");
 
@@ -23,6 +29,10 @@ describe("HTTP API Tests", () => {
     if (server) {
       server.close();
     }
+    if (originalAuthEnabled === undefined) delete process.env.AUTH_ENABLED;
+    else process.env.AUTH_ENABLED = originalAuthEnabled;
+    if (originalCrmMode === undefined) delete process.env.CRM_MODE;
+    else process.env.CRM_MODE = originalCrmMode;
   });
 
   test("GET /api/health trả ok true", async () => {
@@ -112,6 +122,48 @@ describe("HTTP API Tests", () => {
     assert.match(json.reply, /2\.000\.000\.000/);
   });
 
+  test('POST /api/chat hiểu "15 khách tiếp" là xem tiếp danh sách đang lọc', async () => {
+    const conversationId = "maturity-next-page-sequence";
+    const first = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId, message: "1" })
+    });
+    assert.strictEqual(first.status, 200);
+    const firstJson = await first.json();
+    assert.match(firstJson.reply, /hiển thị 15 khách hàng/);
+
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId, message: "15 khách tiếp" })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    assert.doesNotMatch(json.reply, /khách hàng "tiep"/i);
+    assert.match(json.reply, /16\./);
+    assert.match(json.reply, /16-30\//);
+    assert.equal(json.context.lastIntent, "maturity-reminder");
+    assert.deepEqual(
+      json.sources.map((s) => s.endpoint),
+      ["GET /customers"]
+    );
+  });
+
+  test('POST /api/chat không coi "15 khách tiếp" là tên khách khi chưa có danh sách', async () => {
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversationId: "next-page-without-list",
+        message: "15 khách tiếp"
+      })
+    });
+    assert.strictEqual(res.status, 200);
+    const json = await res.json();
+    assert.doesNotMatch(json.reply, /khách hàng "tiep"/i);
+  });
+
   test('POST /api/chat với sequence "hôm nay..." rồi "soạn mail" dùng context khách hàng', async () => {
     const conversationId = "email-mail-sequence";
     await fetch(`${baseUrl}/api/chat`, {
@@ -136,6 +188,37 @@ describe("HTTP API Tests", () => {
     assert.match(json.reply, /Email 1/);
   });
 
+  test("POST /api/chat giữ customer context khi chuyển sang campaign", async () => {
+    const conversationId = "customer-campaign-sequence";
+    await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversationId,
+        message: "Khách Nguyễn Văn An có cơ hội nào phù hợp?"
+      })
+    });
+
+    const response = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        conversationId,
+        message: "Chiến dịch nào phù hợp với khách này?"
+      })
+    });
+    assert.equal(response.status, 200);
+    const json = await response.json();
+    assert.equal(json.context.currentModule, "campaign");
+    assert.deepEqual(json.context.focusedCustomers, ["C001"]);
+    assert.match(json.reply, /Bảo hiểm liên kết vay mua nhà/);
+    assert.doesNotMatch(json.reply, /Gia hạn tiết kiệm quý 3/);
+    assert.deepEqual(
+      json.sources.map((source) => source.endpoint),
+      ["GET /customers", "GET /campaigns"]
+    );
+  });
+
   test("POST /api/chat thiếu message trả 400", async () => {
     const res = await fetch(`${baseUrl}/api/chat`, {
       method: "POST",
@@ -143,6 +226,50 @@ describe("HTTP API Tests", () => {
       body: JSON.stringify({})
     });
     assert.strictEqual(res.status, 400);
+  });
+
+  test("POST /api/chat validates blank and oversized messages", async () => {
+    for (const message of ["   ", "x".repeat(4001)]) {
+      const res = await fetch(`${baseUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+      assert.strictEqual(res.status, 400);
+      assert.deepEqual(await res.json(), { error: "Du lieu yeu cau khong hop le." });
+    }
+  });
+
+  test("draft endpoints validate customerId", async () => {
+    for (const endpoint of ["/api/draft-email", "/api/call-script"]) {
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ suggestion: "test" })
+      });
+      assert.strictEqual(res.status, 400);
+    }
+  });
+
+  test("malformed JSON and internal failures return safe client errors", async () => {
+    const malformed = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{"
+    });
+    assert.strictEqual(malformed.status, 400);
+    assert.deepEqual(await malformed.json(), { error: "Du lieu yeu cau khong hop le." });
+
+    process.env.CRM_MODE = "invalid-provider";
+    try {
+      const failed = await fetch(`${baseUrl}/api/crm/customers`);
+      assert.strictEqual(failed.status, 500);
+      const payload = await failed.json();
+      assert.deepEqual(Object.keys(payload), ["error"]);
+      assert.ok(!JSON.stringify(payload).includes("CRM_MODE"));
+    } finally {
+      process.env.CRM_MODE = "mock";
+    }
   });
 
   test("GET crm endpoints trả data array", async () => {

@@ -14,7 +14,7 @@ DEFAULT_DB_PATH = REPO_ROOT / "db" / "crm.db"
 DEFAULT_SCHEMA_PATH = REPO_ROOT / "db" / "schema.sql"
 DEFAULT_V1_MIGRATION_PATH = REPO_ROOT / "db" / "migrations" / "001_harden_sqlite_schema.sql"
 DEFAULT_BUSY_TIMEOUT_MS = 5_000
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA_CONTRACT = {
     "schema_migrations": {"version", "name", "applied_at"},
@@ -126,6 +126,46 @@ SCHEMA_CONTRACT = {
         "event_type",
         "status",
     },
+    "rm_profiles": {
+        "id",
+        "full_name",
+        "normalized_name",
+        "branch_code",
+        "role",
+        "status",
+    },
+    "intent_keywords": {
+        "id",
+        "intent_name",
+        "keyword",
+        "match_type",
+        "weight",
+        "active",
+    },
+    "keyword_aliases": {
+        "id",
+        "alias",
+        "canonical",
+        "active",
+    },
+    "saved_queries": {
+        "id",
+        "rm_id",
+        "name",
+        "query_text",
+        "normalized_query",
+        "resolved_intent",
+        "use_count",
+        "is_pinned",
+    },
+    "rm_notifications": {
+        "id",
+        "rm_id",
+        "type",
+        "title",
+        "priority",
+        "status",
+    },
 }
 
 REQUIRED_INDEXES = {
@@ -133,6 +173,10 @@ REQUIRED_INDEXES = {
     "idx_customers_maturity_date",
     "idx_opportunities_customer_id",
     "idx_interactions_customer_id_occurred_at",
+    "idx_intent_keywords_intent",
+    "idx_keyword_aliases_alias",
+    "idx_rm_notifications_rm",
+    "idx_saved_queries_rm",
 }
 
 COUNT_TABLES = (

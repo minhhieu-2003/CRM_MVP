@@ -12,22 +12,12 @@ import {
   listCampaigns
 } from "./crmRepository.js";
 import { normalizeVietnamese } from "./textUtils.js";
-
-const contextStore = new Map();
-
-function getState(conversationId) {
-  if (!contextStore.has(conversationId)) {
-    contextStore.set(conversationId, {
-      currentModule: "general",
-      focusedCustomers: [],
-      lastIntent: null
-    });
-  }
-  return contextStore.get(conversationId);
-}
+import { getConversationContext, saveConversationContext } from "./contextManager.js";
 
 async function detectCustomerName(message, identity) {
   const normalized = normalizeVietnamese(message);
+  if (getContinuationPageSize(normalized)) return null;
+
   const customers = await listCustomers(identity);
   const mentionedCustomer = customers.find((customer) =>
     normalized.includes(customer.normalizedName)
@@ -51,6 +41,42 @@ function sourceTrace(entries) {
 
 function hasAny(text, keywords) {
   return keywords.some((keyword) => text.includes(keyword));
+}
+
+function parsePositiveInteger(value, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getContinuationPageSize(normalized, fallback = 15) {
+  const compact = normalized.replace(/\s+/g, " ").trim();
+  if (/(^|\s)tiep khach(?:\s|$)/.test(compact)) return null;
+
+  const beforeKeyword = compact.match(
+    /(?:^|\s)(\d{1,2})\s*(?:khach(?: hang)?|dong|muc)?\s*(?:tiep|tiep theo|ke tiep|nua)(?:\s|$)/
+  );
+  const afterKeyword = compact.match(
+    /^(?:xem tiep|tiep theo|ke tiep|tiep|them)\s*(\d{1,2})?\s*(?:khach(?: hang)?|dong|muc)?$/
+  );
+  const directKeyword = /^(?:khach(?: hang)?\s+)?(?:tiep|tiep theo|ke tiep|xem tiep)$/.test(
+    compact
+  );
+
+  if (beforeKeyword) return Math.min(parsePositiveInteger(beforeKeyword[1], fallback), 50);
+  if (afterKeyword || directKeyword) {
+    return Math.min(parsePositiveInteger(afterKeyword?.[1], fallback), 50);
+  }
+
+  return null;
+}
+
+function setCustomerListView(state, view) {
+  state.listView = {
+    ...view,
+    pageSize: view.pageSize ?? 15,
+    nextOffset: view.nextOffset ?? 0,
+    totalCount: view.totalCount ?? 0
+  };
 }
 
 function uniqueNames(items) {
@@ -84,6 +110,61 @@ function parseVndThreshold(normalized) {
   if (["trieu", "m"].includes(unit)) return value * 1_000_000;
 
   return value < 1000 ? value * 1_000_000_000 : value;
+}
+
+async function resolveCustomerListViewItems(listView, identity) {
+  if (!listView || typeof listView !== "object") return null;
+
+  if (listView.type === "maturity-reminder" || listView.type === "today-care-list") {
+    return await getMaturityCustomers(parsePositiveInteger(listView.daysAhead, 7), identity);
+  }
+
+  if (listView.type === "savings-threshold-summary") {
+    const threshold = Number(listView.threshold);
+    if (!Number.isFinite(threshold)) return null;
+    const customers = await listCustomers(identity);
+    return customers
+      .filter((customer) => customer.savingsAmountVnd > threshold)
+      .sort((a, b) => b.savingsAmountVnd - a.savingsAmountVnd);
+  }
+
+  return null;
+}
+
+function renderCustomerListPage({ items, offset, pageSize, state, listView }) {
+  const safeOffset = Math.max(0, Math.min(offset, items.length));
+  const endOffset = Math.min(safeOffset + pageSize, items.length);
+  const displayedCustomers = items.slice(safeOffset, endOffset);
+
+  state.currentModule = "customer-profile";
+  state.focusedCustomers = displayedCustomers.map((item) => item.id);
+  state.lastIntent = listView.type;
+  setCustomerListView(state, {
+    ...listView,
+    pageSize,
+    nextOffset: endOffset,
+    totalCount: items.length
+  });
+
+  if (displayedCustomers.length === 0) {
+    return "Em đã hiển thị hết danh sách khách hàng đang lọc.";
+  }
+
+  const lines = displayedCustomers.map(
+    (item, index) =>
+      `${safeOffset + index + 1}. ${item.name} - ${item.savingsProduct} - ${formatVnd(
+        item.savingsAmountVnd
+      )} - đến hạn ${item.maturityDate}`
+  );
+  const rangeText = `${safeOffset + 1}-${endOffset}/${items.length}`;
+  const nextHint =
+    endOffset < items.length
+      ? `\n\nAnh/chị có thể nhắn "${pageSize} khách tiếp" để xem tiếp.`
+      : "\n\nEm đã hiển thị hết danh sách này.";
+
+  return `Em hiển thị tiếp ${displayedCustomers.length} khách hàng (${rangeText}):\n${lines.join(
+    "\n"
+  )}${nextHint}`;
 }
 
 function renewalSuggestion(customer) {
@@ -133,17 +214,21 @@ export async function routeConversation(payload) {
   }
 
   if (result.context) {
-    result.context = JSON.parse(JSON.stringify(result.context));
+    result.context = saveConversationContext({
+      conversationId: payload.conversationId,
+      identity: payload.identity,
+      context: result.context
+    });
   }
 
   return result;
 }
 
 async function processConversation({ conversationId, message, identity }) {
-  const state = getState(conversationId);
+  const state = structuredClone(getConversationContext({ conversationId, identity }));
   const normalized = normalizeVietnamese(message);
   const compact = normalized.replace(/\s+/g, " ").trim();
-  const askedName = await detectCustomerName(message, identity);
+  const continuationPageSize = getContinuationPageSize(normalized);
 
   const isReminderIntent =
     compact === "1" ||
@@ -181,6 +266,25 @@ async function processConversation({ conversationId, message, identity }) {
     hasAny(normalized, ["tiet kiem", "khoan tiet kiem", "so du"]) &&
     hasAny(normalized, ["bao nhieu", "nguoi", "khach", "liet ke", "danh sach"]);
 
+  if (continuationPageSize && state.listView) {
+    const items = await resolveCustomerListViewItems(state.listView, identity);
+    if (items) {
+      return {
+        reply: renderCustomerListPage({
+          items,
+          offset: parsePositiveInteger(state.listView.nextOffset, 0),
+          pageSize: continuationPageSize,
+          state,
+          listView: state.listView
+        }),
+        sources: sourceTrace(["GET /customers"]),
+        context: state
+      };
+    }
+  }
+
+  const askedName = await detectCustomerName(message, identity);
+
   if (isTodayCareIntent) {
     const dueCustomers = await getMaturityCustomers(7, identity);
     const maxItems = 15;
@@ -189,6 +293,13 @@ async function processConversation({ conversationId, message, identity }) {
     state.currentModule = "customer-profile";
     state.focusedCustomers = displayedCustomers.map((item) => item.id);
     state.lastIntent = "today-care-list";
+    setCustomerListView(state, {
+      type: "today-care-list",
+      daysAhead: 7,
+      pageSize: maxItems,
+      nextOffset: displayedCustomers.length,
+      totalCount: dueCustomers.length
+    });
 
     const lines = displayedCustomers.map(
       (item, index) =>
@@ -221,6 +332,13 @@ async function processConversation({ conversationId, message, identity }) {
     state.currentModule = "customer-profile";
     state.focusedCustomers = displayedCustomers.map((item) => item.id);
     state.lastIntent = "savings-threshold-summary";
+    setCustomerListView(state, {
+      type: "savings-threshold-summary",
+      threshold: savingsThreshold,
+      pageSize: maxItems,
+      nextOffset: displayedCustomers.length,
+      totalCount: matchedCustomers.length
+    });
 
     const lines = displayedCustomers.map(
       (item, index) =>
@@ -244,7 +362,7 @@ async function processConversation({ conversationId, message, identity }) {
 
   if (isProductSummaryIntent) {
     const opportunities = await listOpportunities(identity);
-    const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
+    const activeCampaigns = (await listCampaigns(identity)).filter((item) => item.status === "Active");
     const productNames = uniqueNames(opportunities);
     const maxItems = 15;
     const displayedProducts = productNames.slice(0, maxItems);
@@ -278,6 +396,13 @@ async function processConversation({ conversationId, message, identity }) {
     state.currentModule = "customer-profile";
     state.focusedCustomers = displayedCustomers.map((item) => item.id);
     state.lastIntent = "maturity-reminder";
+    setCustomerListView(state, {
+      type: "maturity-reminder",
+      daysAhead: 7,
+      pageSize: maxItems,
+      nextOffset: displayedCustomers.length,
+      totalCount: dueCustomers.length
+    });
 
     const lines = displayedCustomers.map(
       (item, index) =>
@@ -395,7 +520,7 @@ async function processConversation({ conversationId, message, identity }) {
 
     if (targetCustomer) {
       state.focusedCustomers = [targetCustomer.id];
-      const opps = await getCustomerOpportunities(targetCustomer.id);
+      const opps = await getCustomerOpportunities(targetCustomer.id, identity);
       const list = opps
         .map((o) => {
           const name = o.product || o.name || "";
@@ -426,15 +551,31 @@ async function processConversation({ conversationId, message, identity }) {
   }
 
   if (isCampaignIntent) {
-    const activeCampaigns = (await listCampaigns()).filter((item) => item.status === "Active");
+    const activeCampaigns = (await listCampaigns(identity)).filter(
+      (item) => item.status === "Active"
+    );
+    const focusedCustomers = (
+      await Promise.all(state.focusedCustomers.map((id) => getCustomerById(id, identity)))
+    ).filter(Boolean);
+    const focusedSegments = new Set(focusedCustomers.map((customer) => customer.segment));
+    const relevantCampaigns =
+      focusedSegments.size > 0
+        ? activeCampaigns.filter((campaign) => focusedSegments.has(campaign.targetSegment))
+        : activeCampaigns;
     state.currentModule = "campaign";
     state.lastIntent = "campaign-summary";
 
     return {
-      reply: `Hiện có ${activeCampaigns.length} chiến dịch đang chạy:\n${activeCampaigns
+      reply: `${
+        focusedSegments.size > 0
+          ? `Em tìm thấy ${relevantCampaigns.length} chiến dịch phù hợp với nhóm khách hàng đang focus`
+          : `Hiện có ${relevantCampaigns.length} chiến dịch đang chạy`
+      }:\n${relevantCampaigns
         .map((item, index) => `${index + 1}. ${item.name} (${item.targetSegment})`)
         .join("\n")}`,
-      sources: sourceTrace(["GET /campaigns"]),
+      sources: sourceTrace(
+        focusedSegments.size > 0 ? ["GET /customers", "GET /campaigns"] : ["GET /campaigns"]
+      ),
       context: state
     };
   }

@@ -1,0 +1,4 @@
+# Large/raw prompt corpus
+/data/prompts-chat/prompts.raw.csv
+/data/prompts-chat/*.tmp
+/data/prompts-chat/*.bak

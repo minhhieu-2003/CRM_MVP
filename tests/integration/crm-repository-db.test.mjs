@@ -36,7 +36,7 @@ describe("CRM repository database providers", () => {
     const databasePath = path.join(tempDirectory, "crm.db");
     const database = new Database(databasePath);
     database.exec(`
-      PRAGMA user_version = 1;
+      PRAGMA user_version = 2;
       CREATE TABLE customers (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,

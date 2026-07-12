@@ -5,25 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BankRM Copilot - CRM AI Agent</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=mobile-ui-2" />
   </head>
   <body>
-    <main class="app">
+    <main class="app" aria-label="BankRM Copilot">
       <header class="header">
-        <h1>BankRM Copilot</h1>
-        <p>AI Agent CRM cho Relationship Manager (Tiếng Việt)</p>
+        <div class="header-copy">
+          <p class="eyebrow">RM Copilot</p>
+          <h1>BankRM Copilot</h1>
+          <p>Hỗ trợ chăm sóc khách hàng và soạn thảo tác vụ CRM.</p>
+        </div>
+        <div class="header-tools">
+          <div class="session-chip" aria-label="Không gian làm việc">CRM nội bộ</div>
+          <div class="header-status" aria-label="Trạng thái">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Sẵn sàng</span>
+          </div>
+        </div>
       </header>
 
-      <section id="chatWindow" class="chat-window"></section>
+      <section
+        id="chatWindow"
+        class="chat-window"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions text"
+        aria-label="Hội thoại với BankRM Copilot"
+      >
+        <div id="welcomeState" class="welcome-state">
+          <p class="welcome-kicker">Bắt đầu ca làm việc</p>
+          <h2>Em sẵn sàng hỗ trợ anh/chị RM.</h2>
+          <p>Dữ liệu CRM nội bộ đã sẵn sàng cho ca làm việc.</p>
+        </div>
+      </section>
+
+      <section class="quick-actions" aria-label="Tác vụ nhanh">
+        <button
+          type="button"
+          aria-label="Phím 1, nhắc tiết kiệm đến hạn"
+          data-message="Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này"
+        >
+          <span>1</span>
+          Tiết kiệm đến hạn
+        </button>
+        <button
+          type="button"
+          aria-label="Phím 2, soạn email chăm sóc"
+          data-message="Soạn email chăm sóc cho khách hàng ưu tiên"
+        >
+          <span>2</span>
+          Soạn email
+        </button>
+        <button
+          type="button"
+          aria-label="Phím 3, gợi ý cơ hội tiếp theo"
+          data-message="Gợi ý cơ hội tiếp theo cho khách hàng ưu tiên"
+        >
+          <span>3</span>
+          Cơ hội tiếp theo
+        </button>
+        <button
+          type="button"
+          aria-label="Phím 4, tạo chiến dịch chăm sóc"
+          data-message="Tạo chiến dịch chăm sóc khách hàng tiền gửi"
+        >
+          <span>4</span>
+          Chiến dịch
+        </button>
+      </section>
+
+      <div id="chatStatus" class="chat-status" role="status" aria-live="polite"></div>
 
       <form id="chatForm" class="composer">
+        <label class="sr-only" for="messageInput">Nhập yêu cầu cho BankRM Copilot</label>
         <input
           id="messageInput"
           type="text"
-          placeholder="Ví dụ: Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này"
+          placeholder="Nhập yêu cầu chăm sóc khách hàng..."
+          autocomplete="off"
           required
         />
-        <button type="submit">Gửi</button>
+        <button id="sendButton" type="submit">Gửi</button>
       </form>
     </main>
 

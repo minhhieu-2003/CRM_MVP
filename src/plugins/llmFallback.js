@@ -4,13 +4,15 @@ import {
   listCustomers,
   listOpportunities
 } from "../services/crmService.js";
+import {
+  callApprovedLlm,
+  isApprovedLlmProxyConfigured,
+  isLlmDataUseAllowed
+} from "../services/llmGateway.js";
 
-const PLACEHOLDER_LLM_API_URL = "https://your-approved-proxy.example.com/v1/chat/completions";
 const DEFAULT_CUSTOMER_CONTEXT_LIMIT = 20;
 const DEFAULT_OPPORTUNITY_CONTEXT_LIMIT = 20;
 const DEFAULT_CAMPAIGN_CONTEXT_LIMIT = 10;
-const DEFAULT_PROVIDER = "openai-compatible";
-const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 
 const SYSTEM_PROMPT = [
   "Bạn là BankRM Copilot - trợ lý AI CRM cho Relationship Manager (RM) của Bank A.",
@@ -21,41 +23,7 @@ const SYSTEM_PROMPT = [
 ].join(" ");
 
 export function isLlmFallbackEnabled() {
-  const provider = getProvider();
-  const apiKey = process.env.LLM_API_KEY?.trim();
-  if (!apiKey) return false;
-
-  if (provider === "gemini") return true;
-  if (provider === "vertex-openai") return Boolean(getGoogleProject());
-  return isUsableLlmUrl(process.env.LLM_API_URL);
-}
-
-function getProvider() {
-  return (process.env.LLM_PROVIDER || DEFAULT_PROVIDER).trim().toLowerCase();
-}
-
-function getDefaultModel(provider) {
-  if (provider === "gemini") return "gemini-2.0-flash";
-  if (provider === "vertex-openai") return "google/gemini-2.0-flash-001";
-  return "gpt-4o-mini";
-}
-
-function getGoogleProject() {
-  const value = process.env.LLM_GOOGLE_PROJECT?.trim();
-  if (!value) return "";
-  return value.replace(/^projects\//, "");
-}
-
-function isUsableLlmUrl(value) {
-  const apiUrl = value?.trim();
-  if (!apiUrl || apiUrl === PLACEHOLDER_LLM_API_URL) return false;
-
-  try {
-    const parsed = new URL(apiUrl);
-    return parsed.protocol === "https:" || parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost";
-  } catch {
-    return false;
-  }
+  return isApprovedLlmProxyConfigured() && isLlmDataUseAllowed();
 }
 
 function readPositiveIntEnv(name, fallback, max) {
@@ -136,101 +104,7 @@ function buildMessages({ crmContext, message }) {
   ];
 }
 
-function buildGeminiUrl({ apiKey, model }) {
-  const configuredUrl = process.env.LLM_API_URL?.trim();
-  const modelPath = model.startsWith("models/") ? model : `models/${model}`;
-  const url = new URL(
-    configuredUrl && configuredUrl !== PLACEHOLDER_LLM_API_URL
-      ? configuredUrl
-      : `${GEMINI_API_BASE_URL}/${modelPath}:generateContent`
-  );
-  if (!url.searchParams.has("key")) {
-    url.searchParams.set("key", apiKey);
-  }
-  return url.toString();
-}
-
-function buildVertexOpenAiUrl() {
-  const configuredUrl = process.env.LLM_API_URL?.trim();
-  if (configuredUrl && configuredUrl !== PLACEHOLDER_LLM_API_URL) {
-    return configuredUrl;
-  }
-
-  const project = getGoogleProject();
-  const location = process.env.LLM_VERTEX_LOCATION?.trim() || "us-central1";
-  return `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`;
-}
-
-async function callOpenAiCompatible({ apiUrl, apiKey, model, messages, signal }) {
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.3,
-      messages
-    }),
-    signal
-  });
-
-  if (!response.ok) {
-    throw new Error(`LLM proxy trả về ${response.status}`);
-  }
-
-  const data = await response.json();
-  const reply = data?.choices?.[0]?.message?.content?.trim();
-  if (!reply) {
-    throw new Error("LLM proxy trả về nội dung rỗng");
-  }
-
-  return reply;
-}
-
-async function callGeminiApi({ apiKey, model, messages, signal }) {
-  const response = await fetch(buildGeminiUrl({ apiKey, model }), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: messages[0].content }]
-      },
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: `${messages[1].content}\n\nCâu hỏi RM:\n${messages[2].content}` }]
-        }
-      ],
-      generationConfig: { temperature: 0.3 }
-    }),
-    signal
-  });
-
-  if (!response.ok) {
-    throw new Error(`Gemini API trả về ${response.status}`);
-  }
-
-  const data = await response.json();
-  const reply = data?.candidates?.[0]?.content?.parts
-    ?.map((part) => part.text)
-    .filter(Boolean)
-    .join("")
-    .trim();
-
-  if (!reply) {
-    throw new Error("Gemini API trả về nội dung rỗng");
-  }
-
-  return reply;
-}
-
 export async function generateLlmFallback({ message }) {
-  const provider = getProvider();
-  const apiKey = process.env.LLM_API_KEY;
-  const model = process.env.LLM_MODEL || getDefaultModel(provider);
-
   if (!isLlmFallbackEnabled()) {
     throw new Error("LLM fallback chưa được cấu hình.");
   }
@@ -239,23 +113,6 @@ export async function generateLlmFallback({ message }) {
     crmContext: await buildCrmContext(),
     message
   });
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-
-  try {
-    const reply =
-      provider === "gemini"
-        ? await callGeminiApi({ apiKey, model, messages, signal: controller.signal })
-        : await callOpenAiCompatible({
-            apiUrl: provider === "vertex-openai" ? buildVertexOpenAiUrl() : process.env.LLM_API_URL,
-            apiKey,
-            model,
-            messages,
-            signal: controller.signal
-          });
-
-    return { reply, model, ok: true };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const result = await callApprovedLlm({ messages, temperature: 0.3 });
+  return { reply: result.content, model: result.model, ok: true };
 }
