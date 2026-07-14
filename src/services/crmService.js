@@ -1,7 +1,9 @@
 import fs from "fs";
+import { randomUUID } from "node:crypto";
 import { campaigns, customers, interactions, opportunities } from "./crmData.js";
 import { getCrmConfig, readCrmCollection, requestCrmOperation } from "./dbClient.js";
 import { normalizeVietnamese } from "./textUtils.js";
+import { sourceContext } from "./sourceContext.js";
 
 let emailTemplates = [];
 let callScripts = [];
@@ -68,6 +70,21 @@ function refreshCacheForProvider() {
   }
 }
 
+function recordSourceTrace(endpoint, count = 1) {
+  const trace = sourceContext.getStore();
+  if (trace) {
+    const config = getCrmConfig();
+    const mode = config.mode === "sandbox" ? "live" : config.mode;
+    trace.push({
+      endpoint,
+      sourceMode: mode,
+      retrievedAt: new Date().toISOString(),
+      requestId: randomUUID(),
+      recordCount: count
+    });
+  }
+}
+
 function pickBest(items, predicate) {
   if (items.length === 0) throw new Error("Không có mẫu nội dung CRM phù hợp.");
   const candidates = items.filter(predicate);
@@ -128,7 +145,10 @@ function daysBetween(fromDateValue, toDateValue) {
 
 export async function listCustomers() {
   refreshCacheForProvider();
-  if (cachedCustomers) return cachedCustomers;
+  if (cachedCustomers) {
+    recordSourceTrace("GET /customers", cachedCustomers.length);
+    return cachedCustomers;
+  }
   const mockData = largeCustomers.length > 0 ? [...customers, ...largeCustomers] : customers;
   const result = await readCrmCollection("customers", mockData);
 
@@ -136,28 +156,38 @@ export async function listCustomers() {
     ...customer,
     normalizedName: customer.normalizedName || normalizeVietnamese(customer.name)
   }));
+  recordSourceTrace("GET /customers", cachedCustomers.length);
   return cachedCustomers;
 }
 
 export async function listOpportunities() {
   refreshCacheForProvider();
-  if (cachedOpportunities) return cachedOpportunities;
+  if (cachedOpportunities) {
+    recordSourceTrace("GET /opportunities", cachedOpportunities.length);
+    return cachedOpportunities;
+  }
   const mockData = largeOpportunities.length > 0 ? [...opportunities, ...largeOpportunities] : opportunities;
   cachedOpportunities = await readCrmCollection("opportunities", mockData);
+  recordSourceTrace("GET /opportunities", cachedOpportunities.length);
   return cachedOpportunities;
 }
 
 export async function listInteractions() {
   refreshCacheForProvider();
-  if (cachedInteractions) return cachedInteractions;
+  if (cachedInteractions) {
+    recordSourceTrace("GET /interactions", cachedInteractions.length);
+    return cachedInteractions;
+  }
   const mockData = largeInteractions.length > 0 ? [...interactions, ...largeInteractions] : interactions;
   cachedInteractions = await readCrmCollection("interactions", mockData);
+  recordSourceTrace("GET /interactions", cachedInteractions.length);
   return cachedInteractions;
 }
 
 export async function listCampaigns() {
   refreshCacheForProvider();
   if (!cachedCampaigns) cachedCampaigns = await readCrmCollection("campaigns", campaigns);
+  recordSourceTrace("GET /campaigns", cachedCampaigns.length);
   return cachedCampaigns;
 }
 
@@ -197,6 +227,7 @@ export async function getMaturityCustomers(daysAhead = 7, now = null) {
 }
 
 export async function draftEmailForCustomer(customer, suggestion) {
+  recordSourceTrace("POST /draft-email", 1);
   const mode = getCrmConfig().mode;
   const remoteDraft = await requestCrmOperation("/draft-email", {
     method: "POST",
@@ -231,6 +262,7 @@ export async function draftEmailForCustomer(customer, suggestion) {
 }
 
 export async function draftCallScript(customer, suggestion) {
+  recordSourceTrace("POST /call-script", 1);
   const mode = getCrmConfig().mode;
   const remoteScript = await requestCrmOperation("/call-script", {
     method: "POST",

@@ -214,8 +214,8 @@ describe("HTTP API Tests", () => {
     assert.match(json.reply, /Bảo hiểm liên kết vay mua nhà/);
     assert.doesNotMatch(json.reply, /Gia hạn tiết kiệm quý 3/);
     assert.deepEqual(
-      json.sources.map((source) => source.endpoint),
-      ["GET /customers", "GET /campaigns"]
+      json.sources.map((source) => source.endpoint).sort(),
+      ["GET /campaigns", "GET /customers"].sort()
     );
   });
 

@@ -3,6 +3,7 @@ import { routeConversation } from "./mcpContextEngine.js";
 import { buildAuditActor, writeAudit } from "./auditLogger.js";
 import { dispatchFallback } from "../plugins/router.js";
 import { runAiNativeCore } from "./aiNativeCore.js";
+import { getConversationContext } from "./contextManager.js";
 
 const SAFE_CHAT_AUDIT_PROMPT = "chat-turn";
 
@@ -40,17 +41,43 @@ export async function runAgentTurn({ conversationId, message, identity }) {
         });
         return shapeResponse({ auditId, ...nativeResult });
       } catch (error) {
+        if (error?.observationCode === "TOOL_SCOPE_DENIED") {
+          writeAudit({
+            auditId: crypto.randomUUID(),
+            ...buildAuditActor(identity),
+            conversationId,
+            llmProvider: "tool-policy",
+            prompt: SAFE_CHAT_AUDIT_PROMPT,
+            sources: ["internal://tool-policy"],
+            module: "general",
+            latencyMs: Date.now() - startedAt,
+            decision: "deny",
+            error: "TOOL_SCOPE_DENIED"
+          });
+          return shapeResponse({
+            auditId,
+            reply: "Em không có quyền truy cập dữ liệu cần thiết cho yêu cầu này.",
+            sources: [{ endpoint: "internal://tool-policy" }],
+            context: getConversationContext({ conversationId, identity })
+          });
+        }
         writeAudit({
           auditId: crypto.randomUUID(),
           ...buildAuditActor(identity),
           conversationId,
           llmProvider: "ai-native-error",
           prompt: SAFE_CHAT_AUDIT_PROMPT,
-          sources: ["internal://ai-native-fallback"],
+          sources: ["internal://ai-native-error"],
           module: "general",
           latencyMs: Date.now() - startedAt,
-          decision: "fallback",
+          decision: "deny",
           error: String(error?.code || error?.name || "AI_NATIVE_FAILED")
+        });
+        return shapeResponse({
+          auditId,
+          reply: "Hệ thống AI Native Core hiện đang bận hoặc gặp sự cố. Anh/chị vui lòng thử lại sau.",
+          sources: [{ endpoint: "internal://ai-native-error" }],
+          context: getConversationContext({ conversationId, identity })
         });
       }
     }

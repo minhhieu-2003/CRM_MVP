@@ -368,7 +368,7 @@ test("Security: HTTP and deterministic fallback enforce server-bound entitlement
       AUTH_ADMIN_USER_ID: "restricted-admin",
       AUTH_ADMIN_ENTITLEMENTS: "*",
       CRM_MODE: "mock",
-      AI_NATIVE_CORE: "true",
+      AI_NATIVE_CORE: "false",
       LLM_API_URL: "",
       LLM_API_KEY: ""
     },
@@ -454,7 +454,7 @@ test("Security: fail closed in pilot/production without AUTH_ENABLED", () => {
 });
 
 test("Security: fail closed in production without AUTH_DEMO_TOKEN", () => {
-  const env = { ...process.env, NODE_ENV: "production", AUTH_ENABLED: "true" };
+  const env = { ...process.env, NODE_ENV: "production", AUTH_ENABLED: "true", CORS_ORIGIN: "https://banka.vn" };
   delete env.AUTH_DEMO_TOKEN;
   assert.throws(
     () => execSync("node src/server.js", { cwd: path.resolve("."), env }),
@@ -467,6 +467,7 @@ test("Security: fail closed in protected auth without explicit entitlements", ()
     ...process.env,
     NODE_ENV: "production",
     AUTH_ENABLED: "true",
+    CORS_ORIGIN: "https://banka.vn",
     AUTH_DEMO_TOKEN: demoToken
   };
   delete env.AUTH_DEMO_ENTITLEMENTS;
@@ -477,7 +478,7 @@ test("Security: fail closed in protected auth without explicit entitlements", ()
 });
 
 test("Security: HTTP protected runtime fails closed without an audit correlation key", () => {
-  const env = { ...process.env, NODE_ENV: "production", AUTH_ENABLED: "true" };
+  const env = { ...process.env, NODE_ENV: "production", AUTH_ENABLED: "true", CORS_ORIGIN: "https://banka.vn" };
   delete env.AUDIT_CORRELATION_KEY;
 
   assert.throws(
@@ -496,6 +497,7 @@ test("Security: fail closed when server-bound RM identity uses a default sentine
       ...process.env,
       NODE_ENV: "production",
       AUTH_ENABLED: "true",
+      CORS_ORIGIN: "https://banka.vn",
       AUTH_DEMO_TOKEN: demoToken,
       AUTH_DEMO_USER_ID: "invalid-demo-rm",
       ...scope

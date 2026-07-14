@@ -47,7 +47,12 @@ export const McpToolErrorCodeSchema = z.enum([
 
 export const ToolSourceSchema = z
   .object({
-    endpoint: z.string().trim().min(1).max(500)
+    tool: z.string().trim().min(1).max(200).optional(),
+    endpoint: z.string().trim().min(1).max(500),
+    sourceMode: z.string().trim().min(1).max(50).optional(),
+    retrievedAt: z.string().datetime({ offset: true }).optional(),
+    requestId: z.string().trim().max(100).optional(),
+    recordCount: z.number().int().min(0).optional()
   })
   .strict();
 
@@ -109,7 +114,13 @@ export function normalizeToolSources(sources = []) {
     const endpoint = typeof source === "string" ? source : source?.endpoint;
     if (typeof endpoint !== "string") continue;
     const normalized = endpoint.trim().slice(0, 500);
-    if (normalized && !unique.has(normalized)) unique.set(normalized, { endpoint: normalized });
+    if (normalized && !unique.has(normalized)) {
+      if (typeof source === "object") {
+        unique.set(normalized, { ...source, endpoint: normalized });
+      } else {
+        unique.set(normalized, { endpoint: normalized });
+      }
+    }
   }
   return [...unique.values()];
 }

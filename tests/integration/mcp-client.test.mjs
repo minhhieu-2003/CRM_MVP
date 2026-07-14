@@ -326,7 +326,7 @@ describe("MCP stdio client", () => {
       assert.ok(observation.data.totalCount > observation.data.items.length);
       assert.equal(observation.data.items.length, 25);
       assert.equal(observation.data.hasMore, true);
-      assert.deepEqual(observation.sources, [{ endpoint: "GET /customers" }]);
+      assert.deepEqual(observation.sources, [{ endpoint: "GET /customers", tool: "crm_customers_due" }]);
       assert.equal(Number.isNaN(Date.parse(observation.observedAt)), false);
       assert.ok(JSON.stringify(observation).length < 40_000);
     } finally {
@@ -375,7 +375,7 @@ describe("MCP stdio client", () => {
       assert.equal(observation.data, null);
       assert.equal(observation.errorCode, "TOOL_BUSINESS_ERROR");
       assert.match(observation.error, /Không tìm thấy khách hàng/);
-      assert.deepEqual(observation.sources, [{ endpoint: "GET /customers" }]);
+      assert.deepEqual(observation.sources, [{ endpoint: "GET /customers", tool: "crm_draft_email" }]);
 
       const invalidInput = await session.callTool({
         name: "crm_get_customer",

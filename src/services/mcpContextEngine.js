@@ -23,6 +23,7 @@ import {
   ToolPolicyDeniedError,
   assertIdentityScopes
 } from "./toolPolicy.js";
+import { sourceContext } from "./sourceContext.js";
 
 const CUSTOMER_READ = Object.freeze(["customer:read"]);
 const CAMPAIGN_READ = Object.freeze(["campaign:read"]);
@@ -57,7 +58,14 @@ async function detectCustomerName(message, identity) {
 }
 
 function sourceTrace(entries) {
-  return entries.map((endpoint) => ({ endpoint }));
+  const store = sourceContext.getStore();
+  const base = store ? [...store] : [];
+  for (const endpoint of entries) {
+    if (!base.some((s) => s.endpoint === endpoint)) {
+      base.push({ endpoint });
+    }
+  }
+  return base;
 }
 
 function policyDeniedResult(context) {
@@ -255,14 +263,15 @@ async function resolveTargetCustomers({ askedName, state, fallbackDue, identity 
 }
 
 export async function routeConversation(payload) {
-  const contextSnapshot = getConversationContextSnapshot({
-    conversationId: payload.conversationId,
-    identity: payload.identity
-  });
-  let result;
-  try {
-    result = await processConversation({ ...payload, initialContext: contextSnapshot.context });
-  } catch (error) {
+  return sourceContext.run([], async () => {
+    const contextSnapshot = getConversationContextSnapshot({
+      conversationId: payload.conversationId,
+      identity: payload.identity
+    });
+    let result;
+    try {
+      result = await processConversation({ ...payload, initialContext: contextSnapshot.context });
+    } catch (error) {
     if (error instanceof ToolPolicyDeniedError || error?.code === TOOL_SCOPE_DENIED) {
       return policyDeniedResult(contextSnapshot.context);
     }
@@ -279,23 +288,24 @@ export async function routeConversation(payload) {
     result.sources = Array.from(uniqueSources.values());
   }
 
-  if (result.context) {
-    try {
-      result.context = compareAndSwapConversationContext({
-        conversationId: payload.conversationId,
-        identity: payload.identity,
-        context: result.context,
-        expectedVersion: contextSnapshot.version
-      });
-    } catch (error) {
-      if (error?.code === "CONTEXT_VERSION_CONFLICT") {
-        return contextConflictResult(payload);
+    if (result.context) {
+      try {
+        result.context = compareAndSwapConversationContext({
+          conversationId: payload.conversationId,
+          identity: payload.identity,
+          context: result.context,
+          expectedVersion: contextSnapshot.version
+        });
+      } catch (error) {
+        if (error?.code === "CONTEXT_VERSION_CONFLICT") {
+          return contextConflictResult(payload);
+        }
+        throw error;
       }
-      throw error;
     }
-  }
 
-  return result;
+    return result;
+  });
 }
 
 async function processConversation({ message, identity, initialContext }) {

@@ -21,6 +21,7 @@ import {
   TOOL_POLICY_SOURCE,
   TOOL_SCOPE_DENIED
 } from "./toolPolicy.js";
+import { sourceContext } from "./sourceContext.js";
 
 const MAX_TOOL_OBSERVATION_BYTES = 40_000;
 const TOOL_REGISTRY_SOURCE = "internal://tool-registry";
@@ -367,18 +368,31 @@ export async function executeAgentTool({ name, input = {}, identity, conversatio
 
   const startedAt = Date.now();
   try {
-    const data = await tool.execute(parsedInput, parsedIdentity);
+    const data = await sourceContext.run([], async () => tool.execute(parsedInput, parsedIdentity));
     const businessError =
       data && !Array.isArray(data) && typeof data === "object" && typeof data.error === "string"
         ? data.error.trim().slice(0, 500)
         : null;
-    const observedSources = businessError
+    const fallbackSources = businessError
       ? (tool.businessErrorSources ?? tool.sources)
       : tool.sources;
+    
+    const contextStore = sourceContext.getStore() || [];
+    const detailedSources = contextStore.length > 0 
+      ? contextStore.map(s => ({ ...s, tool: name }))
+      : fallbackSources.map(endpoint => ({ endpoint, tool: name }));
+      
+    // Always include fallbacks in case some static endpoints were not dynamically hit
+    for (const endpoint of fallbackSources) {
+      if (!detailedSources.some(s => s.endpoint === endpoint)) {
+        detailedSources.push({ endpoint, tool: name });
+      }
+    }
+    
     let observation = McpToolObservationSchema.parse({
       status: businessError ? "error" : "success",
       data: businessError ? null : data,
-      sources: normalizeToolSources(observedSources),
+      sources: normalizeToolSources(detailedSources),
       observedAt: new Date().toISOString(),
       ...(businessError ? { error: businessError, errorCode: "TOOL_BUSINESS_ERROR" } : {})
     });
@@ -388,13 +402,13 @@ export async function executeAgentTool({ name, input = {}, identity, conversatio
       observation = McpToolObservationSchema.parse({
         status: "error",
         data: null,
-        sources: normalizeToolSources(observedSources),
+        sources: normalizeToolSources(detailedSources),
         observedAt: new Date().toISOString(),
         error: "Kết quả CRM vượt giới hạn observation an toàn. Vui lòng thu hẹp truy vấn.",
         errorCode: "TOOL_OBSERVATION_TOO_LARGE"
       });
     }
-    audit(name, observedSources, parsedConversationId, parsedIdentity, {
+    audit(name, detailedSources, parsedConversationId, parsedIdentity, {
       decision: businessError || oversized ? "deny" : "allow",
       latencyMs: Date.now() - startedAt,
       ...(oversized ? { error: "TOOL_OBSERVATION_TOO_LARGE" } : {})
