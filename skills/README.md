@@ -15,7 +15,7 @@ Thư mục này định nghĩa các **skill** (năng lực) của AI Agent CRM. 
 | `opportunity-advisor` | Gợi ý cơ hội bán chéo theo khách hàng | `GET /customers`, `GET /opportunities`, `GET /interactions` |
 | `campaign-viewer` | Liệt kê chiến dịch đang chạy | `GET /campaigns` |
 | `report-git-issues` | Chuyển findings/review checklist thành GitHub Issues hoặc draft Markdown | GitHub CLI `gh` / local draft |
-| `system-architecture-designer` | Thiết kế/điều chỉnh chi tiết kiến trúc hệ thống, component, DB/entity và sơ đồ Draw.io | `docs/architecture/*`, `scripts/docs/generate-if-else-workflow.mjs` |
+| `system-architecture-designer` | Thiết kế/điều chỉnh chi tiết kiến trúc hệ thống, component, DB/entity và sơ đồ Draw.io | `docs/architecture/*`, `scripts/docs/generate-system-architecture.mjs` |
 
 ## Quy ước
 - Tất cả các skill đều dùng file `SKILL.md`.

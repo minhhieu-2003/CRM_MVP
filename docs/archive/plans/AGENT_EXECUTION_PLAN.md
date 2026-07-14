@@ -1,5 +1,12 @@
 # BankRM Copilot - Kế hoạch triển khai cho agent con
 
+> [!CAUTION]
+> **HISTORICAL — DO NOT EXECUTE.** Đây là snapshot kế hoạch ngày 2026-07-08;
+> nhiều giả định, số liệu test và hạng mục đã được thay thế. Không giao các prompt
+> bên dưới cho agent hoặc dùng chúng làm checklist triển khai hiện tại. Bắt đầu từ
+> [mục lục tài liệu](../../README.md), [kiến trúc hiện hành](../../architecture/architecture.md)
+> và [AI-native core](../../architecture/ai-native-core.md).
+
 Ngày lập: 2026-07-08  
 Repo: `D:\ReactNative_Project\CRM_MVP`  
 Mục tiêu: đưa CRM MVP từ trạng thái demo rule-based/mock lên mức pilot có kiểm soát, có test, có audit, có bảo mật biên API, có UI RM workspace và có đường nâng cấp sang CRM thật.

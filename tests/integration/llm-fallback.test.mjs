@@ -2,6 +2,9 @@ import { describe, test } from "node:test";
 import assert from "node:assert";
 import { createServer } from "node:http";
 import { generateLlmFallback, isLlmFallbackEnabled } from "../../src/plugins/llmFallback.js";
+import { runAgentTurn } from "../../src/services/agentService.js";
+
+const fallbackEntitlements = ["customer:read", "opportunity:read", "campaign:read"];
 
 describe("LLM fallback", () => {
   test("không bật khi thiếu key hoặc còn dùng URL placeholder", () => {
@@ -30,7 +33,13 @@ describe("LLM fallback", () => {
         res.setHeader("Content-Type", "application/json");
         res.end(
           JSON.stringify({
-            choices: [{ message: { content: "Dạ, em đã xử lý qua LLM fallback." } }]
+            choices: [
+              {
+                message: {
+                  content: JSON.stringify({ reply: "Dạ, em đã xử lý qua LLM fallback." })
+                }
+              }
+            ]
           })
         );
       });
@@ -42,18 +51,46 @@ describe("LLM fallback", () => {
       process.env.LLM_API_URL = `${baseUrl}/v1/chat/completions`;
       process.env.LLM_API_KEY = "test-key";
       process.env.LLM_MODEL = "unit-test-model";
+      process.env.AI_NATIVE_CORE = "false";
       setSmallContextLimits();
 
       assert.strictEqual(isLlmFallbackEnabled(), true);
-      const result = await generateLlmFallback({ message: "Câu hỏi chưa có trong rule engine" });
+      await assert.rejects(
+        () => generateLlmFallback({ message: "Thiếu identity" }),
+        /identity hợp lệ/
+      );
+      assert.equal(captured.body, undefined);
+      const scopedIdentity = {
+        userId: "fallback-rm",
+        rmId: "RM01",
+        role: "rm",
+        branchId: "Hà Nội",
+        entitlements: fallbackEntitlements
+      };
+      const result = await runAgentTurn({
+        conversationId: "llm-fallback-scoped-chain",
+        message: "Câu hỏi chưa có trong rule engine",
+        identity: scopedIdentity
+      });
 
       assert.deepStrictEqual(result, {
+        auditId: result.auditId,
         reply: "Dạ, em đã xử lý qua LLM fallback.",
-        model: "unit-test-model",
-        ok: true
+        sources: [
+          { endpoint: "GET /customers" },
+          { endpoint: "GET /opportunities" },
+          { endpoint: "GET /campaigns" },
+          { endpoint: "POST /llm-proxy/chat" }
+        ],
+        context: {
+          currentModule: "general",
+          focusedCustomers: [],
+          lastIntent: "fallback"
+        }
       });
       assert.strictEqual(captured.authorization, "Bearer test-key");
       assert.strictEqual(captured.body.model, "unit-test-model");
+      assert.strictEqual(captured.body.response_format.type, "json_object");
       assert.strictEqual(
         captured.body.messages.at(-1).content,
         "Câu hỏi chưa có trong rule engine"
@@ -63,6 +100,18 @@ describe("LLM fallback", () => {
       assert.match(context, /Khách hàng \(hiển thị 3\/\d+\)/);
       assert.match(context, /Cơ hội bán chéo \(hiển thị 2\/\d+\)/);
       assert.match(context, /Chiến dịch \(hiển thị 1\/\d+\)/);
+      assert.match(context, /\[\[BANKRM_PII_[a-z]+_\d+\]\]/);
+      assert.doesNotMatch(context, /Nguyễn Văn An|Đỗ Thu Hà|Trần Thị Mai|C001/);
+
+      await generateLlmFallback({
+        message: "tu van cho mai van binh hom nay",
+        identity: scopedIdentity
+      });
+      const protectedMessage = captured.body.messages.at(-1).content;
+      assert.match(protectedMessage, /tu van cho/);
+      assert.match(protectedMessage, /hom nay/);
+      assert.match(protectedMessage, /\[\[BANKRM_PII_[a-z]+_\d+\]\]/);
+      assert.doesNotMatch(protectedMessage, /mai van binh/i);
     } finally {
       await close(server);
       restoreLlmEnv(originalEnv);
@@ -86,6 +135,126 @@ describe("LLM fallback", () => {
       restoreLlmEnv(originalEnv);
     }
   });
+
+  test("từ chối thiếu scope trước khi đọc CRM hoặc gọi LLM", async () => {
+    const originalEnv = snapshotLlmEnv();
+    let requestCount = 0;
+    const server = createServer((_req, res) => {
+      requestCount += 1;
+      res.statusCode = 500;
+      res.end();
+    });
+
+    try {
+      const baseUrl = await listen(server);
+      process.env.LLM_PROVIDER = "openai-compatible";
+      process.env.LLM_API_URL = `${baseUrl}/v1/chat/completions`;
+      process.env.LLM_API_KEY = "test-key";
+      process.env.LLM_MODEL = "unit-test-model";
+      process.env.AI_DATA_CLASSIFICATION = "synthetic";
+      process.env.CRM_MODE = "sandbox";
+      process.env.CRM_API_BASE_URL = baseUrl;
+      process.env.CRM_API_KEY = "sandbox-test-key";
+
+      await assert.rejects(
+        generateLlmFallback({
+          message: "Tóm tắt dữ liệu CRM",
+          identity: {
+            userId: "customer-only-rm",
+            rmId: "RM01",
+            role: "rm",
+            branchId: "Hà Nội",
+            entitlements: ["customer:read"]
+          }
+        }),
+        (error) => error.code === "TOOL_SCOPE_DENIED"
+      );
+      assert.equal(requestCount, 0);
+    } finally {
+      await close(server);
+      restoreLlmEnv(originalEnv);
+    }
+  });
+
+  test("rejects malformed, schema-expanded, and ungrounded fallback replies", async () => {
+    const originalEnv = snapshotLlmEnv();
+    const cases = [
+      {
+        content: "not-json",
+        verify: (error) => /JSON không hợp lệ/.test(error.message)
+      },
+      {
+        content: JSON.stringify({
+          reply: "Em chưa có đủ dữ liệu.",
+          sources: [{ endpoint: "LLM-controlled" }]
+        }),
+        verify: (error) => /không đúng schema/.test(error.message)
+      },
+      {
+        content: JSON.stringify({ reply: "Khách C-FABRICATED cần được chăm sóc." }),
+        verify: (error) =>
+          error.code === "UNGROUNDED_SENSITIVE_FACT" && error.kind === "customer-id"
+      },
+      {
+        content: JSON.stringify({ reply: "Khách hàng đáo hạn ngày 31/12/2099." }),
+        verify: (error) => error.code === "UNGROUNDED_SENSITIVE_FACT" && error.kind === "date"
+      },
+      {
+        content: JSON.stringify({ reply: "Giá trị dự kiến là 9.999.999.999 đồng." }),
+        verify: (error) => error.code === "UNGROUNDED_SENSITIVE_FACT" && error.kind === "money"
+      },
+      {
+        content: JSON.stringify({ reply: "Giá trị dự kiến là 9.999.999.999 ₫." }),
+        verify: (error) => error.code === "UNGROUNDED_SENSITIVE_FACT" && error.kind === "money"
+      },
+      {
+        content: JSON.stringify({ reply: "Xác suất thành công là 99%." }),
+        verify: (error) => error.code === "UNGROUNDED_SENSITIVE_FACT" && error.kind === "percentage"
+      }
+    ];
+    let responseIndex = 0;
+    const server = createServer((req, res) => {
+      collectJson(req, () => {
+        res.setHeader("Content-Type", "application/json");
+        res.end(
+          JSON.stringify({
+            choices: [{ message: { content: cases[responseIndex++].content } }]
+          })
+        );
+      });
+    });
+
+    try {
+      const baseUrl = await listen(server);
+      process.env.LLM_PROVIDER = "openai-compatible";
+      process.env.LLM_API_URL = `${baseUrl}/v1/chat/completions`;
+      process.env.LLM_API_KEY = "test-key";
+      process.env.LLM_MODEL = "unit-test-model";
+      process.env.AUTH_ENABLED = "false";
+      setSmallContextLimits();
+      const scopedIdentity = {
+        userId: "fallback-grounding-rm",
+        rmId: "RM01",
+        role: "rm",
+        branchId: "Hà Nội",
+        entitlements: fallbackEntitlements
+      };
+
+      for (const testCase of cases) {
+        await assert.rejects(
+          generateLlmFallback({
+            message: "Tóm tắt dữ liệu CRM",
+            identity: scopedIdentity
+          }),
+          testCase.verify
+        );
+      }
+      assert.equal(responseIndex, cases.length);
+    } finally {
+      await close(server);
+      restoreLlmEnv(originalEnv);
+    }
+  });
 });
 
 function snapshotLlmEnv() {
@@ -99,7 +268,13 @@ function snapshotLlmEnv() {
     LLM_CONTEXT_CUSTOMER_LIMIT: process.env.LLM_CONTEXT_CUSTOMER_LIMIT,
     LLM_CONTEXT_OPPORTUNITY_LIMIT: process.env.LLM_CONTEXT_OPPORTUNITY_LIMIT,
     LLM_CONTEXT_CAMPAIGN_LIMIT: process.env.LLM_CONTEXT_CAMPAIGN_LIMIT,
-    AI_DATA_CLASSIFICATION: process.env.AI_DATA_CLASSIFICATION
+    AI_DATA_CLASSIFICATION: process.env.AI_DATA_CLASSIFICATION,
+    AI_NATIVE_CORE: process.env.AI_NATIVE_CORE,
+    AUTH_ENABLED: process.env.AUTH_ENABLED,
+    NODE_ENV: process.env.NODE_ENV,
+    CRM_MODE: process.env.CRM_MODE,
+    CRM_API_BASE_URL: process.env.CRM_API_BASE_URL,
+    CRM_API_KEY: process.env.CRM_API_KEY
   };
 }
 

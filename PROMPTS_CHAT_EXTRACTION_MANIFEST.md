@@ -19,15 +19,16 @@ This pack integrates the public `f/prompts.chat` repository into a generic CTO m
   - `src/lib/ai/quality-check.prompt.yml`
   - `AGENTS.md`
 
-## Full corpus extraction
+## Full corpus extraction — currently blocked
 
-Run on a machine with internet access:
+> [!CAUTION]
+> Do not run `scripts/extract_prompts_chat.sh` in its current form. It fetches
+> the `main` branch and does not validate or honor `PROMPTS_CHAT_REF`, so the
+> result is not pinned or reproducible. The curation script/config documented by
+> project policy are also not implemented. Extraction remains blocked until
+> those gaps are fixed, reviewed, and tested.
 
-```bash
-bash scripts/extract_prompts_chat.sh
-```
-
-Outputs:
+Intended outputs after the pipeline is compliant:
 
 ```text
 data/prompts-chat/prompts.raw.csv

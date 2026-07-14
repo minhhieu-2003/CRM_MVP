@@ -1,4 +1,11 @@
-# Skill: Hướng dẫn thiết kế kiến trúc hệ thống toàn bộ hệ sinh thái bằng draw.io
+# Hướng dẫn thiết kế kiến trúc hệ thống bằng Draw.io
+
+> [!NOTE]
+> **REFERENCE GUIDE.** Đây là checklist thiết kế sơ đồ, không phải Codex skill có
+> thể chạy và không phải mô tả runtime BankRM hiện tại. Khi cập nhật sơ đồ dự án,
+> bắt đầu từ [mục lục tài liệu](../README.md), đối chiếu
+> [kiến trúc hiện hành](../architecture/architecture.md) và giữ source `.drawio`
+> đồng bộ với generator tương ứng.
 
 ## 1) Mục tiêu
 Tài liệu này hướng dẫn cách thiết kế **kiến trúc hệ thống chi tiết** cho toàn bộ hệ sinh thái đề bài bằng **draw.io (diagrams.net)**, nhằm:
@@ -37,7 +44,9 @@ Tài liệu này hướng dẫn cách thiết kế **kiến trúc hệ thống c
 
 ## 3) Cấu trúc file draw.io đề xuất
 
-- Tạo 1 file chính: `docs/architecture/system-ecosystem.drawio`.
+- File nhiều trang canonical hiện tại: `docs/architecture/bankrm-copilot-system-architecture.drawio`.
+- Source semantic tương ứng: `scripts/docs/generate-system-architecture.mjs`; chạy với `--check` sau khi chỉnh artifact.
+- Bản tóm tắt một trang và các package Draw.io cũ đã được retire để tránh hai source of truth.
 - Dùng nhiều **Page** trong cùng file:
   1. `00-legend-conventions`
   2. `01-system-context`

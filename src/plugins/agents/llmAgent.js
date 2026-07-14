@@ -8,11 +8,11 @@ export const llmAgent = {
   priority: 90,
   enabled: () => isLlmFallbackEnabled(),
   match: () => true,
-  run: async ({ message }) => {
-    const llm = await generateLlmFallback({ message });
+  run: async ({ message, identity }) => {
+    const llm = await generateLlmFallback({ message, identity });
     return {
       reply: llm.reply,
-      sources: [{ endpoint: "POST /llm-proxy/chat" }],
+      sources: llm.sources,
       provider: `llm-fallback:${llm.model}`
     };
   }

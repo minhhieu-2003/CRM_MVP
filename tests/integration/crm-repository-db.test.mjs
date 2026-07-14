@@ -162,10 +162,16 @@ describe("CRM repository database providers", () => {
   it("từ chối mock ở pilot và production", async () => {
     process.env.CRM_MODE = "mock";
     process.env.NODE_ENV = "pilot";
-    await assert.rejects(() => listCustomers({ role: "admin" }), /Không được dùng CRM_MODE=mock/);
+    await assert.rejects(
+      () => listCustomers({ role: "admin", entitlements: ["*"] }),
+      /Không được dùng CRM_MODE=mock/
+    );
 
     process.env.NODE_ENV = "production";
-    await assert.rejects(() => listCustomers({ role: "admin" }), /Không được dùng CRM_MODE=mock/);
+    await assert.rejects(
+      () => listCustomers({ role: "admin", entitlements: ["*"] }),
+      /Không được dùng CRM_MODE=mock/
+    );
   });
 
   it("validate mode, timeout và cấu hình PostgreSQL", async () => {

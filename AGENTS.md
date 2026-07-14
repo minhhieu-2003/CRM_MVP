@@ -84,7 +84,7 @@
 ### prompts.chat integration
 
 The project may contain an extracted prompt corpus from the public `f/prompts.chat` repository.
-See `PROMPTS_CHAT_EXTRACTION_MANIFEST.md` for the full extraction spec and `docs/PROMPTS_CHAT_SECURITY.md` for the security policy.
+See `PROMPTS_CHAT_EXTRACTION_MANIFEST.md` for the full extraction spec and `docs/integrations/prompts-chat.md` for the security policy.
 
 Generated files may include:
 
@@ -142,21 +142,15 @@ data/prompts-chat/extraction-manifest.json
 data/prompts-chat/verification-report.json
 ```
 
-### Extraction commands
+### Extraction implementation status
 
-```bash
-# Full extraction (requires internet access)
-bash scripts/extract_prompts_chat.sh
-
-# Pin a specific commit for reproducibility
-PROMPTS_CHAT_REF="<commit-sha>" bash scripts/extract_prompts_chat.sh
-
-# Curate a filtered subset
-node scripts/curate_prompts_chat.mjs \
-  --input data/prompts-chat/prompts.normalized.jsonl \
-  --output data/prompts-chat/prompts.curated.jsonl \
-  --config prompts-chat.config.json
-```
+> [!CAUTION]
+> The current pipeline is not approved for reproducible or production extraction.
+> `scripts/extract_prompts_chat.sh` fetches the `main` branch and does not yet
+> validate or honor `PROMPTS_CHAT_REF`. The documented curator
+> `scripts/curate_prompts_chat.mjs` and `prompts-chat.config.json` are not present.
+> Do not run or represent this pipeline as pinned/curated until those gaps are
+> implemented, reviewed, and tested.
 
 ### Supply-chain security
 

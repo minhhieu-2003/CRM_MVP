@@ -1,89 +1,126 @@
-# Multi-Agent Router & Cơ chế dự phòng
+# Multi-Agent Router và chuỗi dự phòng
 
-## Tổng quan
+> **Trạng thái:** Tài liệu runtime hiện hành. Xem [mục lục tài liệu](../README.md) và
+> [kiến trúc tổng thể](../architecture/architecture.md) để biết vị trí của router trong hệ thống.
 
-Hệ thống có 2 lớp điều hướng:
+## Vị trí trong runtime
 
-1. **Rule engine (MCP context engine)** — `src/services/mcpContextEngine.js`
-   - Lớp chính, IF/ELSE, xử lý các intent CRM cốt lõi: nhắc đến hạn, soạn email,
-     call script, gợi ý cơ hội, xem chiến dịch.
-   - Khi không khớp intent → trả `{ fallback: true }`.
+Multi-agent router không phải đường xử lý CRM chính. Thứ tự điều phối của `/api/chat` là:
 
-2. **Multi-agent router (plugin)** — `src/plugins/router.js`
-   - Chỉ kích hoạt khi rule engine trả `fallback: true`.
-   - Có nhiều **agent plugin "chờ sẵn"** trong registry, được thử lần lượt theo
-     `priority` (thấp = ưu tiên trước) và điều kiện `match()`.
-   - **Dự phòng theo chuỗi**: một agent lỗi hoặc không trả kết quả → tự động
-     chuyển sang agent kế tiếp. Nếu không agent nào xử lý được → dùng fallback
-     tĩnh của rule engine.
+1. Khi `AI_NATIVE_CORE=true`, `agentService.js` thử AI-native core: planner qua configured proxy,
+   MCP client/server, canonical tool registry, entitlement policy và application-scoped repository.
+2. Nếu AI core bị tắt, data policy chặn, proxy/MCP lỗi hoặc plan không hợp lệ, hệ thống chạy
+   deterministic engine trong `mcpContextEngine.js`.
+3. Chỉ khi deterministic engine trả `{ fallback: true }`, `src/plugins/router.js` mới thử các
+   plugin theo `priority`.
+4. Nếu không plugin nào xử lý được, câu trả lời fallback tĩnh của deterministic engine được giữ
+   nguyên.
 
-```
+```text
 message
-  │
-  ▼
-rule engine (IF/ELSE)  ──khớp intent──▶  trả lời CRM
-  │ không khớp (fallback:true)
-  ▼
-router.dispatchFallback()
-  ├─ smalltalk-agent   (priority 10, nội bộ)
-  ├─ capability-agent  (priority 20, nội bộ)
-  └─ llm-fallback-agent(priority 90, gọi LLM proxy — chỉ khi đã cấu hình)
-  │ không agent nào xử lý được / tất cả lỗi
-  ▼
-fallback tĩnh (rule engine)
+  |
+  +-- AI_NATIVE_CORE=true và policy cho phép
+  |     -> configured LLM planner
+  |     -> MCP tools/list + tools/call
+  |     -> canonical registry -> entitlement policy -> application-scoped repository -> CRM provider
+  |     -> grounded synthesis
+  |          |
+  |          +-- lỗi/timeout/invalid -> deterministic fallback
+  |
+  +-- AI core tắt hoặc fallback
+        -> mcpContextEngine.js
+             |
+             +-- khớp intent -> trả lời CRM
+             |
+             +-- fallback:true -> router.dispatchFallback()
+                    +-- smalltalk-agent
+                    +-- capability-agent
+                    +-- llm-fallback-agent (nếu đủ policy gate)
+                    +-- không xử lý được -> giữ fallback tĩnh
 ```
+
+Deterministic engine và LLM fallback đều yêu cầu entitlement rồi đọc dữ liệu qua
+`crmRepository.js`; capability và RM/branch scope không bị bỏ qua khi chuyển đường xử lý. Cả
+deterministic path và AI-native path dùng context snapshot/draft/CAS, nên response lỗi hoặc turn cũ
+không ghi đè state hợp lệ.
 
 ## Agent plugin interface
 
-Mỗi agent là một object:
+Mỗi plugin là một object:
 
 ```js
 {
   id: "ten-agent",
   description: "Mô tả ngắn",
-  priority: 10,                       // thấp = thử trước
-  enabled: () => true,               // bật/tắt runtime (vd theo env)
+  priority: 10, // số thấp được thử trước
+  enabled: () => true,
   match: ({ message, normalized }) => boolean,
-  run: async ({ message, normalized }) => ({
-    reply: "...",                    // bắt buộc
-    sources: [{ endpoint: "..." }],  // truy vết nguồn
+  run: async ({ message, normalized, identity }) => ({
+    reply: "...",
+    sources: [{ endpoint: "..." }],
     provider: "ten-agent"
   })
 }
 ```
 
-Đăng ký thêm agent lúc chạy: `registerAgent(agent)` trong `src/plugins/router.js`.
+Router chuẩn hóa tiếng Việt trước khi gọi `match()`. Một plugin lỗi hoặc không trả `reply` sẽ
+không chặn các plugin kế tiếp. Có thể đăng ký thêm plugin trong process bằng
+`registerAgent(agent)`; danh sách hiện tại được công bố qua `GET /api/agents`.
 
-## Các agent hiện có
+## Các plugin hiện có
 
-| Agent | Priority | Enabled | Vai trò |
-|-------|----------|---------|---------|
-| `smalltalk-agent` | 10 | luôn bật | Chào hỏi, cảm ơn, tạm biệt |
-| `capability-agent` | 20 | luôn bật | Giới thiệu năng lực, hướng dẫn |
-| `llm-fallback-agent` | 90 | khi cấu hình LLM | Dự phòng cuối bằng LLM qua proxy |
+| Agent                | Priority | Điều kiện bật                                                               | Vai trò                                   |
+| -------------------- | -------: | --------------------------------------------------------------------------- | ----------------------------------------- |
+| `smalltalk-agent`    |       10 | Luôn bật                                                                    | Chào hỏi, cảm ơn, tạm biệt.               |
+| `capability-agent`   |       20 | Luôn bật                                                                    | Giới thiệu năng lực và hướng dẫn sử dụng. |
+| `llm-fallback-agent` |       90 | Configured proxy vượt gate ứng dụng, data class được phép và đủ read scopes | Trả lời dự phòng qua proxy LLM.           |
 
-Kiểm tra registry qua API: `GET /api/agents`.
+## Policy gate của LLM fallback
 
-## Cấu hình LLM agent (tùy chọn)
+`llm-fallback-agent` chỉ được bật khi đồng thời thỏa mãn:
 
-Sao chép `.env.example` → `.env` và điền:
+- `LLM_API_URL` và `LLM_API_KEY` đã cấu hình;
+- URL dùng HTTPS, trừ loopback phục vụ test/local;
+- URL không trỏ trực tiếp đến các model vendor bị chặn;
+- `AI_DATA_CLASSIFICATION` là `synthetic` hoặc `anonymized`.
 
-```
-LLM_API_URL=https://your-approved-proxy.example.com/v1/chat/completions
-LLM_API_KEY=...
-LLM_MODEL=gpt-4o-mini
-```
+Đây là các gate mà ứng dụng hiện enforce. Trước proxy call, fallback token hóa PII có thể nhận diện
+trong RM message và CRM context rồi chỉ hoàn nguyên output phía ứng dụng. Việc proxy có logging,
+rate limit và các kiểm soát nội bộ khác, cùng DLP/NER bao phủ ngoài regex, là yêu cầu vận hành/pilot
+chưa được ứng dụng tự xác minh. Không đặt
+`internal`, `pii` hoặc `restricted` vào `AI_DATA_CLASSIFICATION` để cố bật LLM; các giá trị này bị
+chặn.
 
-- Nếu **không** cấu hình, `llm-fallback-agent` ở trạng thái `enabled:false` (chờ sẵn
-  nhưng không chạy) → hệ thống chỉ dùng agent nội bộ + fallback tĩnh, **không gọi
-  API bên ngoài**.
-- Endpoint phải là proxy **đã được phê duyệt và có logging** (theo `RULES.md`).
-- `npm start` / `npm run dev` tự nạp `.env` qua `--env-file-if-exists`.
+LLM fallback lấy tối đa 20 khách hàng, 20 cơ hội và 10 chiến dịch theo mặc định. Dữ liệu được lấy
+qua scoped repository trước khi cắt giới hạn. Đây là giới hạn context, chưa phải query pushdown ở
+provider.
 
-## Audit & bảo mật
+Trước khi đọc CRM hoặc gọi proxy, fallback phải có đủ `customer:read`, `opportunity:read` và
+`campaign:read`; thiếu quyền dừng với `TOOL_SCOPE_DENIED` và không gọi CRM/LLM. Proxy phải trả
+strict JSON `{reply}`. Sources do code gắn từ các repository call thực tế và shared typed
+sensitive-claim validator từ chối ID/ngày/số tiền/tỷ lệ không grounded. Validator chưa tương đương
+field-level/entity-scoped provenance hoàn hảo.
 
-- Mọi lượt xử lý được ghi audit (`llmProvider`, `sources`, `module`, `latencyMs`).
-  - Agent nội bộ: `router:smalltalk-agent`, `router:capability-agent`.
-  - LLM: `router:llm-fallback:<model>`.
-  - Lỗi agent: bản ghi riêng `agent-error:<agentId>` kèm thông báo lỗi.
-- Không rò rỉ metadata kỹ thuật ra UI (frontend chỉ hiển thị `reply`).
+## Ranh giới identity và môi trường
+
+- Local development có thể chạy với `AUTH_ENABLED=false` và identity mặc định để dùng dữ liệu
+  mock/sandbox cục bộ.
+- Khi auth được bật hoặc ở `pilot`/`production`, non-admin phải có RM/branch scope thật; sentinel
+  `default` bị từ chối trước đường LLM fallback.
+- HTTP token-to-scope mapping nằm ở backend. Plugin nhận identity đã được backend xác thực và
+  không nhận scope từ nội dung prompt.
+- Pilot/production không được dùng `CRM_MODE=mock`.
+
+Auth hiện tại là cơ chế bearer token phục vụ demo/pilot có kiểm soát, chưa thay thế SSO/JWT,
+entitlement service hay RBAC production-grade.
+
+## Audit và nguồn
+
+- Turn cuối cùng cố gắng ghi `llmProvider`, actor/scope, mã tương quan băm thay cho raw `conversationId`, sources, module và latency; audit local hiện là best-effort.
+- Plugin nội bộ dùng provider `router:smalltalk-agent` hoặc `router:capability-agent`.
+- LLM fallback dùng `router:llm-fallback:<model>` và khai báo các CRM endpoint cùng
+  `POST /llm-proxy/chat`.
+- Lỗi plugin tạo event riêng `agent-error:<agentId>` rồi router tiếp tục chuỗi dự phòng.
+- UI chỉ hiển thị nội dung nghiệp vụ; metadata kỹ thuật không được render trong RM Chat.
+
+Chi tiết tool execution và structured observations nằm tại [MCP Toolkit](mcp-toolkit.md).

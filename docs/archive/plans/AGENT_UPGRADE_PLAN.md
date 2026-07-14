@@ -1,5 +1,12 @@
 # YÊU CẦU THỰC THI (PROMPT CHO AI CLI AGENT)
 
+> [!CAUTION]
+> **HISTORICAL PROMPT — DO NOT EXECUTE.** Nội dung bên dưới được giữ để truy vết
+> một đề xuất nâng cấp cũ và không còn là chỉ dẫn cho agent. Một số bước xung đột
+> với kiến trúc MCP-native, chính sách mock/sandbox và workflow review hiện tại.
+> Xem [mục lục tài liệu](../../README.md), [kiến trúc hiện hành](../../architecture/architecture.md)
+> và [MCP toolkit](../../integrations/mcp-toolkit.md) trước khi lập kế hoạch mới.
+
 Bạn là một AI Coding Agent. Dưới đây là kế hoạch nâng cấp chi tiết từng bước cho dự án **BankRM Copilot (CRM AI Agent)**. Nhiệm vụ của bạn là đọc kỹ, phân tích và thực thi **tuần tự** từng bước dưới đây.
 Dự án được xây dựng bằng Node.js, Express và giao diện Vanilla JS ở thư mục `public/`. Không dùng TypeScript.
 

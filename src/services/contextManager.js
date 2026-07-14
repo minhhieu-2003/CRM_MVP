@@ -4,6 +4,18 @@ const DEFAULT_CONTEXT = Object.freeze({
   lastIntent: null
 });
 
+export class ContextVersionConflictError extends Error {
+  constructor(expectedVersion, actualVersion) {
+    super(
+      `Conversation context changed concurrently (expected version ${expectedVersion}, actual ${actualVersion}).`
+    );
+    this.name = "ContextVersionConflictError";
+    this.code = "CONTEXT_VERSION_CONFLICT";
+    this.expectedVersion = expectedVersion;
+    this.actualVersion = actualVersion;
+  }
+}
+
 function readPositiveInteger(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
@@ -66,6 +78,15 @@ export function createContextManager(options = {}) {
   const maxFocusedCustomers = readPositiveInteger(options.maxFocusedCustomers, 50);
   const now = typeof options.now === "function" ? options.now : Date.now;
   const store = new Map();
+  let issuedRevision = 0;
+
+  function nextRevision() {
+    if (issuedRevision >= Number.MAX_SAFE_INTEGER) {
+      throw new RangeError("Conversation context revision space is exhausted.");
+    }
+    issuedRevision += 1;
+    return issuedRevision;
+  }
 
   function cleanupExpired(timestamp = now()) {
     for (const [key, record] of store) {
@@ -73,9 +94,9 @@ export function createContextManager(options = {}) {
     }
   }
 
-  function touch(key, context, timestamp) {
+  function touch(key, context, version, timestamp) {
     store.delete(key);
-    store.set(key, { context, expiresAt: timestamp + ttlMs });
+    store.set(key, { context, version, expiresAt: timestamp + ttlMs });
 
     while (store.size > maxConversations) {
       const oldestKey = store.keys().next().value;
@@ -89,8 +110,20 @@ export function createContextManager(options = {}) {
     cleanupExpired(timestamp);
     const existing = store.get(key);
     const context = existing?.context ?? normalizeContext(DEFAULT_CONTEXT, maxFocusedCustomers);
-    touch(key, context, timestamp);
+    const version = existing?.version ?? nextRevision();
+    touch(key, context, version, timestamp);
     return immutableSnapshot(context);
+  }
+
+  function getConversationContextSnapshot({ conversationId, identity } = {}) {
+    const key = conversationKey({ conversationId, identity });
+    const timestamp = now();
+    cleanupExpired(timestamp);
+    const existing = store.get(key);
+    const context = existing?.context ?? normalizeContext(DEFAULT_CONTEXT, maxFocusedCustomers);
+    const version = existing?.version ?? nextRevision();
+    touch(key, context, version, timestamp);
+    return Object.freeze({ context: immutableSnapshot(context), version });
   }
 
   function saveConversationContext({ conversationId, identity, context } = {}) {
@@ -98,7 +131,31 @@ export function createContextManager(options = {}) {
     const timestamp = now();
     cleanupExpired(timestamp);
     const normalized = normalizeContext(context, maxFocusedCustomers);
-    touch(key, normalized, timestamp);
+    touch(key, normalized, nextRevision(), timestamp);
+    return immutableSnapshot(normalized);
+  }
+
+  function compareAndSwapConversationContext({
+    conversationId,
+    identity,
+    context,
+    expectedVersion
+  } = {}) {
+    if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) {
+      throw new TypeError("expectedVersion must be a non-negative safe integer");
+    }
+
+    const key = conversationKey({ conversationId, identity });
+    const timestamp = now();
+    cleanupExpired(timestamp);
+    const existing = store.get(key);
+    const actualVersion = existing?.version ?? -1;
+    if (!existing || actualVersion !== expectedVersion) {
+      throw new ContextVersionConflictError(expectedVersion, actualVersion);
+    }
+
+    const normalized = normalizeContext(context, maxFocusedCustomers);
+    touch(key, normalized, nextRevision(), timestamp);
     return immutableSnapshot(normalized);
   }
 
@@ -109,7 +166,9 @@ export function createContextManager(options = {}) {
 
   return Object.freeze({
     getConversationContext,
+    getConversationContextSnapshot,
     saveConversationContext,
+    compareAndSwapConversationContext,
     deleteConversationContext
   });
 }
@@ -121,5 +180,7 @@ const defaultManager = createContextManager({
 });
 
 export const getConversationContext = defaultManager.getConversationContext;
+export const getConversationContextSnapshot = defaultManager.getConversationContextSnapshot;
 export const saveConversationContext = defaultManager.saveConversationContext;
+export const compareAndSwapConversationContext = defaultManager.compareAndSwapConversationContext;
 export const deleteConversationContext = defaultManager.deleteConversationContext;

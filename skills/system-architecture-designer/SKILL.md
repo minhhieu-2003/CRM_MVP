@@ -26,7 +26,7 @@ Khi dùng skill này, phải rà và cập nhật các nhóm sau nếu liên qua
 1. Đọc bối cảnh repo:
    - `AGENTS.md`
    - `docs/architecture/architecture.md`
-   - `scripts/docs/generate-if-else-workflow.mjs`
+   - `scripts/docs/generate-system-architecture.mjs`
    - `src/server.js`
    - `src/services/agentService.js`
    - `src/services/mcpContextEngine.js`
@@ -42,13 +42,13 @@ Khi dùng skill này, phải rà và cập nhật các nhóm sau nếu liên qua
 
 3. Cập nhật artifact:
    - Markdown: `docs/architecture/architecture.md`.
-   - Draw.io: sửa generator `scripts/docs/generate-if-else-workflow.mjs`, sau đó chạy `node scripts/docs/generate-if-else-workflow.mjs`.
+   - Draw.io: sửa generator `scripts/docs/generate-system-architecture.mjs`, sau đó chạy `node scripts/docs/generate-system-architecture.mjs`.
    - Không chỉnh tay XML lớn nếu có thể sinh lại từ script.
 
 4. Kiểm tra:
-   - `node --check scripts/docs/generate-if-else-workflow.mjs`
-   - `node_modules\.bin\prettier.cmd --check scripts\docs\generate-if-else-workflow.mjs docs\architecture\architecture.md`
-   - `git diff --check -- docs\architecture\architecture.md docs\architecture\bankrm-if-else-workflow.drawio scripts\docs\generate-if-else-workflow.mjs`
+   - `node --check scripts/docs/generate-system-architecture.mjs`
+   - `node_modules\.bin\prettier.cmd --check scripts\docs\generate-system-architecture.mjs docs\architecture\architecture.md`
+   - `git diff --check -- docs\architecture\architecture.md docs\architecture\bankrm-copilot-system-architecture.drawio scripts\docs\generate-system-architecture.mjs`
    - Kiểm tra Draw.io XML có đủ pages và không có missing source/target refs.
 
 ## Template mô tả component
@@ -170,7 +170,7 @@ Layout:
 4. Đặt Production Target bên phải, nối dashed arrow từ Current MVP sang Target.
 5. Thêm legend góc phải dưới với màu/line style.
 6. Không dùng endpoint/tool/DB chưa có nếu không ghi rõ Production Target.
-7. Sau khi sửa generator, chạy lại node scripts/docs/generate-if-else-workflow.mjs.
+7. Sau khi sửa generator, chạy lại `node scripts/docs/generate-system-architecture.mjs`.
 ```
 
 ## Prompt mẫu cho agent
@@ -191,7 +191,7 @@ Yêu cầu bắt buộc:
 - Khi vẽ Draw.io, dùng đúng shape có sẵn trong palette General/Misc: rounded rectangle cho UI/service, diamond cho decision, cylinder cho DB/data store, document cho file/log/template, table/list cho entity, cloud cho external system, solid arrow cho flow hiện tại, dashed arrow cho optional/future/production target.
 - Không dùng custom icon, emoji, SVG tự chế hoặc shape không chắc chắn thuộc Draw.io native palette.
 - Cập nhật `docs/architecture/architecture.md`.
-- Cập nhật sơ đồ bằng cách sửa `scripts/docs/generate-if-else-workflow.mjs` rồi chạy generator để sinh lại `docs/architecture/bankrm-if-else-workflow.drawio`.
+- Cập nhật sơ đồ bằng cách sửa `scripts/docs/generate-system-architecture.mjs` rồi chạy generator để sinh lại `docs/architecture/bankrm-copilot-system-architecture.drawio`.
 - Sau khi xong, chạy kiểm tra cú pháp, Prettier, diff check và validate Draw.io refs.
 
 Output mong muốn:

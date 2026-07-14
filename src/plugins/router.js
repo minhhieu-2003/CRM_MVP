@@ -25,7 +25,7 @@ export function registerAgent(agent) {
  * Một agent lỗi/không trả kết quả -> tự chuyển agent kế tiếp (dự phòng theo chuỗi).
  * Trả về null nếu không agent nào xử lý được (caller dùng fallback tĩnh).
  */
-export async function dispatchFallback({ message, onAgentError } = {}) {
+export async function dispatchFallback({ message, identity, onAgentError } = {}) {
   const normalized = normalizeVietnamese(message);
   const candidates = registry
     .filter((agent) => {
@@ -39,7 +39,7 @@ export async function dispatchFallback({ message, onAgentError } = {}) {
 
   for (const agent of candidates) {
     try {
-      const result = await agent.run({ message, normalized });
+      const result = await agent.run({ message, normalized, identity });
       if (result && result.reply) {
         return { ...result, agentId: agent.id };
       }

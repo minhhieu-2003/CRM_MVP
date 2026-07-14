@@ -19,7 +19,7 @@ Bộ quy tắc bắt buộc khi agent xử lý hội thoại và gọi MCP tool.
 - Nếu thiếu thông tin (chưa có khách hàng mục tiêu), hỏi lại RM thay vì đoán bừa.
 
 ## 4. Công cụ (tool use)
-- Chỉ dùng tool trong MCP toolkit đã khai báo (`docs/mcp-toolkit.md`).
+- Chỉ dùng tool trong MCP toolkit đã khai báo (`docs/integrations/mcp-toolkit.md`).
 - **Không** gọi API bên thứ 3 chưa được phê duyệt.
 - Mọi LLM call phải đi qua proxy có logging (theo yêu cầu pilot Bank A).
 

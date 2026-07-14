@@ -1,8 +1,35 @@
-# Draw.io Architecture Gap Assessment - BankRM Copilot
+# Draw.io Architecture Gap Assessment - BankRM Copilot (Historical Baseline)
+
+> [!WARNING]
+> **HISTORICAL BASELINE — DO NOT USE AS CURRENT ARCHITECTURE OR EXECUTION PLAN.**
+> Tài liệu này được giữ để truy vết khoảng cách tại ngày 2026-07-11. Xem
+> [mục lục tài liệu](../../README.md), [kiến trúc hiện hành](../../architecture/architecture.md) và
+> [AI-native core](../../architecture/ai-native-core.md) để đánh giá runtime hiện tại.
 
 Nguon tham chieu: `C:\Users\hieu\Downloads\ai_crm_copilot_architecture.drawio.xml`
 
 Ngay danh gia: 2026-07-11
+
+> Cap nhat 2026-07-13: day la baseline lich su truoc khi issue #15 duoc trien khai. Cac nhan dinh va phan tram ben duoi mo ta snapshot 2026-07-11, khong phai trang thai runtime hien tai.
+
+## 0. Trang thai sau issue #15 (2026-07-13)
+
+Runtime hien tai khi `AI_NATIVE_CORE=true`:
+
+```text
+Chat UI -> Express API -> AI Planner -> MCP Client -> MCP Server
+  -> Canonical Tool Registry -> Scoped CRM Repository
+  -> Mock / SQLite / PostgreSQL / CRM Sandbox
+```
+
+- `src/services/toolRegistry.js` la nguon tool duy nhat; MCP `tools/list` cong bo input/output schema, scope, risk, access va source metadata.
+- AI core goi MCP that qua stdio cho `initialize`, `tools/list` va `tools/call`; `mcpContextEngine.js` la deterministic resilience fallback.
+- Collection observations duoc phan trang toi da 50 record va tra `{items,totalCount,returnedCount,offset,hasMore}`.
+- Session identity nam ngoai planner-controlled arguments; auth mode chan scope `default`, repository ap RM/branch scope cho moi duong doc CRM.
+- Context co TTL, actor isolation va capacity bounds; audit MCP co actor/scope va duoc hop nhat tu parent memory + child NDJSON.
+- Cac so lieu 45-55%/30-40% va backlog #15 trong baseline khong con dung de danh gia hien tai.
+
+Production gaps con lai tap trung vao SSO/JWT + entitlement tap trung, remote/managed MCP transport, durable context/audit, pre-LLM redaction, contract/load/chaos testing va product knowledge grounding.
 
 ## 1. Tom tat file XML
 
@@ -32,7 +59,7 @@ Kien truc trong diagram mo ta dich den tham vong hon MVP hien tai:
 - Tool catalog gom customer.search/profile, interaction.history, opportunity.list/recommend, campaign.list, reminder.list, knowledge.search, email.generate, callscript.generate, context.switch/restore, session.manage, reasoning.trace, source.cite.
 - Principle: AI-first, explainable, context-aware, RM in control, traceability end-to-end.
 
-## 2. Muc do khop voi repo hien tai
+## 2. Muc do khop tai baseline 2026-07-11
 
 | Capability trong XML | Trang thai repo | Danh gia |
 | --- | --- | --- |
@@ -52,7 +79,7 @@ Kien truc trong diagram mo ta dich den tham vong hon MVP hien tai:
 | Auth/RBAC/RM scope | Chua co | Blocker pilot |
 | Evaluation 20 case + latency | Co `test:crm`, nhung report con don gian | Partial |
 
-## 3. Lech kien truc quan trong
+## 3. Lech kien truc tai baseline 2026-07-11
 
 ### 3.1 MCP chua la duong chay chinh cua chat
 
@@ -122,7 +149,7 @@ Repo hien tai:
 
 Khuyen nghi khong doi stack luc nay neu muc tieu la hackathon/demo nhanh. Nen cap nhat diagram hoac doc de ghi ro: repo hien tai chon Node/Express de giam build/runtime phuc tap; Python chi nen vao ETL/scoring neu can.
 
-## 4. Diem manh cua repo so voi XML
+## 4. Diem manh tai baseline 2026-07-11
 
 - Co MVP chay duoc local, khong chi la diagram.
 - Co test HTTP va test CRM business cases.
@@ -132,7 +159,7 @@ Khuyen nghi khong doi stack luc nay neu muc tieu la hackathon/demo nhanh. Nen ca
 - Co LLM fallback optional qua proxy, khong bat mac dinh neu thieu config.
 - Co UI don gian, phu hop demo nhanh.
 
-## 5. Uu tien bo sung de repo khop target architecture
+## 5. Backlog de xuat tai baseline 2026-07-11
 
 ### P0 - Pilot blockers
 
@@ -158,7 +185,7 @@ Khuyen nghi khong doi stack luc nay neu muc tieu la hackathon/demo nhanh. Nen ca
 3. #14 - Python next-best-action scoring.
 4. Them KB/vector search neu product catalog da on dinh.
 
-## 6. De xuat dieu chinh architecture docs
+## 6. De xuat tai baseline 2026-07-11
 
 Nen cap nhat `docs/architecture/architecture.md` hoac diagram draw.io theo 2 lop:
 
@@ -180,7 +207,7 @@ Nen cap nhat `docs/architecture/architecture.md` hoac diagram draw.io theo 2 lop
 - Product KB grounding.
 - Audit co actor/scope/hash, khong raw token/PII.
 
-## 7. Ket luan danh gia
+## 7. Ket luan baseline 2026-07-11
 
 Repo hien tai dat muc MVP kha tot: co UI, API, mock data, rule engine, MCP toolkit, tests va audit. Tuy nhien, neu lay file draw.io lam target architecture, repo moi dat khoang 45-55% ve mat thanh phan va chi dat khoang 30-40% ve pilot readiness.
 

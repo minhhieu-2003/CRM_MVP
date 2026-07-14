@@ -11,6 +11,7 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { getDefaultEnvironment } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..", "..");
@@ -35,12 +36,14 @@ function toolCall(name, args = {}) {
 
 // ─── Spawn MCP server ────────────────────────────────────────────────────────
 function spawnServer() {
-  const child = spawn(process.execPath, ["--env-file-if-exists=.env", SERVER_PATH], {
+  const child = spawn(process.execPath, [SERVER_PATH], {
     cwd: ROOT,
     stdio: ["pipe", "pipe", "pipe"],
     env: {
-      ...process.env,
+      ...getDefaultEnvironment(),
       NODE_ENV: "development",
+      AUTH_ENABLED: "false",
+      CRM_MODE: "mock",
       AUDIT_LOG_DIR: path.join(ROOT, "logs")
     }
   });
@@ -107,18 +110,19 @@ async function runTest(label, child, reqStr, assertFn) {
 function assertToolOk(res) {
   if (!res.result) throw new Error("No result in response");
   const content = res.result.content;
-  if (!Array.isArray(content) || content.length === 0)
-    throw new Error("result.content is empty");
+  if (!Array.isArray(content) || content.length === 0) throw new Error("result.content is empty");
   const text = content[0].text;
   if (typeof text !== "string") throw new Error("result.content[0].text is not a string");
-  // Parse JSON inside text — MCP tools return JSON.stringify'd data
-  const data = JSON.parse(text);
-  if (data.error) throw new Error(`Tool returned error: ${data.error}`);
-  return data;
+  const observation = JSON.parse(text);
+  if (observation.status !== "success") {
+    throw new Error(`Tool returned error: ${observation.error ?? "unknown"}`);
+  }
+  const data = observation.data;
+  return Array.isArray(data?.items) ? data.items : data;
 }
 
 function assertHasItems(data, minCount = 1) {
-  const arr = Array.isArray(data) ? data : data.data ?? data.customers ?? data.items ?? [];
+  const arr = Array.isArray(data) ? data : (data.data ?? data.customers ?? data.items ?? []);
   if (!Array.isArray(arr) || arr.length < minCount) {
     throw new Error(`Expected >=${minCount} items, got ${arr.length ?? "non-array"}`);
   }
@@ -152,7 +156,10 @@ await new Promise((resolve, reject) => {
     8000
   );
   child.stderr.on("data", (d) => {
-    if (d.toString().includes("dang chay tren stdio") || d.toString().includes("đang chạy trên stdio")) {
+    if (
+      d.toString().includes("dang chay tren stdio") ||
+      d.toString().includes("đang chạy trên stdio")
+    ) {
       clearTimeout(timer);
       resolve();
     }
@@ -188,21 +195,31 @@ await runTest("tools/list trả đúng 8 tools", child, rpc("tools/list"), (res)
 // ─── Step 2: crm_list_customers ───────────────────────────────────────────────
 console.log(`\n${BOLD}2. crm_list_customers${RESET}`);
 let firstCustomer;
-await runTest("Trả về danh sách khách hàng (array >= 1)", child, toolCall("crm_list_customers"), (res) => {
-  const data = assertToolOk(res);
-  const arr = assertHasItems(data, 1);
-  firstCustomer = arr[0];
-  assertHasField(arr, "id");
-  assertHasField(arr, "name");
-});
+await runTest(
+  "Trả về danh sách khách hàng (array >= 1)",
+  child,
+  toolCall("crm_list_customers"),
+  (res) => {
+    const data = assertToolOk(res);
+    const arr = assertHasItems(data, 1);
+    firstCustomer = arr[0];
+    assertHasField(arr, "id");
+    assertHasField(arr, "name");
+  }
+);
 
-await runTest("Khách hàng có trường segment hoặc savings_amount_vnd", child, toolCall("crm_list_customers"), (res) => {
-  const data = assertToolOk(res);
-  const arr = Array.isArray(data) ? data : [];
-  if (arr.length === 0) throw new Error("Danh sách rỗng");
-  const hasSegment = arr.some((c) => "segment" in c || "savings_amount_vnd" in c);
-  if (!hasSegment) throw new Error("Không có bản ghi nào có trường segment/savings_amount_vnd");
-});
+await runTest(
+  "Khách hàng có trường segment hoặc savings_amount_vnd",
+  child,
+  toolCall("crm_list_customers"),
+  (res) => {
+    const data = assertToolOk(res);
+    const arr = Array.isArray(data) ? data : [];
+    if (arr.length === 0) throw new Error("Danh sách rỗng");
+    const hasSegment = arr.some((c) => "segment" in c || "savings_amount_vnd" in c);
+    if (!hasSegment) throw new Error("Không có bản ghi nào có trường segment/savings_amount_vnd");
+  }
+);
 
 // ─── Step 3: crm_get_customer ─────────────────────────────────────────────────
 console.log(`\n${BOLD}3. crm_get_customer${RESET}`);
@@ -254,17 +271,24 @@ await runTest(
       // depend on runtime mode.
       const hasField = "maturityDate" in first || "maturity_date" in first;
       if (!hasField)
-        throw new Error(`Thiếu maturityDate/maturity_date trong: ${JSON.stringify(first).slice(0, 150)}`);
+        throw new Error(
+          `Thiếu maturityDate/maturity_date trong: ${JSON.stringify(first).slice(0, 150)}`
+        );
     }
   }
 );
 
 // ─── Step 5: crm_list_opportunities ──────────────────────────────────────────
 console.log(`\n${BOLD}5. crm_list_opportunities${RESET}`);
-await runTest("Trả toàn bộ opportunities (array)", child, toolCall("crm_list_opportunities", {}), (res) => {
-  const data = assertToolOk(res);
-  if (!Array.isArray(data)) throw new Error("Kết quả phải là array");
-});
+await runTest(
+  "Trả toàn bộ opportunities (array)",
+  child,
+  toolCall("crm_list_opportunities", {}),
+  (res) => {
+    const data = assertToolOk(res);
+    if (!Array.isArray(data)) throw new Error("Kết quả phải là array");
+  }
+);
 
 await runTest(
   "Lọc theo customerId hợp lệ trả array",
@@ -278,10 +302,15 @@ await runTest(
 
 // ─── Step 6: crm_list_interactions ───────────────────────────────────────────
 console.log(`\n${BOLD}6. crm_list_interactions${RESET}`);
-await runTest("Trả toàn bộ interactions (array)", child, toolCall("crm_list_interactions", {}), (res) => {
-  const data = assertToolOk(res);
-  if (!Array.isArray(data)) throw new Error("Kết quả phải là array");
-});
+await runTest(
+  "Trả toàn bộ interactions (array)",
+  child,
+  toolCall("crm_list_interactions", {}),
+  (res) => {
+    const data = assertToolOk(res);
+    if (!Array.isArray(data)) throw new Error("Kết quả phải là array");
+  }
+);
 
 await runTest(
   "Lọc theo customerId trả array",

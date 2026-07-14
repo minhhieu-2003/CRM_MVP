@@ -3,91 +3,196 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BankRM Copilot - CRM AI Agent</title>
+    <title>BankRM Copilot – CRM AI Agent</title>
+    <meta name="description" content="BankRM Copilot – Trợ lý AI hỗ trợ Relationship Manager chăm sóc khách hàng ngân hàng." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css?v=mobile-ui-2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main class="app" aria-label="BankRM Copilot">
-      <header class="header">
-        <div class="header-copy">
-          <p class="eyebrow">RM Copilot</p>
-          <h1>BankRM Copilot</h1>
-          <p>Hỗ trợ chăm sóc khách hàng và soạn thảo tác vụ CRM.</p>
-        </div>
-        <div class="header-tools">
-          <div class="session-chip" aria-label="Không gian làm việc">CRM nội bộ</div>
-          <div class="header-status" aria-label="Trạng thái">
-            <span class="status-dot" aria-hidden="true"></span>
-            <span>Sẵn sàng</span>
+    <div class="app-shell" id="appShell">
+
+      <!-- ═══════════════════════════════════════════════
+           HEADER
+      ═══════════════════════════════════════════════ -->
+      <header class="app-header" role="banner">
+        <div class="header-brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+            </svg>
           </div>
+          <div class="brand-text">
+            <span class="brand-label">RM Copilot</span>
+            <span class="brand-name">BankRM Copilot</span>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="header-badge" id="sessionBadge" aria-label="Phiên làm việc">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            CRM nội bộ
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="model-badge" id="modelBadge" aria-label="Chế độ AI">
+            <span class="model-dot" id="modelDot"></span>
+            <span id="modelLabel">AI Copilot</span>
+          </div>
+          <div class="status-badge" id="statusBadge" aria-label="Trạng thái hệ thống">
+            <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+            <span id="statusLabel">Sẵn sàng</span>
+          </div>
+          <button class="icon-btn" id="sidebarToggleBtn" aria-label="Ẩn/hiện lịch sử" title="Lịch sử hội thoại">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
         </div>
       </header>
 
-      <section
-        id="chatWindow"
-        class="chat-window"
-        role="log"
-        aria-live="polite"
-        aria-relevant="additions text"
-        aria-label="Hội thoại với BankRM Copilot"
-      >
-        <div id="welcomeState" class="welcome-state">
-          <p class="welcome-kicker">Bắt đầu ca làm việc</p>
-          <h2>Em sẵn sàng hỗ trợ anh/chị RM.</h2>
-          <p>Dữ liệu CRM nội bộ đã sẵn sàng cho ca làm việc.</p>
-        </div>
-      </section>
+      <!-- ═══════════════════════════════════════════════
+           MAIN LAYOUT (3 PANELS)
+      ═══════════════════════════════════════════════ -->
+      <div class="app-body">
 
-      <section class="quick-actions" aria-label="Tác vụ nhanh">
-        <button
-          type="button"
-          aria-label="Phím 1, nhắc tiết kiệm đến hạn"
-          data-message="Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này"
-        >
-          <span>1</span>
-          Tiết kiệm đến hạn
-        </button>
-        <button
-          type="button"
-          aria-label="Phím 2, soạn email chăm sóc"
-          data-message="Soạn email chăm sóc cho khách hàng ưu tiên"
-        >
-          <span>2</span>
-          Soạn email
-        </button>
-        <button
-          type="button"
-          aria-label="Phím 3, gợi ý cơ hội tiếp theo"
-          data-message="Gợi ý cơ hội tiếp theo cho khách hàng ưu tiên"
-        >
-          <span>3</span>
-          Cơ hội tiếp theo
-        </button>
-        <button
-          type="button"
-          aria-label="Phím 4, tạo chiến dịch chăm sóc"
-          data-message="Tạo chiến dịch chăm sóc khách hàng tiền gửi"
-        >
-          <span>4</span>
-          Chiến dịch
-        </button>
-      </section>
+        <!-- ── SIDEBAR ──────────────────────────────── -->
+        <aside class="sidebar" id="sidebar" aria-label="Lịch sử hội thoại">
+          <div class="sidebar-header">
+            <button class="new-chat-btn" id="newChatBtn" type="button" aria-label="Tạo hội thoại mới">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Hội thoại mới
+            </button>
+          </div>
 
-      <div id="chatStatus" class="chat-status" role="status" aria-live="polite"></div>
+          <nav class="conversation-list" id="conversationList" aria-label="Danh sách hội thoại">
+            <p class="conv-empty-hint" id="convEmptyHint">Chưa có hội thoại nào.</p>
+          </nav>
+        </aside>
 
-      <form id="chatForm" class="composer">
-        <label class="sr-only" for="messageInput">Nhập yêu cầu cho BankRM Copilot</label>
-        <input
-          id="messageInput"
-          type="text"
-          placeholder="Nhập yêu cầu chăm sóc khách hàng..."
-          autocomplete="off"
-          required
-        />
-        <button id="sendButton" type="submit">Gửi</button>
-      </form>
-    </main>
+        <!-- ── CHAT PANEL ────────────────────────────── -->
+        <main class="chat-panel" aria-label="Panel hội thoại chính">
+
+          <!-- Messages -->
+          <section
+            id="chatWindow"
+            class="chat-window"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+            aria-label="Hội thoại với BankRM Copilot"
+          >
+            <!-- Welcome state -->
+            <div id="welcomeState" class="welcome-state">
+              <div class="welcome-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <p class="welcome-kicker">Bắt đầu ca làm việc</p>
+              <h2>Em sẵn sàng hỗ trợ anh/chị RM.</h2>
+              <p>Dữ liệu CRM nội bộ đã kết nối. Hỏi về khách hàng, soạn email, hoặc gợi ý cơ hội tiếp theo.</p>
+              <div class="welcome-suggestions">
+                <button type="button" class="suggestion-chip" data-message="Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này">
+                  Tiết kiệm đến hạn tuần này
+                </button>
+                <button type="button" class="suggestion-chip" data-message="Gợi ý cơ hội tiếp theo cho khách hàng ưu tiên">
+                  Gợi ý cơ hội tiếp theo
+                </button>
+                <button type="button" class="suggestion-chip" data-message="Soạn email chăm sóc cho khách hàng ưu tiên">
+                  Soạn email chăm sóc
+                </button>
+                <button type="button" class="suggestion-chip" data-message="Tạo chiến dịch chăm sóc khách hàng tiền gửi">
+                  Tạo chiến dịch chăm sóc
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick Actions -->
+          <section class="quick-actions" aria-label="Tác vụ nhanh">
+            <button type="button" aria-label="Phím 1 – Tiết kiệm đến hạn" data-message="Nhắc tôi những khách hàng có tiết kiệm đến hạn trong tuần này">
+              <span class="qa-key">1</span>
+              <span class="qa-label">Tiết kiệm đến hạn</span>
+            </button>
+            <button type="button" aria-label="Phím 2 – Soạn email" data-message="Soạn email chăm sóc cho khách hàng ưu tiên">
+              <span class="qa-key">2</span>
+              <span class="qa-label">Soạn email</span>
+            </button>
+            <button type="button" aria-label="Phím 3 – Cơ hội tiếp theo" data-message="Gợi ý cơ hội tiếp theo cho khách hàng ưu tiên">
+              <span class="qa-key">3</span>
+              <span class="qa-label">Cơ hội tiếp theo</span>
+            </button>
+            <button type="button" aria-label="Phím 4 – Chiến dịch" data-message="Tạo chiến dịch chăm sóc khách hàng tiền gửi">
+              <span class="qa-key">4</span>
+              <span class="qa-label">Chiến dịch</span>
+            </button>
+          </section>
+
+          <!-- Status bar -->
+          <div id="chatStatus" class="chat-status" role="status" aria-live="polite"></div>
+
+          <!-- Composer -->
+          <form id="chatForm" class="composer" autocomplete="off">
+            <label class="sr-only" for="messageInput">Nhập yêu cầu cho BankRM Copilot</label>
+            <div class="composer-inner">
+              <textarea
+                id="messageInput"
+                rows="1"
+                placeholder="Nhập yêu cầu chăm sóc khách hàng... (Enter để gửi, Shift+Enter xuống dòng)"
+                aria-label="Nhập yêu cầu"
+              ></textarea>
+              <button id="sendButton" type="submit" aria-label="Gửi yêu cầu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <span class="send-label">Gửi</span>
+              </button>
+            </div>
+          </form>
+        </main>
+
+        <!-- ── SIDE PANEL ─────────────────────────────── -->
+        <aside class="side-panel" id="sidePanel" aria-label="Panel thông tin phụ">
+
+          <!-- Tool Trace -->
+          <section class="sp-section" id="toolTraceSection">
+            <div class="sp-section-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Sơ đồ xử lý
+              <span class="sp-badge" id="toolTraceBadge" hidden></span>
+            </div>
+            <div class="sp-section-body" id="toolTraceBody">
+              <p class="sp-hint">Gửi câu hỏi để xem AI xử lý như thế nào.</p>
+            </div>
+          </section>
+
+          <!-- Sources -->
+          <section class="sp-section" id="sourcesSection">
+            <div class="sp-section-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              Nguồn trích dẫn
+            </div>
+            <div class="sp-section-body" id="sourcesBody">
+              <p class="sp-hint">Các nguồn dữ liệu sử dụng sẽ hiển thị ở đây.</p>
+            </div>
+          </section>
+
+          <!-- Focused Customers -->
+          <section class="sp-section" id="customersSection">
+            <div class="sp-section-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Khách hàng đang focus
+            </div>
+            <div class="sp-section-body" id="customersBody">
+              <p class="sp-hint">Khách hàng được nhắc đến sẽ hiển thị ở đây.</p>
+            </div>
+          </section>
+
+        </aside>
+      </div><!-- /.app-body -->
+    </div><!-- /.app-shell -->
 
     <script src="/config.js"></script>
     <script src="/app.js"></script>

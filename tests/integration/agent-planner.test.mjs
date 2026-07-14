@@ -74,6 +74,65 @@ describe("AI-native planning slice", () => {
     }
   });
 
+  test("tokenizes raw RM PII before sending a planning request", async () => {
+    const proxy = await createProxy(
+      JSON.stringify({
+        intent: "customer",
+        steps: [{ tool: "crm_list_customers", input: {} }],
+        responseGoal: "Find the matching customer."
+      })
+    );
+
+    try {
+      configureProxy(proxy.url);
+      await planAgentTurn({
+        message:
+          "Tìm khách mai van binh, email an@example.com, điện thoại 0912345678, tài khoản 123456789012.",
+        context: { currentModule: "customer", focusedCustomers: ["C001"] },
+        identity: { userId: "rm-secret", rmId: "RM01", role: "rm", branchId: "HN" },
+        availableTools: ["crm_list_customers"]
+      });
+
+      const outbound = JSON.stringify(proxy.requests[0].body.messages);
+      assert.match(outbound, /BANKRM_PII_/);
+      assert.doesNotMatch(
+        outbound,
+        /mai van binh|an@example\.com|0912345678|123456789012|C001|rm-secret|RM01/i
+      );
+    } finally {
+      await proxy.close();
+    }
+  });
+
+  test("restores a protected customer identifier only after planner output validation", async () => {
+    const proxy = await createProxy((request) => {
+      const token = JSON.stringify(request.body.messages).match(
+        /\[\[BANKRM_PII_[a-z]+_\d+\]\]/
+      )?.[0];
+      assert.ok(token, "the outbound planner prompt must contain an opaque PII token");
+      return JSON.stringify({
+        intent: "draft-email",
+        steps: [{ tool: "crm_draft_email", input: { customerId: token } }],
+        responseGoal: "Draft the requested email."
+      });
+    });
+
+    try {
+      configureProxy(proxy.url);
+      const plan = await planAgentTurn({
+        message: "Soan email cho khach C001",
+        context: {},
+        identity: { role: "rm" },
+        availableTools: ["crm_draft_email"]
+      });
+
+      assert.equal(plan.steps[0].input.customerId, "C001");
+      assert.doesNotMatch(JSON.stringify(proxy.requests[0].body.messages), /C001/);
+    } finally {
+      await proxy.close();
+    }
+  });
+
   test("fails deterministically when planner JSON is malformed", async () => {
     const proxy = await createProxy("```json\n{}\n```");
 
@@ -93,12 +152,67 @@ describe("AI-native planning slice", () => {
     }
   });
 
+  test("rejects planner-owned policy fields and plans over the runtime step budget", async () => {
+    const policyProxy = await createProxy(
+      JSON.stringify({
+        intent: "customer",
+        steps: [{ tool: "crm_list_customers", input: {}, risk: "low" }],
+        responseGoal: "List customers.",
+        requiresApproval: false
+      })
+    );
+
+    try {
+      configureProxy(policyProxy.url);
+      await assert.rejects(
+        planAgentTurn({
+          message: "Liệt kê khách hàng",
+          context: {},
+          identity: {},
+          availableTools: ["crm_list_customers"],
+          maxSteps: 1
+        }),
+        (error) => error.code === "PLANNER_INVALID_RESPONSE"
+      );
+    } finally {
+      await policyProxy.close();
+    }
+
+    const budgetProxy = await createProxy(
+      JSON.stringify({
+        intent: "multi-step",
+        steps: [
+          { tool: "crm_list_customers", input: {} },
+          { tool: "crm_list_campaigns", input: {} }
+        ],
+        responseGoal: "List customers and campaigns."
+      })
+    );
+
+    try {
+      configureProxy(budgetProxy.url);
+      await assert.rejects(
+        planAgentTurn({
+          message: "Liệt kê khách hàng và chiến dịch",
+          context: {},
+          identity: {},
+          availableTools: ["crm_list_customers", "crm_list_campaigns"],
+          maxSteps: 1
+        }),
+        (error) => error.code === "PLANNER_STEP_BUDGET_EXCEEDED"
+      );
+      assert.match(JSON.stringify(budgetProxy.requests[0].body.messages), /between 1 and 1 steps/);
+    } finally {
+      await budgetProxy.close();
+    }
+  });
+
   test("synthesizes a reply while deriving deduplicated sources from observations", async () => {
     const proxy = await createProxy(JSON.stringify({ reply: "Da, em da tong hop ket qua CRM." }));
     const plan = {
       intent: "opportunity",
       steps: [
-        { tool: "crm_get_customer", input: { name: "Nguyen Van A" } },
+        { tool: "crm_get_customer", input: { name: "mai van binh" } },
         { tool: "crm_list_opportunities", input: { customerId: "C001" } }
       ],
       responseGoal: "Summarize grounded opportunities."
@@ -107,17 +221,19 @@ describe("AI-native planning slice", () => {
     try {
       configureProxy(proxy.url);
       const result = await synthesizeAgentTurn({
-        message: "Co hoi nao phu hop?",
+        message: "Tu van cho truong thi lan hom nay; co hoi nao phu hop?",
         context: { focusedCustomers: ["C001"] },
         plan,
         observations: [
           {
             tool: "crm_get_customer",
+            input: { name: "mai van binh" },
             data: { id: "C001", segment: "VIP" },
             sources: [{ endpoint: "GET /customers" }]
           },
           {
             tool: "crm_list_opportunities",
+            input: { customerId: "C001" },
             data: [{ product: "Bao hiem", score: 0.8 }],
             sources: ["GET /opportunities", "GET /customers"]
           }
@@ -127,6 +243,44 @@ describe("AI-native planning slice", () => {
       assert.deepEqual(result, {
         reply: "Da, em da tong hop ket qua CRM.",
         sources: [{ endpoint: "GET /customers" }, { endpoint: "GET /opportunities" }]
+      });
+      const outbound = JSON.stringify(proxy.requests[0].body.messages);
+      assert.match(outbound, /BANKRM_PII_/);
+      assert.doesNotMatch(outbound, /C001|mai van binh|truong thi lan/i);
+    } finally {
+      await proxy.close();
+    }
+  });
+
+  test("grounds a customer identifier from successful tool input", async () => {
+    const proxy = await createProxy(
+      JSON.stringify({ reply: "Đã soạn email chăm sóc cho khách hàng C001." })
+    );
+    const plan = {
+      intent: "draft-email",
+      steps: [{ tool: "crm_draft_email", input: { customerId: "C001" } }],
+      responseGoal: "Draft a grounded customer email."
+    };
+
+    try {
+      configureProxy(proxy.url);
+      const result = await synthesizeAgentTurn({
+        message: "Soạn email chăm sóc",
+        context: { focusedCustomers: ["C001"] },
+        plan,
+        observations: [
+          {
+            tool: "crm_draft_email",
+            input: { customerId: "C001" },
+            data: { subject: "Chăm sóc khách hàng", body: "Nội dung email" },
+            sources: [{ endpoint: "POST /emails/draft" }]
+          }
+        ]
+      });
+
+      assert.deepEqual(result, {
+        reply: "Đã soạn email chăm sóc cho khách hàng C001.",
+        sources: [{ endpoint: "POST /emails/draft" }]
       });
     } finally {
       await proxy.close();
@@ -142,6 +296,44 @@ describe("AI-native planning slice", () => {
       await assert.rejects(
         callApprovedLlm({ messages: [{ role: "user", content: "hello" }] }),
         (error) => error.code === "LLM_TIMEOUT"
+      );
+    } finally {
+      await proxy.close();
+    }
+  });
+
+  test("rejects synthesizer-owned sources, risk, and approval fields", async () => {
+    const proxy = await createProxy(
+      JSON.stringify({
+        reply: "Da, em da tong hop ket qua CRM.",
+        sources: [{ endpoint: "LLM-controlled" }],
+        risk: "low",
+        requiresApproval: false
+      })
+    );
+    const plan = {
+      intent: "customer",
+      steps: [{ tool: "crm_list_customers", input: {} }],
+      responseGoal: "List customers."
+    };
+
+    try {
+      configureProxy(proxy.url);
+      await assert.rejects(
+        synthesizeAgentTurn({
+          message: "Liệt kê khách hàng",
+          context: {},
+          plan,
+          observations: [
+            {
+              tool: "crm_list_customers",
+              input: {},
+              data: [{ id: "C001" }],
+              sources: [{ endpoint: "GET /customers" }]
+            }
+          ]
+        }),
+        (error) => error.code === "SYNTHESIS_INVALID_RESPONSE"
       );
     } finally {
       await proxy.close();
@@ -177,8 +369,9 @@ async function createProxy(content, delayMs = 0) {
         body: JSON.parse(Buffer.concat(chunks).toString("utf8"))
       });
       setTimeout(() => {
+        const responseContent = typeof content === "function" ? content(requests.at(-1)) : content;
         response.setHeader("Content-Type", "application/json");
-        response.end(JSON.stringify({ choices: [{ message: { content } }] }));
+        response.end(JSON.stringify({ choices: [{ message: { content: responseContent } }] }));
       }, delayMs);
     });
   });
