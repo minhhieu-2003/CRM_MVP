@@ -67,6 +67,8 @@ function sanitizeText(value) {
     .replace(/\b(?:api[_ -]?key|token|password|secret)\s*[:=]\s*[^\s,;]+/gi, "$1=[REDACTED]")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[REDACTED:EMAIL]")
     .replace(/(?<!\d)(?:\+?84|0)(?:[ .-]?\d){8,10}(?!\d)/g, "[REDACTED:PHONE]")
+    .replace(/(?<!\d)(?:\d{9}|\d{12})(?!\d)/g, "[REDACTED:ID_CARD]")
+    .replace(/(?<!\d)\d{10,13}(?!\d)/g, "[REDACTED:TAX_ID]")
     .replace(/(?<!\d)\d{8,19}(?!\d)/g, "[REDACTED:ACCOUNT]")
     .replace(/\bC(?:-[A-Z0-9_-]+|\d{3,})\b/gi, "[REDACTED:CUSTOMER_ID]")
     .replace(/\b(?:O|I|CP)(?:-[A-Z0-9_-]+|\d{3,})\b/gi, "[REDACTED:RECORD_ID]")

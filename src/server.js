@@ -117,9 +117,15 @@ function requireRouteScopes(req, requiredScopes) {
 }
 
 const env = (process.env.NODE_ENV || "development").trim().toLowerCase();
-if ((env === "pilot" || env === "production") && process.env.AUTH_ENABLED !== "true") {
-  console.error("FATAL: Khoi dong that bai. AUTH_ENABLED=true is required in pilot/production.");
-  process.exit(1);
+if (env === "pilot" || env === "production") {
+  if (process.env.AUTH_ENABLED !== "true") {
+    console.error("FATAL: Khoi dong that bai. AUTH_ENABLED=true is required in pilot/production.");
+    process.exit(1);
+  }
+  if (!process.env.CORS_ORIGIN || process.env.CORS_ORIGIN === "*") {
+    console.error("FATAL: Khoi dong that bai. CORS_ORIGIN cannot be * in pilot/production.");
+    process.exit(1);
+  }
 }
 if (process.env.AUTH_ENABLED === "true" && !process.env.AUTH_DEMO_TOKEN?.trim()) {
   console.error("FATAL: AUTH_DEMO_TOKEN is required when authentication is enabled.");
@@ -213,7 +219,12 @@ try {
 }
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", process.env.CORS_ORIGIN || "*");
+  const origin = process.env.CORS_ORIGIN || "*";
+  if ((env === "pilot" || env === "production") && origin === "*") {
+    res.setHeader("Access-Control-Allow-Origin", "https://restricted.domain.invalid");
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -228,7 +239,7 @@ app.use((req, res, next) => {
     req.identity = {
       userId: req.header("X-User-Id") || "default",
       rmId: req.header("X-RM-Id") || "default",
-      role: req.header("X-Role") || "user",
+      role: ["user", "rm"].includes(req.header("X-Role")) ? req.header("X-Role") : "user",
       branchId: req.header("X-Branch-Id") || "default",
       entitlements: localDemoEntitlements,
       authMode: "disabled-local-demo"
